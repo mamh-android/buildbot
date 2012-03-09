@@ -22,7 +22,7 @@
 #---------------------
 CUR_PATH="${PWD}"
 WORKSPACE="${CUR_PATH}"
-RESULT_FOLDER="${WORKSPACE}/Result"
+RESULT_FOLDER="${WORKSPACE}/DiffFileResult"
 
 FOLDER1="$(cd ${1} && pwd)"
 FOLDER2="$(cd ${2} && pwd)"
