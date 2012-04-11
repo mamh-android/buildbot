@@ -1,6 +1,6 @@
 #!/bin/bash
 cd ~/buildbot_script/buildbot/
-. ../check_update.sh
+. ./check_update.sh
 platform=`awk '{if($1=="platform") print $2}' /home/buildfarm/buildbot_script/args.log`
 product=`awk '{if($1=="product") print $2}' /home/buildfarm/buildbot_script/args.log`
 release=`awk '{if($1=="last") print $2}' /home/buildfarm/buildbot_script/args.log`

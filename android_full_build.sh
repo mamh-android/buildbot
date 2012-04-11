@@ -2,6 +2,7 @@
 ids=$1  
 echo $1
 rm -f /home/buildfarm/buildbot_script/args.log
+. ~/buildbot_script/buildbot/check_update.sh
 cd ~/aabs
 var_0=`echo ${ids%%_*}`
 if [ ! "${var_0}" == "rls" ]; then
