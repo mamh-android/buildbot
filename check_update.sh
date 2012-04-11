@@ -22,7 +22,7 @@ if [ $? -ne 0 ]; then
     echo "[buildbot] git -rev-parse origin/master return errors" | tee -a $LOG
     exit 30
 fi
-if [ ! "$current_head"="$new_head" ]; then
+if [ ! "$current_head" = "$new_head" ]; then
     echo "[buildbot]=============================" | tee -a $LOG
     echo "[buildbot] start to check orign/master " | tee -a $LOG
     echo "[buildbot]=============================" | tee -a $LOG
