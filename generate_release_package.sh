@@ -4,8 +4,6 @@ platform=$2
 product=$3
 release=$4
 RC=$5
+Release_package_path=$6
 echo $*
-foldername="${platform}-${product}.${release}${RC}"
-cd /home/buildfarm/release
-mkdir ${foldername}
-. /home/buildfarm/buildbot_script/buildbot/bbolt_cdrop.sh -i ${input} -o /home/buildfarm/release/${foldername} -l /home/buildfarm/release/content
+. /home/buildfarm/buildbot_script/buildbot/bbolt_cdrop.sh ${input} ${platform} ${product} ${release} ${RC} ${Release_package_path}
