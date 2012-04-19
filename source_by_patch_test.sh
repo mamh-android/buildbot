@@ -70,4 +70,4 @@ if [ $? -eq 0 ]; then
 else
   echo "Test failed!"
 fi
-rm -f /home/buildfarm/buildbot_script/${folder_name}
+rm -f /home/buildfarm/buildbot_script/buildbot/${folder_name}
