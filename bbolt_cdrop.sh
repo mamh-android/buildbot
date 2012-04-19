@@ -1,74 +1,92 @@
 #!/bin/sh
 # 
 
+IDIR=
+PLATFORM=
+PRODUCT=
+RLS=
+RC=
+LIST=
+RPKG_FOLDER="releasepackage"
+PREBUILT_FOLDER="prebuilt_bin"
+SRC_FOLDER="src"
+
 help() {
     if [ -n "$1" ]; then
 	echo "Error: $1"
 	echo
     fi
-    echo "Usage: bbolt_cdrop.sh -i <path> -o <path> -l <list>"
+    echo "Usage: bbolt_cdrop.sh <path> <platform> <product> <release> <rc> <list>"
     echo
-    echo "bbolt_cdrop is used by buildbolt to publish the prebuilt binaries"
-    echo " and source code for code drop."
-    echo
-    echo "List format:"
-    echo "<source> [:space:] <destination>"
-    echo "  Don't include any spaces in either <source> or <destination>"
+    echo "bbolt_cdrop is used by buildbolt to publish code drop."
     echo
     exit 0
 }
 
-IDIR=
-ODIR=
-LIST=
+
 
 validate_parameters() {
     if [ $# -ne 6 ]; then
 	help
     fi
 
-    while [ $# -gt 0 ];
-    do
-	case "$1" in
-	    "-i")
-		IDIR=$2
-		;;
-	    "-o")
-		ODIR=$2
-		;;
-	    "-l")
-		LIST=$2
-		;;
-	    *)
-		help "Here is an unknown option: $1."
-		;;
-	esac
-	shift 2
-    done
-
-    if [ -z "$IDIR" -o ! -d "$IDIR" ]; then
+    IDIR=$1
+    echo $IDIR
+    if [ ! -d "$IDIR" ]; then
 	help "Please specify a valid input directory!"
     fi
-    if [ -z "$ODIR" -o ! -d "$ODIR" ]; then
-	help "Please specify a valid output directory!"
+
+    LIST=$6
+    if [ ! -f "$LIST" ]; then
+	help "Please specify a valid release list!"
     fi
-    if [ -z "$LIST" -o ! -f "$LIST" ]; then
-	help "Please specify a valid list file!"
-    fi
+
+    PLATFORM=$2
+    PRODUCT=$3
+    RLS=$4
+    RC=$5
 }
 
-parse_copy_list() {
+bbolt_copy() {
 
-CDROP_COPY_PATTERN="
+    CDROP_COPY_PATTERN="
     {
         if (NF < 2 || \$2 == \"\")
             \$2 = \$1;
+        make_odir = \"dirname \"odir\"/\"\$2\"| xargs mkdir -p\"
+        system(make_odir);
         system(\"cp -f \"idir\"/\"\$1\" \"odir\"/\"\$2);
     }
-"
+    "
 
     awk -v idir="$1" -v odir="$2" "$CDROP_COPY_PATTERN" $3
 }
 
 validate_parameters $*
-parse_copy_list "$IDIR" "$ODIR" "$LIST"
+
+ODIR=$IDIR"/"$RPKG_FOLDER"/"$RLS"_"$RC
+RPKG_NAME=$PLATFORM"_ANDROID_PLATFORM_"$RLS
+RLS_BIN=$RPKG_NAME"_prebuilt_bin"
+RLS_SRC=$RPKG_NAME"_src"
+
+
+if [ ! -d "$ODIR" ]; then
+    mkdir -p $ODIR
+fi
+
+bbolt_copy $IDIR $ODIR $LIST
+
+cd $ODIR
+
+tar czf $RLS_BIN.tgz $PREBUILT_FOLDER
+if [ -f "$RLS_BIN".tgz ]; then
+  split -b 100M -d ./"$RLS_BIN".tgz ./"$RLS_BIN".
+  rm -rf "$PREBUILT_FOLDER"
+fi
+
+tar czf $RLS_SRC.tgz $SRC_FOLDER
+if [ -f "$RLS_SRC".tgz ]; then
+  split -b 100M -d ./"$RLS_SRC".tgz ./"$RLS_SRC".
+  rm -rf "$SRC_FOLDER"
+fi
+ 
