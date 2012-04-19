@@ -35,4 +35,4 @@ if [ ! "$current_head" = "$new_head" ]; then
 else
     echo "[buildbot][$(get_date)] there is nothing to update" | tee -a $LOG
 fi
-cd ~/buildbot_script
+cd ~/buildbot_script/buildbot
