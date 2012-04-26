@@ -20,7 +20,7 @@ help() {
     echo
     echo "bbolt_cdrop is used by buildbolt to publish code drop."
     echo
-    exit 0
+    exit -1
 }
 
 
@@ -65,7 +65,7 @@ bbolt_copy() {
 validate_parameters $*
 
 ODIR=$IDIR"/"$RPKG_FOLDER"/"$RLS"_"$RC
-RPKG_NAME=$PLATFORM"_ANDROID_PLATFORM_"$RLS
+RPKG_NAME=$PLATFORM"_Android_Platform_"$RLS
 RLS_BIN=$RPKG_NAME"_prebuilt_bin"
 RLS_SRC=$RPKG_NAME"_src"
 
