@@ -3,7 +3,7 @@
 # File: genDeltaPatch.sh
 # Author: YuanZhang
 # Create Data: 06/13/2011
-# Update Date: 06/15/2011
+# Update Date: 04/18/2012
 # ---------------------------------------
 # 
 # Description:
@@ -34,25 +34,32 @@ XML_TWO="$2"
 
 XML_ONE_NAME="${1##*/}"
 XML_TWO_NAME="${2##*/}"
+
+RELEASE_FOLDER=`echo ${XML_TWO%%${XML_TWO_NAME}*}`
+
 REFERENCE_FOLDER="$3"
 
-XML_ONE_LOG="${RESULT_FOLDER}/${XML_ONE_NAME}.log"
-android_version_1=echo ${XML_ONE} | grep honeycomb -i
-if [ -n ${android_version_1} ]; then
-MANIFEST_GIT_1="ssh://shgit.marvell.com/git/droid/platform/manifest.git"
-REPO_GIT_1="ssh://shgit.marvell.com/git/droid/tools/repo.git"
+REPO_GIT="ssh://shgit.marvell.com/git/android/tools/repo.git"
+
+#------
+# Check git server whether using honeycomb
+#------
+
+XML_ONE_VERSION=`cat ${XML_ONE} | grep honeycomb`
+if [ "${XML_ONE_VERSION}" != "" ]; then
+	MANIFEST_GIT_1="ssh://shgit.marvell.com/git/droid/platform/manifest.git"
 else 
-NIFEST_GIT_1="ssh://shgit.marvell.com/git/droid/platform/manifest.git"
-REPO_GIT_1="ssh://shgit.marvell.com/git/android/tools/repo.git"
+	MANIFEST_GIT_1="ssh://shgit.marvell.com/git/android/platform/manifest.git"
 fi
-android_version_2=echo ${XML_TWO} | grep honeycomb -i
-if [ -n ${android_version_2} ]; then
-MANIFEST_GIT_2="ssh://shgit.marvell.com/git/droid/platform/manifest.git"
-REPO_GIT_2="ssh://shgit.marvell.com/git/droid/tools/repo.git"
+
+XML_TWO_VERSION=`cat ${XML_TWO} | grep honeycomb`
+if [ "${XML_TWO_VERSION}" != "" ]; then
+	MANIFEST_GIT_2="ssh://shgit.marvell.com/git/droid/platform/manifest.git"
 else
-NIFEST_GIT_2="ssh://shgit.marvell.com/git/droid/platform/manifest.git"
-REPO_GIT_2="ssh://shgit.marvell.com/git/android/tools/repo.git"
+	MANIFEST_GIT_2="ssh://shgit.marvell.com/git/android/platform/manifest.git"
 fi
+
+XML_ONE_LOG="${RESULT_FOLDER}/${XML_ONE_NAME}.log"
 XML_TWO_LOG="${RESULT_FOLDER}/${XML_TWO_NAME}.log"
 FIRST_PROJECTS_LIST="${RESULT_FOLDER}/FirstProjectsList.log"
 SECOND_PROJECTS_LIST="${RESULT_FOLDER}/SecondProjectsList.log"
@@ -105,6 +112,9 @@ function clobber(){
 
 	mkdir -p "${OUTPUT_FOLDER}"
 	mkdir -p "${RESULT_FOLDER}"
+	mkdir -p "${PATCHES_SUB}"
+	mkdir -p "${PATCHES_ADD}"
+
 }
 
 #---------------
@@ -168,22 +178,22 @@ function fetchLatestBranch(){
 	echo "-> Repo sync first manifest.xml to \"${FIRST_SYNC_FOLDER}\"..."
 
 	cd "${FIRST_SYNC_FOLDER}" &&
-	repo init -u ${MANIFEST_GIT_1} ${REFERENCE_PARAMETER} --repo-url=${REPO_GIT_1} 1>/dev/null 2>&1 &&
-	cp "${WORKSPACE}/${XML_ONE}" "${FIRST_SYNC_FOLDER}/.repo/manifests/" &&
-	repo init -m ${XML_ONE_NAME} 1>/dev/null 2>&1 &&
+	repo init -u ${MANIFEST_GIT_1} ${REFERENCE_PARAMETER} --repo-url=${REPO_GIT} #1>/dev/null 2>&1 &&
+	cp "${XML_ONE}" "${FIRST_SYNC_FOLDER}/.repo/manifests/" &&
+	repo init -m ${XML_ONE_NAME} #1>/dev/null 2>&1 &&
 	repo sync
 
-	checkReturn "fetchLatestBranch ${XML_ONE_NAME} failed."
+	checkReturn "fetchLatestBranch ${XML_ONE} failed."
 
 	echo "-> Repo sync second manifest.xml to \"${SECOND_SYNC_FOLDER}\"..."
 
 	cd "${SECOND_SYNC_FOLDER}" &&
-	repo init -u ${MANIFEST_GIT_2} ${REFERENCE_PARAMETER} --repo-url=${REPO_GIT_2} 1>/dev/null 2>&1 &&
-	cp "${WORKSPACE}/${XML_TWO}" "${SECOND_SYNC_FOLDER}/.repo/manifests/" &&
+	repo init -u ${MANIFEST_GIT_2} ${REFERENCE_PARAMETER} --repo-url=${REPO_GIT} 1>/dev/null 2>&1 &&
+	cp "${XML_TWO}" "${SECOND_SYNC_FOLDER}/.repo/manifests/" &&
 	repo init -m ${XML_TWO_NAME} 1>/dev/null 2>&1 &&
 	repo sync
 
-	checkReturn "fetchLatestBranch ${XML_TWO_NAME} failed."
+	checkReturn "fetchLatestBranch ${XML_TWO} failed."
 
 	cd "${WORKSPACE}"
 
@@ -327,17 +337,17 @@ function diffPatches(){
 #---------------------
 function movePatches(){
 
-	rm -rf "${PATCHES_SUB}" 
-	rm -rf "${PATCHES_ADD}"
-
 	if [ -d "${FIRST_SYNC_FOLDER}/${PATCH_PATH}" ]; then 
 		mv "${FIRST_SYNC_FOLDER}/${PATCH_PATH}" "${PATCHES_SUB}"
+	else
+		mkdir -p "${PATCHES_SUB}"
 	fi
 
 	if [ -d "${SECOND_SYNC_FOLDER}/${PATCH_PATH}" ]; then 
 		mv "${SECOND_SYNC_FOLDER}/${PATCH_PATH}" "${PATCHES_ADD}" 
+	else
+		mkdir -p "${PATCHES_ADD}"
 	fi
-
 }
 
 #---------------------
@@ -351,7 +361,7 @@ function reOrderPatches(){
 	PROJECTPATH=""
 	PATCHES_FOLDER="${1}"
 
-	find "${PATCHES_FOLDER}" -name "*.patch" > "/tmp/plxxx"
+	find "${PATCHES_FOLDER}" -name "*.patch" | sort > "/tmp/plxxx"
 
 	while read FILE
 	do
@@ -384,6 +394,10 @@ function reOrderPatches(){
 function deleteEmptyFolder(){
 	find "${PATCHES_SUB}" -type d -exec rmdir -p --ignore-fail-on-non-empty {} \; 2>/dev/null
 	find "${PATCHES_ADD}" -type d -exec rmdir -p --ignore-fail-on-non-empty {} \; 2>/dev/null
+	
+	# create empty path if not deleted by above code
+	mkdir -p "${PATCHES_SUB}"
+	mkdir -p "${PATCHES_ADD}" 	
 }
 
 #------------------------
@@ -407,7 +421,7 @@ function summary(){
 	echo ""
 	echo "============ Summary ============="
 	echo "-> Patches Folder: \"${OUTPUT_FOLDER}\""
-	echo "-> Patches TAR Package: \"${OUTPUT_FOLDER}/delta_patches.tgz\""
+	echo "-> Patches TAR Package: \"${RELEASE_FOLDER}/delta_patches.tgz\""
 	echo ""
 
 	echo "${RETURN_VALUE_PASS}"
@@ -435,8 +449,11 @@ function tarPatches(){
 	cd "${OUTPUT_FOLDER}"
 
 	tar czf ${RESULT_NAME}.tgz patches_sub/ patches_add/ patches_add.txt patches_sub.txt
+        checkReturn "tar the result failed."
 	#----------------------------------------------------------
-	
+
+	cp -f "${RESULT_NAME}.tgz" "${RELEASE_FOLDER}/"
+
 	cd ${WORKSPACE}
 
 }

@@ -5,7 +5,7 @@
 # File: genDiff.sh
 # Author: YuanZhang
 # Date: 06/17/2011
-# Update: 06/21/2011
+# Update: 04/27/2012
 # -----------------------------------
 #
 # Description:
@@ -22,14 +22,15 @@
 #---------------------
 CUR_PATH="${PWD}"
 WORKSPACE="${CUR_PATH}"
-RESULT_FOLDER="${WORKSPACE}/DiffFileResult"
+RESULT_FOLDER="${WORKSPACE}/DiffResult"
+RELEASE_FOLDER="${3}"
 
 FOLDER1="$(cd ${1} && pwd)"
 FOLDER2="$(cd ${2} && pwd)"
 FOLDER1_NAME="${FOLDER1##*/}"
 FOLDER2_NAME="${FOLDER2##*/}"
 
-DIFF_EXECU="./diffz"
+DIFF_EXECU="/home/buildfarm/buildbot_script/buildbot/diffz"
 DIFF_PARAM="-rsq -x .git -x .repo"
 
 RAWDATA="${RESULT_FOLDER}/RawData"
@@ -259,6 +260,9 @@ function tarResult(){
 	fi
 
 	tar czf ${OUTPUT_NAME}.tgz "${FOLDER1_NAME}" "${FOLDER2_NAME}" "OnlyIn_${FOLDER1_NAME}.lst" "OnlyIn_${FOLDER2_NAME}.lst" "DiffBetween_${FOLDER1_NAME}_${FOLDER2_NAME}.lst"
+
+	cp -f "${OUTPUT_NAME}.tgz" "${RELEASE_FOLDER}/"
+
 	checkReturn "tarResult ${OUTPUT_NAME}.tgz \"${FOLDER1_NAME}\" \"${FOLDER2_NAME}\" Failed."
 }
 
@@ -288,7 +292,7 @@ function main(){
 	processDiffData
 	processOnlyData
 	tarResult
-	summary
+	#summary
 
 }
 
