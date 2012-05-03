@@ -23,7 +23,7 @@ else
 REPO_DIR="git://android.googlesource.com/platform/manifest -b master"
 GIT_LOCAL_MIRROR=/mnt/mirror/default/
 fi
-autobuild_dir=/autobuild/android/$2/$1
+autobuild_dir=/autobuild/android/$2/$1/src/
 #autobuild_dir=$HOME/share/for_MyWindows/autobuild/$1
 android_dir=$test_dir/android_source
 marvell_dir=$test_dir/marvell_patch
