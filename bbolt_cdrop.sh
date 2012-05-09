@@ -20,7 +20,7 @@ help() {
     echo
     echo "bbolt_cdrop is used by buildbolt to publish code drop."
     echo
-    exit -1
+    exit 1
 }
 
 
@@ -62,6 +62,30 @@ bbolt_copy() {
     awk -v idir="$1" -v odir="$2" "$CDROP_COPY_PATTERN" $3
 }
 
+generate_checksum() {
+    for file in `ls -l | grep ^[^d] | awk '{print $8}'`; do
+    md5sum $file >> checksum.md5
+    done
+}
+
+generate_prebuilt() {
+
+    folders=`ls -d */`
+    for folder in $folders; do
+        cd $folder
+        if [ -d $PREBUILT_FOLDER ]; then 
+                tar czf $RLS_BIN.tgz $PREBUILT_FOLDER 
+        fi
+        if [ -f "$RLS_BIN".tgz ]; then
+            split -b 100M -d ./"$RLS_BIN".tgz ./"$RLS_BIN".
+            rm -rf "$PREBUILT_FOLDER"
+        fi
+        generate_checksum
+        cd ..
+    done
+}
+
+
 validate_parameters $*
 
 ODIR=$IDIR"/"$RPKG_FOLDER"/"$RLS"_"$RC
@@ -77,16 +101,12 @@ fi
 bbolt_copy $IDIR $ODIR $LIST
 
 cd $ODIR
-
-tar czf $RLS_BIN.tgz $PREBUILT_FOLDER
-if [ -f "$RLS_BIN".tgz ]; then
-  split -b 100M -d ./"$RLS_BIN".tgz ./"$RLS_BIN".
-  rm -rf "$PREBUILT_FOLDER"
-fi
+generate_prebuilt
 
 tar czf $RLS_SRC.tgz $SRC_FOLDER
 if [ -f "$RLS_SRC".tgz ]; then
   split -b 100M -d ./"$RLS_SRC".tgz ./"$RLS_SRC".
   rm -rf "$SRC_FOLDER"
 fi
+generate_checksum
  
