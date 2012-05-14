@@ -77,7 +77,7 @@ generate_prebuilt() {
                 tar czf $RLS_BIN.tgz $PREBUILT_FOLDER 
         fi
         if [ -f "$RLS_BIN".tgz ]; then
-            split -b 100M -d ./"$RLS_BIN".tgz ./"$RLS_BIN".
+            split -b 170M -d ./"$RLS_BIN".tgz ./"$RLS_BIN".
             rm -rf "$PREBUILT_FOLDER"
         fi
         generate_checksum
@@ -105,7 +105,7 @@ generate_prebuilt
 
 tar czf $RLS_SRC.tgz $SRC_FOLDER
 if [ -f "$RLS_SRC".tgz ]; then
-  split -b 100M -d ./"$RLS_SRC".tgz ./"$RLS_SRC".
+  split -b 170M -d ./"$RLS_SRC".tgz ./"$RLS_SRC".
   rm -rf "$SRC_FOLDER"
 fi
 generate_checksum
