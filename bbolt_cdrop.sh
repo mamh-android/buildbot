@@ -79,8 +79,8 @@ generate_prebuilt() {
         if [ -f "$RLS_BIN".tgz ]; then
             split -b 170M -d ./"$RLS_BIN".tgz ./"$RLS_BIN".
             rm -rf "$PREBUILT_FOLDER"
+            generate_checksum
         fi
-        generate_checksum
         cd ..
     done
 }
