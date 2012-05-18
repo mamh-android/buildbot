@@ -265,7 +265,7 @@ function genAllPatches(){
 				echo "[WARNING] Project \"${GIT_NAME##*/}\" is a newly added project. Making Tarball ..."
 				mkdir -p "${OLD_SRC_PATH}/${PATCH_PATH}/${PROJECTPATH}"
 				tar czvf ${OLD_SRC_PATH}/${PATCH_PATH}/${PROJECTPATH}/0001-${GIT_NAME##*/}.tgz ./* > /dev/null
-				return
+				continue
 			fi
 			cd ${NEW_SRC_PATH}/${NEW_PRJ_PATH}
 		fi
