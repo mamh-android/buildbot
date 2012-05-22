@@ -20,7 +20,7 @@ if [ -n "${choose}" ];then
 REPO_DIR="ssh://partner.source.android.com:29418/platform/manifest -b honeycomb-mr2-release"
 GIT_LOCAL_MIRROR=/mnt/mirror/restricted/
 else
-REPO_DIR="git://android.googlesource.com/platform/manifest -b master"
+REPO_DIR="https://android.googlesource.com/platform/manifest -b master"
 GIT_LOCAL_MIRROR=/mnt/mirror/default/
 fi
 autobuild_dir=/autobuild/android/$2/$1/src
