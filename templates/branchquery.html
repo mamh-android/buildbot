@@ -1,0 +1,225 @@
+{% from 'build_line.html' import build_table %}
+{% import 'forms.html' as forms %}
+{% extends "layout.html" %}
+{%block content%}
+<script type="text/javascript">
+</script> 
+<script>
+function editReason(id)
+{
+	buttonid = "button"+id;
+	str = document.getElementById("failurereason"+id).value;
+	document.getElementById(id).innerHTML="<td align='center'><textarea id='edit"+id+"'>"+str+"</textarea></td>";
+    document.getElementById(buttonid).value="submit";
+    document.getElementById(buttonid).onclick=function()
+	{
+        document.getElementById("failurereason"+id).value=document.getElementById("edit"+id).value;
+		return true;
+	};
+	return false;
+}
+function validateReason(thisform)
+{
+	with(thisform)
+	{
+		with(failurereason)
+		{
+			if(value == "")
+			{
+				alert("The failure reason can't be null!");
+				return false;
+			}
+			for (i = 0; i < value.length; i++)
+ 			{
+ 				c = value.substr(i, 1);
+				ts = escape(c);
+ 				if(ts.substring(0,2) == "%u")
+ 				{
+ 					alert("Chinese characters is not allowed!");
+                 	return false;
+             	}
+         	}	
+
+		}
+	}
+	return true;
+}	
+</script>
+<!--<script type="text/javascript"src="{{path_to_root}}jquery-1.7.2.min.js"></script>
+<script type="text/javascript"src="{{path_to_root}}table2csv.js"></script>
+<script>
+	//alert("cccc");
+	$(document).ready(function()
+	{
+		alert("aaa");
+		$("#export").click(function()
+		{
+			alert("hello!!");
+			$("#finishedtable").table2CSV();
+		})
+	})
+</script>-->
+<div align="center">
+  <h1>Manifest Branch Query{%if branchname%}[{{branchname}}]{%endif%}</h1>
+</div>
+<input type="hidden" id="branch_names" value="{{branch_names}}" />
+<div id="get_branch_names" style="display:none">
+{{branch_names}}
+</div>
+<h2>To query the build in the other branch, input the branch name and click the button to query.</h2>
+<form id="form2" name="form2" method="post" onsubmit="return branchValidate(this)" action="">
+  <label>* Branch
+  <input id="branch" type="text" name="branchname" size="50"/>
+  </label>
+  <label>
+  <input type="submit" name="Submit2" value="Query" />
+  </label>
+</form>     
+{% if current %}
+  <h1><strong>Running Builds</strong></h1>
+  <table>
+    <tr>
+      <td align="center">Number</td>
+      <td align="center">Reason</td>
+      <td align="center">Start_time</td>
+      <td align="center">Builder name</td>
+      <td align="center">Branch name</td>
+      <td align="center">Current step</td>
+      <td align="center">Stop_url</td>
+    </tr>
+  	{% for b in current %}
+    <tr>
+      <td align="center"><a href="{{b.link}}">{{b.num}}</a></td>
+      <td align="center">{{b.reason}}</td>
+      <td align="center">{{b.when_time }}</td>
+      <td align="center">{{b.buildername}}</td>
+      <td align="center">{{b.branch}}</td>
+      <td align="center">{{b.current_step}}</td>
+      <td align="center"><form id="form1" name="form1" method="post" action="{{b.stop_url}}">
+        <label>
+          <input type="submit" name="Submit" value="stop" />
+          </label>
+      </form></td>
+    </tr>
+    {%endfor%}
+  </table>
+  {% else %}
+  <h1><strong>No Running Builds</strong></h1>
+{% endif %}
+{%-if pending%}
+  <h1>Pending Builds</h1>
+  <table >
+    <tr>
+      <td align="center">Brid</td>
+      <td align="center">When</td>
+      <td align="center">Builder Name</td>
+      <td align="center">Delay</td>
+      <td align="center">Branch Name </td>
+      <td align="center">Cancel Url </td>
+    </tr>
+    {%for b in pending%}
+    <tr>
+      <td align="center">{{b.id}}</td>
+      <td align="center">{{b.when}}</td>
+      <td align="center">{{b.name}}</td>
+      <td align="center">waiting{{b.delay}}</td>
+      <td align="center">{{b.branch}}</td>
+      <td align="center">
+	  <form id="form1" name="form1" method="post" action="{{b.builder_url}}">
+        <label>
+          <input type="submit" name="Submit" value="cancel" />
+          <input type="hidden" name="id" value = {{b.id}} />
+          <input type="hidden" name="branchname" value = {{b.branch}} />
+        </label>
+      </form>
+	  </td>
+    </tr>
+      {%endfor%}
+  </table>
+  {%else%}
+  <h1><strong>No Pending Builds</strong></h1>  
+  {%endif%}
+  {%if recent%}
+  <h1>Finished Builds</h1>
+  <form method="post" action="../branchquery/export">
+  <input type="submit" id="export" value="Export All">
+  <input type="hidden" name="branchname" value={{recent[0].branch}}>
+  </form>
+  <table id="finishedtable">
+    <tr>
+      <td align="center">Time</td>
+      <td align="center">Branch Name</td>
+      <td align="center">Result</td>
+      <td align="center">Reason</td>
+      <td align="center">Builder</td>
+      <td align="center">Build</td>
+      <td align="center">Info</td>
+      <td align="center">Android Build Info</td>
+      <td align="center">Failure Reason</td>
+      <td align="center">Owner</td>
+      <td align="center">Submit Time</td>
+      <td align="center">Submit</td>
+    </tr>
+    {%for b in recent%}
+	<form method="post" onsubmit="return validateReason(this)"action="../branchquery/submitreason">
+    <tr>
+      <td align="center">{{b.time}}</td>
+      <td align="center">{{b.branch}}</td>
+      <td align="center" class={{b.results}}>{{b.results}}</td>
+      <td align="center" >{{b.reason}}</td>
+      <td align="center"><a href="{{ b.builderurl }}">{{b.builder_name}}</a></td>
+      <td align="center"><a href="{{ b.buildurl }}">{{b.buildnum}}</a></td>
+      <td align="center">{{b.text}}</td>
+      {%if b.text1.find('http') >=0%}
+      <td align="center"><a href="{{b.text1}}" target="_blank">{{b.text2}}</a></td>
+      {%else%}
+      {%if b.text1 == 'no build'%}
+      <td align="center" class='nobuild'>{{b.text1}}</td>
+      {%else%}
+      <td align="center" class={{b.text1}}>{{b.text1}}</td>
+      {%endif%}
+      {%endif%}
+	  {%if b.results=="exception" or b.results=="failure"%}
+	  {%if b.reason1==""%}
+	  <td align="center"><textarea name="failurereason"></textarea></td>
+      <td align="center"></td>
+      <td align="center"></td>
+      <td align="center"><input type="submit" value="submit" ></td>
+	  {%else%}
+      <td align="center"><div id={{b.buildnum}}>{{b.reason1}}</div></td>
+      <td align="center">{{b.editperson}}</td>
+      <td align="center">{{b.edittime}}</td>
+      <td align="center"><input type="submit"value="edit"id="button{{b.buildnum}}" onclick="return editReason('{{b.buildnum}}')"></td>
+	  <input type="hidden" id="failurereason{{b.buildnum}}" name="failurereason" value="{{b.reason1}}" />
+	  {%endif%}
+	  <input type="hidden" name="buildid" value={{b.buildnum}} />
+	  <input type="hidden" name="branch" value={{b.branch}} />
+	  <input type="hidden" name="buildername" value={{b.builder_name}} />
+	  {%else%}
+      <td align="center"></td>
+      <td align="center"></td>
+      <td align="center"></td>
+      <td align="center"></td>
+      {%endif%}
+    </tr>
+	</form>
+    {%endfor%}	
+  </table>
+  {%else%}
+  <h1>No Finished Builds </h1> 
+  {%endif%}
+
+ <script language="javascript" type="text/javascript">
+
+    var scheduler = document.getElementById("get_branch_names").innerHTML;
+    var  dataObj = eval("("+scheduler+")")
+    var a = []
+    for(var i=0;i<dataObj.length;i++) 
+         a.push(dataObj[i])
+    
+    var oo=new mSift('oo',20)
+    oo.Data=a
+    oo.Create(document.getElementById("branch"))
+</script>
+{%endblock%}
+

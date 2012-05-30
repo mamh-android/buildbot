@@ -1,0 +1,316 @@
+{% extends "layout.html" %}
+{%block body%}
+<body class="interface" onload="checkSamebranch()" >
+{% endblock%}
+{%block content%}
+<script type="text/javascript" src="{{path_to_root}}public.js"></script>
+<h1>Trigger Build</h1>
+<input type="hidden" id="branch_names" value="{{branch_names}}" />
+<input type="hidden" id="devslavenum" value="{{devslavenum}}">
+<input type="hidden" id="relslavenum" value="{{relslavenum}}">
+<p>To trigger a build, fill out the following fields and push the 'Trigger Build' button</p>
+<p>Please choose the build type:
+  <select id = "triggermenu" name="triggermenu" onchange="change(this.value)">
+    <option value="1" selected="selected">Android develop build</option>
+    <option value="2">Android release build</option>
+    <option value="3">Coverity build</option>
+    <option value="4">Generate Ref delta patch/delta file</option>
+    <option value="5">Generate Release Package</option>
+  </select>
+</p>
+<div id="Layer1" style="display:block">
+  <form id="form1" name="form1" method="post" action="trigger/force" onsubmit= "return triggerValidate(this)">
+    <p>
+      <input name="selected" type="hidden" id="buildtype" value="android_develop_build" />
+    </p>
+    <p>
+      <input id="username1" type="hidden" name="username"  />
+      <input  id="email1" readonly type="hidden" name="email" />
+    </p>
+    <p>
+      <label>*Reason For Build
+      <input type="text" name="reason" />
+      </label>
+    </p>
+	<table id='tb'>
+	  <tr>
+		<td>
+		*Manifest Branch
+		</td>
+		<td>
+        <input type="text" id="manifest_branch0" name="branch0" size = "50"ime-mode:Disabled/>
+		</td>
+		<td>
+        Urgent<input type="checkbox" id="urgent0" name="urgent0" value="urgent"onclick="checkBox(this)" />
+		</td>
+		<td>
+		<input type="button" id="delete0"value="delete" style="display:none" onclick="deleteInput(0)">
+		</td>
+	  </tr>
+	</table>
+	<input type="hidden" value=0 name="len" id="devlen">
+    <p style=" font-size:12px;color:#999999">
+    example:yellowstone_ics(if master)/rls_dkbtd_gingerbread_beta6(if release)
+    </p>
+  	<p>
+      <input type="hidden" name="property1name" value="Android_Case_Build" />  	
+      <label>Android Case Build
+      <input type="checkbox" name="property1value" value="True"/>
+      </label>
+    </p>
+    <p>
+    </p>
+    <p>
+      <label>
+      <input type="submit" name="Submit2" value="Trigger Build" />
+      </label>
+    </p>
+  </form>
+</div>
+<div id="Layer2" style="display:none">
+  <form id="form2" name="form2" method="post" action="trigger/force" onsubmit= "return triggerValidate(this)">
+    <p>
+      <input name="selected" type="hidden" id="buildtype" value="android_release_build" />
+    </p>
+    <p>
+      <!--<label>Your Name-->
+      <input id="username2" type="hidden" name="username" readonly />
+      </label>
+  	</p>
+    <p>
+     <!-- <label>Your Email -->
+      <input id="email2" readonly type="hidden" name="email" />
+      </label>
+    </p>
+    <p>
+      <label>*Reason For Build
+      <input type="text" name="reason" />
+      </label>
+    </p>
+	<table id='tb2'>
+	  <tr>
+		<td>
+		*Manifest Branch
+		</td>
+		<td>
+        <input type="text" id="manifest_branch20" name="branch20" size = "50"ime-mode:Disabled/>
+		</td>
+		<td>
+        Urgent<input type="checkbox" id="urgent20" name="urgent20" value="urgent"onclick="checkBox(this)" />
+		</td>
+		<td>
+		<input type="button" id="delete20"value="delete"style='display:none' onclick="deleteInput(0)">
+		</td>
+	  </tr>
+	</table>
+	<input type="hidden" value=0 name="rellen" id="rellen">
+
+    <!--<p>
+      <label>*Manifest Branch
+      <input type="text" id="manifest_branch9" name="branch0" size = "50 "ime-mode:Disabled />
+      </label>
+      <label>Urgent
+      <input type="checkbox" id="urgent2" name="urgent0" value="urgent" />
+      </label>
+    </p>
+	<input type="hidden" value=0 name="len" id="rellen">-->
+    <p style=" font-size:12px;color:#999999">
+    example:yellowstone_ics(if master)/rls_dkbtd_gingerbread_beta6(if release)
+    </p>
+  	<p>
+      <input type="hidden" name="property1value" value="Android_Case_Build" />  	
+      <label>Android Case Build
+      <input type="checkbox" name="property1value" value="True" />
+      </label>
+    </p>
+    <p>
+      <!--<input type="hidden" name="property2value" value="Graphics_Build" />
+      <label>Graphics Build
+      <input type="checkbox" name="property2value" value="True" />
+      </label>-->
+    </p>
+    <p>
+      <label>
+      <input type="submit" name="Submit2" value="Trigger Build" />
+      </label>
+    </p>
+  </form>
+</div>
+<div id="Layer3" style="display:none">
+  <form id="form3" name="form3" method="post" action="trigger/force" onsubmit= "return triggerValidate(this)">
+    <p>
+      <input name="selected" type="hidden" id="buildtype" value="Coverity build" />
+    </p>
+    <p>
+      <label>Your Name
+      <input id="username3" type="text" name="username" readonly />
+      </label>
+	</p>
+    <p>
+      <label>Your Email 
+      <input  id="email3" readonly type="text" name="email" />
+      </label>
+    </p>
+    <p>
+      <label>*Reason For Build
+      <input type="text" name="reason" />
+      </label>
+    </p>
+    <p>
+      <label>Manifest Branch
+      <input type="text" name="branch" />
+      </label>
+      <label>Urgent
+      <input type="checkbox" id="urgent3" name="urgent" value="urgent" />
+      </label>
+    </p>
+    <p>TBD...</p>
+    <p>
+      <label>
+      <input type="submit" name="Submit3" value="Trigger Build" />
+      </label>
+    </p>
+  </form>
+</div>
+<div id="Layer4" style="display:none">
+  <form id="form4" name="form4" method="post" action="trigger/force" onsubmit= "return triggerValidate(this)">
+    <p>
+      <input name="selected" type="hidden" id="buildtype" value="generate_patch_file" />
+    </p>
+    <p>
+      <!--<label>Your Name-->
+      <input id="username4" type="hidden" name="username" readonly />
+      </label>
+	</p>
+    <p>
+     <!-- <label>Your Email-->
+      <input id="email4" readonly type="hidden" name="email" />
+      </label>
+    </p>
+    <p>
+      <label>*Reason For Build
+      <input type="text" name="reason" />
+      </label>
+    </p>
+    <p>
+      <input type="hidden" name = "property1name" value="Base_Build_Link" />
+      <label>*Base Build Link     
+      <input type="text" name="property1value" />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      path of the first directory
+      </span>
+    </p>
+    <p>
+      <input type="hidden" name = "property2name" value="Current_Build_Link" />
+      <label>*Current Build Link
+      <input type="text" name="property2value" />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      path of the second directory
+      </span>
+    </p>
+   <!-- <p>
+      <input type="hidden" name = "property3name" value="Output_Folder" />
+      <label>*Output Folder    
+      <input type="text" name="property3value" />
+      </label>
+    </p>-->
+    <p>
+      <label>
+      <input type="submit" name="Submit4" value="Trigger Build" />
+      </label>
+    </p>
+  </form>
+</div>
+<div id="Layer5" style="display:none">
+  <form id="form5" name="form5" method="post" action="trigger/force" onsubmit="return triggerValidate(this)">
+    <p>
+      <input name="selected" type="hidden" id="buildtype" value="generate_release_package" />
+    </p>
+    <p>
+      <!--<label>Your Name-->
+      <input id="username5" type="hidden" name="username" readonly />
+      </label>
+	</p>
+    <p>
+     <!-- <label>Your Email-->
+      <input id="email5" readonly type="hidden" name="email" />
+      </label>
+    </p>
+    <p>
+      <label>*Reason For Build
+      <input type="text" name="reason" />
+      </label>
+    </p>
+    <p>
+      <input type="hidden" name = "property1name" value="Auto_Build_Link" /> 
+      <label>*Auto Build Link
+      <input type="text" name="property1value" />
+      </label>
+       <span style=" font-size:12px;color:#999999">
+      example:/autobuild/android/pxa978T/2012-04-25_pxa978T-ics_r4
+      </span>
+    </p>
+    <p>
+      <input type="hidden" name = "property2name" value="Platform" /> 
+      <label>*Android_Platform
+      <input type="text"  id="platform" name="property2value" />
+      </label>
+       <span style=" font-size:12px;color:#999999">
+      example:dkbtd
+      </span>
+    </p>
+        <p>
+      <input type="hidden" name = "property3name" value="Product" /> 
+      <label>*Product
+      <input type="text" id="product" name="property3value" />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      example:gingerbread
+	  </span>
+    </p>
+    <p>
+      <input type="hidden" name = "property4name" value="Release_Name" /> 
+      <label>*Release Name
+      <input type="text" name="property4value" />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      example:beta3
+      </span>
+	</p>
+    <p>
+      <input type="hidden" name = "property5name" value="RC" />
+      <label>*RC
+      <input type="text" name="property5value" />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      example:rc1
+	  </span>
+    </p>
+    <p>
+      <input type="hidden" name = "property6name" value="RPLP" />
+      <label>*Release package list
+      <input type="text" name="property6value" />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      example:/autobuild/android/pxa978T/2012-04-25_pxa978T-ics_r4/release_package_list
+	  </span>
+    </p>
+    <!--<p> 
+      <span style="font-size:12px;color:#999999">
+       output package name:&lt Platform &gt _&lt Product &gt _&lt ReleaseName &gt &lt RC &gt
+      </span>
+    </p>-->
+    <p>
+      <label>
+      <input type="submit" name="Submit5" value="Trigger Build" />
+      </label>
+    </p>
+  </form>
+</div>
+<div id="msg" style="position:absolute; left:537px;top:155px;width:218px;height:28px;z-index:1;background-color:#cccccc;display:none" >Too many urgent builds </div>
+<script  language="javascript" type="text/javascript">
+	triggerScript();
+</script>
+{%endblock%}

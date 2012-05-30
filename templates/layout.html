@@ -1,0 +1,88 @@
+{%- block doctype -%}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% endblock %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+{% block head %}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv='Expires' content='0'>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv='Cache-Control' content='no-cache,must-revalidate'>
+	<meta http-equiv="refresh" content="600">
+    {% if metatags %}
+      {{ metatags }}
+    {% endif %}
+
+    <title>{{ pageTitle|e }}</title>
+    <script  type="text/javascript" src="{{path_to_root}}public.js"></script>
+    <link rel="stylesheet" href="{{ stylesheet }}" type="text/css" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ path_to_root }}rss">
+{% endblock %}
+</head>
+
+{%block body%}
+<body class="interface" >
+{% endblock%}
+
+{% block header -%}
+<div class="header"> 
+    <a href="{{ path_to_root}}root">Home</a>
+    &nbsp &nbsp <!--<a href="{{ path_to_root }}waterfall">Waterfall</a>  &nbsp &nbsp -->
+     <a href="{{ path_to_root }}builders">Builders</a> &nbsp &nbsp
+     <a href="{{ path_to_root }}one_line_per_build">Recent Builds</a> &nbsp &nbsp
+     <a href="{{ path_to_root }}buildslaves">Buildslaves</a> &nbsp &nbsp
+     <a href="{{ path_to_root }}trigger">Trigger</a> &nbsp &nbsp
+     <a href="{{ path_to_root }}query">Query</a> &nbsp &nbsp
+     <a href="{{ path_to_root }}configbuild">Config AutoBuild</a> &nbsp &nbsp
+     <a href="{{ path_to_root }}branchquery">Branch Query</a> &nbsp &nbsp
+	<span style="float:right">
+	<span id="User"></span>
+	<a href="" id="Login" onclick="loginOut()">Quit</a>
+	</span>
+</div>
+    <script>
+    if(getCookie("dispname") && getCookie("username"))
+    {
+		document.getElementById("User").innerHTML = "user:" + getCookie("dispname");
+		document.getElementById("Login").innerHTML = "Quit";
+		document.getElementById("Login").href=" ";
+    }
+    else
+    {
+		document.getElementById("Login").href = "../";
+		document.getElementById("Login").onclick = "";
+		document.getElementById("Login").innerHTML =" Login";
+    }
+    </script>
+
+{% endblock %}
+
+{%- block barecontent -%}
+<hr/>
+
+<div class="content">
+{%- block content -%}     
+{%- endblock -%}
+</div>
+{%- endblock -%}
+
+{%- block footer -%} 
+<div class="footer" style="clear:both">
+<hr/>
+<a href="http://buildbot.net/">BuildBot</a> ({{version}})
+{% if title -%}
+  working for the&nbsp;
+{%- if title_url -%}
+  marvell apse buildfarm
+{%- else -%}
+  {{ title }}
+{%- endif -%}
+  &nbsp;project.
+{%- endif -%}
+<br/>
+Page built: <b>{{ time }}</b> ({{ tz }})
+</div>
+{% endblock -%}
+</body>
+</html>

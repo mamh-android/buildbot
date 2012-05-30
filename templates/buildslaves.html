@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block body %}
+<body class="interface" onload="checkReboot()" >
+<!--<body class="interface" onload="alert('ccccc')" >-->
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="{{path_to_root}}public.js"></script>
+
+<h1>Buildslaves</h1>
+
+<div class="column">
+
+<table class="info">
+
+<tr>
+  <th>Name</th>
+  {%- if show_builder_column %}
+    <th>Builders</th>
+  {%- endif %}
+  <th>BuildBot</th>
+  <th>Admin</th>
+  <th>Last heard from</th>
+  <th>Connects/Hour</th>
+  <th>Status</th>
+  <th>Restart</th>
+</tr>
+
+{% for s in slaves %}
+  <tr class="{{ loop.cycle('alt','') }}">
+  <td><b><a href="{{ s.link }}">{{ s.name }}</a></b></td>
+  
+  {%- if show_builder_column %}
+    <td>
+    {%- if s.builders %}
+      {%- for b in s.builders %}
+        <a href="{{ b.link }}">{{ b.name }}</a>
+      {%- endfor %}
+    {%- else %}
+      <span class="Warning">no builders</span>
+    {%- endif -%}
+    </td>
+  {%- endif %}
+
+
+  <td>{{ (s.version or '-')|e }}</td>
+ 
+  {%- if s.admin -%}
+    <td>{{ s.admin|email }}</td>
+  {%- else -%}
+    <td>-</td>
+  {%- endif -%}
+
+    <td>
+    {%- if s.last_heard_from_age -%}
+      {{ s.last_heard_from_age }} <small>({{ s.last_heard_from_time }})</small>
+    {%- endif -%}
+    </td>
+    <td>
+    {{ s.connectCount }}
+    </td>
+        
+  {% if s.connected %}
+    {% if s.running_builds %}
+      <td class="building">Running {{ s.running_builds }} build(s)</td>
+    {% else %}
+      <td class="idle">Idle</td>
+	  <td>
+		<form action="../buildslaves/restart">	
+		<input type="submit" name="restart" value="restart"/>
+		<input type="hidden" name="slaveInfo" value="{{s.admin}}"/> 
+		</form>
+	  </td>
+    {% endif %}
+        
+  {% else %}
+    <td class="offline">Not connected</td>
+  {% endif %}
+  
+  </tr>
+{% endfor %}
+</table>
+
+</div>
+  
+{% endblock %}

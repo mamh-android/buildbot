@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% import 'forms.html' as forms %}
+{% from 'build_line.html' import build_table %}
+{% block content %}
+
+<h1>Android autobuild</h1>
+
+<div class="column">
+<ul>
+{% set item_class=cycler('alt', '') %}
+{%for b in builders%}
+
+ <li class="{{ item_class.next() }}">{{b.name|e}}</li>
+
+{% endfor %}
+<li class="{{ item_class.next() }}">{{num_builds}}</li>
+</ul>
+<div class="column">
+
+
+{% if current %}
+  <h2>Current Builds:</h2>
+  <ul>
+  {% for b in current %}
+    <li><a href="{{ b.link }}">{{ b.link }}{{b.branch}}</a>
+    {% if b.when %}
+      ETA: {{ b.when_time }} [{{ b.when }}]
+    {% endif %}
+
+    {{ b.current_step }}
+
+    {% if authz.advertiseAction('stopBuild') %}
+      {{ forms.stop_build(b.stop_url, authz, on_all=False, short=True, label='Build') }}
+    {% endif %}    
+    </li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <h2>No current builds</h2>
+{% endif %}    
+ 
+{% if pending %}
+  <h2>Pending Build Requests:</h2>
+  <ul>
+  {% for b in pending %}
+    <li><small>{{b.name}}{{b.branch}}({{ b.when }}, waiting {{ b.delay }})</small> 
+    
+    {% if authz.advertiseAction('cancelPendingBuild') %}
+      {{ forms.cancel_pending_build(builder_url+"/cancelbuild", authz, short=True, id=b.id) }}
+    {% endif %}    
+    
+    {% if b.num_changes < 4 %}
+        {% for c in b.changes %}{{ c.revision|shortrev(c.repo) }}
+        (<a href="{{ c.url }}">{{ c.who }}</a>){% if not loop.last %},{% endif %}
+        {% endfor %}
+    {% else %}
+        ({{ b.num_changes }} changes)
+    {% endif %}   
+
+    </li>
+  {% endfor %}
+  </ul>  
+  
+  {% if authz.advertiseAction('cancelPendingBuild') %}
+    {{ forms.cancel_pending_build(builder_url+"/cancelbuild", authz, short=False, id='all') }}
+  {% endif %}    
+     
+{% else %}
+  <h2>No Pending Build Requests</h2>
+{% endif %}
+
+<h2>Recent Builds: 
+<h3>
+{% if nextpage %}
+ <a href="{{ nextpage }}">next page</a>
+{% endif %}
+</h3>
+</h2>
+
+{{ build_table(recent,True) }}
+
+</div>
+<div class="row">
+  <form method="post" action="../autobuild/query" >
+  <span>Manifest branch:</span>
+   <input type="text" name="branch"  />
+   <input type="submit" value="Query" />
+  </form>
+</div>
+
+<h2>Force Build</h2>
+{{ forms.force_build_1(path_to_root+"autobuild/force", authz, on_selected=True, builders=builders) }}
+</div>
+{% if previouspage %}
+ <a href="{{ nextpage }}">previous page</a>
+{% endif %}
+
+
+{% endblock %}

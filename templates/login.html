@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ <html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv='Expires' content='0'>
+  <meta http-equiv='Pragma' content='no-cache'>
+  <meta http-equiv='Cache-Control' content='no-cache,must-revalidate'>
+  <meta http-equiv="refresh" content="600">
+  {% if metatags %}
+  {{ metatags }}
+  {% endif %}
+  
+ <title>{{ pageTitle|e }}</title>
+ <script  type="text/javascript" src="{{path_to_root}}public.js"></script>
+ <link rel="stylesheet" href="{{ stylesheet }}" type="text/css" />
+ <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ path_to_root }}rss    ">
+</head>
+
+<body class="interface" onload="doClear()">
+<div align="center">
+  <h1><strong>Buildbot Login Page</strong></h1>
+</div>
+<div align="center">
+  <h3>Input username and password to enter the buildbot</h3>
+</div>
+<div align="center">
+<form id="login" name="form1" method="post" action="{{path_to_root}}login/auth" onsubmit= "return onLogin(this)">
+  <label>username
+  <input id="username"type="text" name="username" />
+  </label>
+  <p>
+    <label>password
+    <input id="passwd" type="password" name="passwd" />
+    </label>
+  </p>
+   <table  width="196" border="0" align="center">
+    <tr>
+      <td width="89" align="right"><label>
+        <input name="login" type="submit" value="Login in" align="middle" style="width:70px"/>
+      </label></td>
+      <td width="97" align="right"><label>
+        <input name="cancel" type="reset" value="Cancel" align="right" style="width:70px" />
+      </label></td>
+    </tr>
+  </table>
+</form>
+</div>
+</body>
+</html>

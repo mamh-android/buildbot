@@ -1,0 +1,198 @@
+{% from 'build_line.html' import build_table %}
+{% import 'forms.html' as forms %}
+{% extends "layout.html" %}
+{%block head%}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="refresh" content="60">
+    {% if metatags %}
+      {{ metatags }}
+    {% endif %}
+    <title>{{ pageTitle|e }}</title>
+    <script type="text/javascript" src="{{path_to_root}}public.js"></script> 
+    <link rel="stylesheet" href="{{ stylesheet }}" type="text/css" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ path_to_root }}rss">
+{%endblock%}
+{%block body%}
+<script>
+function onLoad()
+{
+	checkSamebranch();
+	if(document.getElementById('runningstr'))
+		document.getElementById('runningstr').value = '';
+	if(document.getElementById('pendingstr'))
+		document.getElementById('pendingstr').value = '';
+	if(document.getElementById('finishedstr'))
+		document.getElementById('finishedstr').value = '';
+}
+
+</script>
+<body class="interface" onload="onLoad()">
+{%endblock%}
+{%block content%}
+<div style='display:none'  id="running">
+{{jsonrunning}}
+</div>
+<div style='display:none'  id="pending">
+{{jsonpending}}
+</div>
+<div style='display:none'  id="finished">
+{{jsonfinished}}
+</div>
+
+<table width="723" border="0" cellpadding="0" cellspacing="0" bgcolor="#ECE9D8">
+  <!--DWLayoutTable-->
+  <tr>
+    <td height="40">&nbsp;</td>
+    <td valign="top"><input id="dd" name="Submit23" type="button"  style="height:40px;width:180px;" value="Runningbuild"onclick="onCheck(this.value)" /></td>
+    <td>&nbsp;</td>
+    <td valign="top" id="Pending build"><input name="Submit2" type="button"  style="height:40px;width:176px;" value="Pendingbuild" onclick="onCheck(this.value)" /></td>
+    <td>&nbsp;</td>
+    <td valign="top" id="Finished build"><input name="Submit22" type="button"  style="height:40px;width:176px;" value="Finishedbuild" onclick="onCheck(this.value)"/></td>
+  </tr>
+</table>
+<div id="Layer1" style="display:block">
+{% if current %}
+  <h1><strong>Running Builds</strong><span><input id='runningstr' type='text' value =''></span></h1>
+<div id='runninglayer'>
+  <table>
+    <tr>
+      <td  align="center">Number</td>
+      <td  align="center">Start_time</td>
+      <td  align="center">Builder name</td>
+      <td  align="center">Branch name</td>
+      <td  align="center">Current step</td>
+      <td  align="center">Reason</td>
+      <td  align="center">Stop_url</td>
+    </tr>
+  	{% for b in current %}
+    <tr>
+      <td height="46" align="center"><a href="{{b.link}}">{{b.num}}</a></td>
+      <td align="center">{{b.when_time }}</td>
+      <td align="center"><a href=/builders/{{b.buildername}}>{{b.buildername}}</a></td>
+      <td align="center"><a href="branchquery/{{ b.branch }}">{{b.branch}}</a></td>
+      <td align="center">{{b.current_step}}</td>
+      <td align="left">{{b.reason}}</td>
+      <td align="center"><form id="form1" onsubmit="return onConfirm('stop')"name="form1" method="post" action="{{b.stop_url}}">
+        <label>
+          <input type="submit" name="Submit" value="stop" />
+          </label>
+      </form></td>
+    </tr>
+    {%endfor%}
+  </table>
+</div>
+  {% else %}
+  <h1><strong>No Running Builds</strong></h1>
+{% endif %}
+</div>
+<div id="Layer2" style="display:none">
+{%-if pending%}
+  <h1>Pending Builds <span><input id='pendingstr' type='text' value=''></span></h1>
+  <div id='pendinglayer'>
+	<table>
+    <tr>
+      <td  align="center">Brid</td>
+      <td  align="center">When</td>
+      <td  align="center">Builder Name</td>
+      <td  align="center">Delay</td>
+      <td  align="center">Branch Name </td>
+      <td  align="center">Reason</td>
+      <td  align="center">Cancel Url </td>
+    </tr>
+    {%for b in pending%}
+    <tr>
+      <td align="center">{{b.id}}</td>
+      <td align="center">{{b.when}}</td>
+      <td align="center"><a href="/builders/{{ b.name }}">{{b.name}}</a></td>
+      <td align="center">waiting{{b.delay}}</td>
+      <td align="center"><a href="/branchquery/{{ b.branch }}">{{b.branch}}</a></td>
+      <td align="center">{{b.reason}}</td>
+      <td align="center"><form id="form1" onsubmit="return onConfirm('cancel')" name="form1" method="post" action="{{b.builder_url}}">
+        <label>
+          <input type="submit" name="Submit" value="cancel" />
+          <input type="hidden" name="id" value = {{b.id}} />
+          <input type="hidden" name="branchname" value = {{b.branch}} />
+          </label>
+      </form></td>
+      </tr>
+      {%endfor%}
+  </table>
+</div>
+  {%else%}
+  <h1><strong>No Pending Builds</strong></h1>  
+  {%endif%}
+</div>
+<div id="Layer3" style="display:none">
+{%if recent%}
+  <h1>Finished Build <span><input id='finishedstr' type='text' value=''></span></h1>
+<div id='finishedlayer'>
+  <h2>{% if nextpage %}
+ <a href="{{ nextpage }}">Next page</a>
+{% endif %}</h2>
+  <h2>{% if previous %}
+ <a href="{{ previous }}">Home page</a>
+{% endif %}</h2>
+  <table> 
+    <tr>
+      <td align="center">Time </td>
+      <td align="center">Branch</td>
+      <td align="center">Result</td>
+      <td align="center">Builder</td>
+      <td align="center">Build</td>
+      <td align="center">Info</td>
+      <td align="center">Android Build Info</td>
+      <td align="center">Reason</td>
+    </tr>
+    {%for b in recent%}
+    <tr>
+      <td align="center">{{b.time}}</td>
+      <td align="center"><a href="branchquery/{{ b.branch }}">{{b.branch}}</a></td>
+      <td align="center" class="{{b.results}}">{{b.results}}</td>
+      <td align="center"><a href="{{ b.builderurl }}">{{b.builder_name}}</a></td>
+      <td align="center"><a href="{{ b.buildurl }}">{{b.buildnum}}</a></td>
+      <td align="center">{{b.text}}</td>
+    {% if b.text1.find(":") >= 0 %}
+      <td align="center"><a href="{{b.text1}}" target='_blank'>{{b.text2}}</a></td>
+    {% else%} 
+    {%if b.text1=='no build'%}
+    <td align="center" class='nobuild'>{{b.text1}}</td>
+    {%else%}
+    <td align="center" class="{{b.text1}}">{{b.text1}}</td>
+    {%endif%}
+    {%endif%}
+    <td align="left">{{b.reason}}</td>
+    </tr>
+    {%endfor%}
+  </table>
+</div>
+  {%else%}
+  <h1>No Finished Build </h1> 
+  {%endif%}
+</div>  
+<script>
+	var value = getCookie("layer");
+	for(i = 1; i < 4; i++)
+	{
+        if (value == i)
+		    document.getElementById("Layer" + i).style.display = "block";
+		else
+		    document.getElementById("Layer" + i).style.display = "none";
+	}
+</script>
+<script>
+if(document.getElementById("pendingstr"))
+{
+	immediately("pendingstr", onFiltpending);
+}
+if(document.getElementById("finished"))
+{
+	immediately("finishedstr", onFiltfinished);
+}
+if(document.getElementById("runningstr"))
+{
+	immediately("runningstr", onFiltrunning);
+}
+//alert(document.getElementById('finished').innerHTML);
+</script>
+{%endblock%}
+

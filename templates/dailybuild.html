@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Configure Daily Build </h2>
+<p>To configure daily build,fill out the following fields and push the </p>
+<p>'Submit'button</p>
+<form id="form1" name="form1" method="post" action="dailybuild/force">
+  <label>Your Name:
+  <input name="username" type="text" id="username" value="dailybuild" maxlength="30" />
+    Your Email:
+  <input name="email" type="text" id="email" value="dailybuild@archermind.com" maxlength="30" />
+  </label>
+  </p>
+  <p>
+    <label>Build Type:
+      <select name="select">
+        <option value="Develop build">Develop build</option>
+        <option value="Release build" selected="selected">Release build</option>
+      </select>
+    </label>
+    
+    <label>Set The Hour:
+    <select name="select2">
+      <option value="01">01</option>
+      <option value="02">02</option>
+      <option value="03">03</option>
+      <option value="04">04</option>
+      <option value="05">05</option>
+      <option value="06">06</option>
+      <option value="07">07</option>
+      <option value="08">08</option>
+      <option value="09">09</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+      <option value="19">19</option>
+      <option value="20">20</option>
+      <option value="21">21</option>
+      <option value="22">22</option>
+      <option value="23">23</option>
+      <option value="24" selected="selected">24</option>
+    </select>
+    </label>
+  </p>
+  <p>Manifest Branch:
+    <label>
+      <input name="branch" type="text" id="branch" />
+      </label>
+  </p>
+  <p>
+    <label> Griphic Build</label>
+    <label>
+      <input name="gb" type="checkbox" id="gb" value="checkbox" />
+    </label>
+    <label> Test Case Build
+      <input name="tcb" type="checkbox" id="tcb" value="checkbox" />
+    </label>
+  </p>
+  <p>
+    <label>
+      <input type="submit" name="Submit" value="Add Build" />
+    </label>
+  </p>
+</form>
+<hr />
+<h3>Daily Build List </h3>
+<p>Follow list shows the daily builds have been saved, click the delete button to delete the</p>
+<p>build,or click the update button the update the build </p>
+<table width="635" height="142" border="0">
+  <tr>
+    <td width="66" height="42" align="center" valign="middle">name</td>
+    <td width="99" align="center" valign="middle">manifestbranch</td>
+    <td width="164" align="center" valign="middle">last update time </td>
+    <td width="72" align="center" valign="middle">build time </td>
+    <td width="74" align="center" valign="middle">buildtype</td>
+    <td width="134" align="center" valign="middle"> delete/update</td>
+  </tr>
+  <tr>
+    <td height="50" align="center" valign="middle">dalybuild</td>
+    <td align="center" valign="middle">asd_dafd_adf</td>
+    <td align="center" valign="middle">Wed 23 Nov 2011 09:21:13</td>
+    <td align="center" valign="middle"> 12:00</td>
+    <td align="center" valign="middle">develop </td>
+    <td align="center" valign="middle"><form id="form2" name="form2" method="post" action="">
+      <label>
+        <input type="submit" name="Submit2" value="delete" />
+        </label>
+      <label></label>
+      <input type="submit" name="Submit3" value="update" />
+    </form></td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle">&nbsp;</td>
+    <td align="center" valign="middle">&nbsp;</td>
+    <td align="center" valign="middle">&nbsp;</td>
+    <td align="center" valign="middle">&nbsp;</td>
+    <td align="center" valign="middle">&nbsp;</td>
+    <td align="center" valign="middle">&nbsp;</td>
+  </tr>
+</table>
+<p></p>
+{% endblock %}

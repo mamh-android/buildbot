@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+{% import 'forms.html' as forms %}
+{%block body%}
+<script>
+function onLoad()
+{
+	document.getElementById('filterstr').value='';
+}
+</script>
+<body class="interface" onload="onLoad()">
+{%endblock%}
+{% block content %}
+<a name="top"></a>
+<h1>Android autobuild</h1>
+<div class="row" id="dict_schedulers" style="display:none" >
+{{dict_schedulers}}
+</div>
+
+<h2>Daily build or Half daily build </h2>
+<form method="post" name="force_build" action="../configbuild/add" class="command forcebuild">
+<h3>To config daily build or half daily build, fill out the following fields and  push the 'SAVE' button</h3>    
+<div class="row">
+   <!-- <span class="label">Your name:</span> -->
+    <input id="name" name="username" type="hidden" readonly="readonly" value=""/>
+    <!--<span class="label">Your Email :</span> -->
+    <input id="email" name="email" type="hidden"  readonly="readonly" value="" />
+</div>
+
+  <div class="row">
+     <span class="label">Type:</span>
+     <label>
+     <select name="select" >
+       <option selected="selected">daily build</option>
+     </select>
+     </label>
+  </div>
+  <div class="row">Time Set Hour :  
+    <select name="hour">
+      <option>0</option>
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+      <option>6</option>
+      <option>7</option>
+      <option>8</option>
+      <option>9</option>
+      <option>10</option>
+      <option>11</option>
+      <option>12</option>
+      <option>13</option>
+      <option>14</option>
+      <option>15</option>
+      <option>16</option>
+      <option>17</option>
+      <option>18</option>
+      <option>19</option>
+      <option>20</option>
+      <option>21</option>
+      <option>22</option>
+      <option>23</option>
+    </select>
+  </div>
+<label>
+ <div class="row">
+    <span class="label">Manifest branch</span>
+    <input type="text" id="manifest" name="manifest_branch"  value="" size="50" />
+    <span style=" font-size:12px;color:#999999">
+    example:yellowstone_ics(if master)/rls_dkbtd_gingerbread_beta6(if release)
+    </span>
+   <input type="hidden" name="get_branch" value="branch" />
+  </div>
+</label>
+    Build Type: 
+      <label>
+      <input type="radio" name="radiobutton" value="Develop"  checked="checked"/>
+	Develop</label>
+      <label>
+      <input type="radio" name="radiobutton" value="Release" />
+	Release</label>
+    <div class="row">
+     <!-- <label>Graphic Build
+      <input type="checkbox" name="checkbox" value="Graphic_Build" />
+      </label>-->
+      <label>Test Case Build
+      <input type="checkbox" name="checkbox" value="Test_Case_Build" checked="true"/>
+      </label>
+      </div>
+     <div class="row">
+     <label>Purpose
+     <input type="text" name="config_purpose" value="" size="30" />
+     </label>
+    </div>
+   <p><span class="row">
+     <input name="save" type="button" value="SAVE"  onclick="configValidate(event)" />
+   </span></p>
+</form>
+<form>
+{%if schedulers%}
+<p>
+<span><input id="filterstr" type="text"></span>
+<span>Input the branchname and query the configured builds.</span>
+</p>
+{%endif%}
+</form>
+   <form id="configure"type="hidden" method="post" >
+	<input id="configurebranch" name="configurebranch" type="hidden"/>
+   </form>
+<div id="filtedbuilds">
+<table> 
+      <tr>
+      <td>NUM</td>  
+      <td>USERINFO</td>  
+      <td>TYPE</td>  
+      <td>BRANCH</td>  
+      <td>TIME</td>  
+      <td>PURPOSE</td>  
+     <td>UPDATE</td>
+     <td>DELETE</td>
+     </tr>
+   {%for b in schedulers%}
+  <tr class="{{ loop.cycle('alt','') if loop }}">
+    <td>{{loop.index}} </td>
+    <td>{{ b.properties.useremail }}</td>
+    <td>{{ b.builderNames[0] }}</td>
+    <td><a href="branchquery/{{ b.branch }}">{{ b.branch}}</a></td>
+    <td >{{ b.hour}}</td>
+    <td>{{b.properties['purpose']}}</td>
+    <td><input type="hidden" name="branch" value="{{b.branch}}" />
+    <input type="hidden" name="hours" value="{{b.hour}}" />
+    <input type="hidden" name="buildname" value="{{b.builderNames[0]}}" />
+    <input type="hidden" id="purpose1" name="purpose" value="{{b.properties['purpose']}}" />
+   
+    {%if b.properties['Graphic_Build']%}
+    <input type="hidden" name="optional1" value="{{b.properties['Graphic_Build']}}">
+    {%else%}
+     <input type="hidden" name="optional1" value="">
+   {%endif%}
+  {%if b.properties['Test_Case_Build']%}
+  <input type="hidden" name="optional2" value="{{b.properties['Test_Case_Build']}}">
+  {%else%}
+  <input type="hidden" name="optional2" value="">
+    {%endif%}
+    <input type="button" name="button1" value="EDIT"  onclick="updateConfigureBuild('{{b.branch}}')" /></td>
+    <td><input type="button" name="button1" value="DELETE"  onclick="removeConfigureBuild('{{b.branch}}')"/></td>
+  	</tr>
+     {%endfor%}
+     </table>
+ </div>
+ <script language="javascript" type="text/javascript">
+ //immediately("filterstr", onFilt);
+ immediately("filterstr", onFiltconfigure); 
+ document.getElementById("name").value=getCookie("username");
+ document.getElementById("email").value=getCookie("email");
+</script>
+{% endblock %}

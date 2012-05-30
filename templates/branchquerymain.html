@@ -1,0 +1,38 @@
+{% from 'build_line.html' import build_table %}
+{% import 'forms.html' as forms %}
+{% extends "layout.html" %}
+{%block head%}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="refresh" content="60">
+    {% if metatags %}
+      {{ metatags }}
+    {% endif %}
+    <title>{{ pageTitle|e }}</title>
+    <link rel="stylesheet" href="{{ stylesheet }}" type="text/css" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ path_to_root }}rss">
+<script>
+function GetBranch()
+{
+	document.getElementById("form2").action = (("branchquery/" + document.getElementById("branch").value));
+	document.getElementById("form2").submit();
+}
+</script>
+{%endblock%}
+{%block body%}
+<body class="interface">
+{%endblock%}
+{%block content%}
+<div align="center">
+  <h1>Manifest Branch Query</h1>
+</div>
+<p>To query the build in the other branch, input the branch name and click the button to query.</p>
+<form id="form2" name="form2" method="post" action="">
+  <label>
+  <input id="branch" type="text" name="branchname" />
+  </label>
+  <label>
+  <input type="submit" name="Submit2" value="Query" onclick="GetBranch()"/>
+  </label>
+</form> 
+</body>
+{%endblock%}

@@ -1,0 +1,264 @@
+{% extends "layout.html" %}
+{%block content%}
+<script>
+function change(v)
+{
+	switch(v)
+	{
+		case "Dev build": 
+		{
+			j=1;
+			break;
+		}
+		case "Release build": 
+		{
+			j=2;
+			break;
+		}
+		case "Coverity build": 
+		{
+			j=3;
+			break;
+		}
+		case "Generate Release Package": 
+		{
+			j=4;
+			break;
+		}
+		case "Generate Ref delta patch/delta file": 
+		{
+			j=5;
+			break;
+		}
+	}
+	for(var i = 1; i< 6; i++)
+	{
+		if(j == i)
+		{
+			window.document.getElementById("Layer" + i).style.display = "block";
+		}
+		else
+			window.document.getElementById("Layer" + i).style.display = "none";	
+	}
+}
+</script>
+<p>&nbsp;</p>
+<h1>Trigger Build </h1>
+<p>To trigger a build, fill out the following fields and push the 'Trigger Build' button</p>
+<div id="Layer1">
+  <form name="form1" id="form1" method = "post" action = "builders/_selected/forceselected">
+    <p>Build Type 
+      <select name="selected" onchange="change(this.value)">
+        <option value="Dev build" selected="selected">Dev build</option>
+        <option value="Release build">Release build</option>
+        <option value="Coverity build">Coverity build</option>
+        <option value="Generate Release Package">Generate Release Package</option>
+        <option value="Generate Ref delta patch/delta file">Generate Ref delta patch/delta file</option>
+        </select>
+  </p>
+    <p>
+      <label>Your Name
+      <input type="text" name="username" />
+      </label>
+</p>
+    <p>Your Email
+      <label>
+      <input type="text" name="textfield2" />
+      </label>
+</p>
+    <p>
+      <label>Your Reason For Build
+      <input type="text" name="comments" />
+      </label>
+    </p>
+    <p>
+      <label>Manifest Branch
+      <input type="text" name="textfield4" />
+      </label>
+      <label>Urgent
+      <input type="checkbox" name="checkbox" value="checkbox" />
+      </label>
+    </p>
+    <p>
+      <label>
+      <input type="radio" name="GA" value="Graphics Build " />
+Graphics Build </label>
+      <br />
+      <label>
+      <input type="radio" name="GA" value="Android Case Build" />
+Android Case Build</label>
+    </p>
+    <p>
+      <label>
+      <input type="submit" name="Submit" value="Trigger Build" />
+      </label>
+      <br />
+    </p>
+  </form>
+</div>
+<div id="Layer2" style="display:none">
+  <form id="form2" name="form2" method="post" action="builders/_selected/forceselected">
+   <p>Build Type 
+      <select name="selected" onchange="change(this.value)">
+        <option value="Dev build">Dev build</option>
+        <option value="Release build" selected="selected">Release build</option>
+        <option value="Coverity build">Coverity build</option>
+        <option value="Generate Release Package">Generate Release Package</option>
+        <option value="Generate Ref delta patch/delta file">Generate Ref delta patch/delta file</option>
+      </select>
+   <p>
+     <label>Your Name
+     <input type="text" name="username" />
+     </label>
+   <p>
+     <label>Your Email
+     <input type="text" name="textfield6" />
+     </label>
+   <p>
+     <label>Your Reason For Build
+     <input type="text" name="comments" />
+     </label>
+   <p>
+     <label>Manifest Branch
+     <input type="text" name="textfield8" />
+     </label>
+     <label>Urgent
+     <input type="checkbox" name="checkbox2" value="checkbox" />
+     </label>
+   <p>
+   <label>
+      <input type="radio" name="GA" value="Graphics Build " />
+Graphics Build </label>
+      <br />
+      <label>
+      <input type="radio" name="GA" value="Android Case Build" />
+Android Case Build</label>
+   <p>
+     <label>
+     <input type="submit" name="Submit2" value="Trigger Build" />
+     </label>
+   
+  </form>
+</div>
+<div id="Layer3" style="display:none">
+  <form id="form3" name="form3" method="post" action="builders/_selected/forceselected">
+  <p>Build Type 
+      <select name="selected" onchange="change(this.value)">
+        <option value="Dev build">Dev build</option>
+        <option value="Release build">Release build</option>
+        <option value="Coverity build" selected="selected">Coverity build</option>
+        <option value="Generate Release Package">Generate Release Package</option>
+        <option value="Generate Ref delta patch/delta file">Generate Ref delta patch/delta file</option>
+      </select>
+  <p>
+    <label>Your Name
+    <input type="text" name="username" />
+    </label>
+  <p>
+    <label>Your Email
+    <input type="text" name="textfield10" />
+    </label>
+  <p>
+    <label>Your Reason For Build
+    <input type="text" name="comments" />
+    </label>
+  <p>
+    <label>Manifest Branch
+    <input type="text" name="textfield12" />
+    </label>
+  <p>TBD  
+  <p>
+    <label>
+    <input type="submit" name="Submit3" value="Trigger Build" />
+    </label>
+  </form>
+</div>
+<div id="Layer4" style="display:none">
+  <form id="form4" name="form4" method="post" action="builders/_selected/forceselected">
+   <p>Build Type 
+      <select name="selected" onchange="change(this.value)">
+        <option value="Dev build">Dev build</option>
+        <option value="Release build">Release build</option>
+        <option value="Coverity build">Coverity build</option>
+        <option value="Generate Release Package" selected="selected">Generate Release Package</option>
+        <option value="Generate Ref delta patch/delta file">Generate Ref delta patch/delta file</option>
+      </select>
+   <p>
+     <label>Your Name
+     <input type="text" name="username" />
+     </label>
+   <p>
+     <label>Your Email
+     <input type="text" name="textfield14" />
+     </label>
+   <p>
+     <label>Your Reason For Build
+     <input type="text" name="comments" />
+     </label>
+   <p>
+     <label>Auto Build Link
+     <input type="text" name="textfield16" />
+     </label>
+   <p>
+     <label>Platfrom
+     <input type="text" name="textfield17" />
+     </label>
+   <p>
+     <label>Release Name
+     <input type="text" name="textfield18" />
+     </label>
+   <p>
+     <label>RC
+     <input type="text" name="textfield19" />
+     </label>
+   <p>
+     <label>
+     <input type="submit" name="Submit4" value="Trigger Build" />
+     </label>
+   
+  </form>
+</div>
+<div id="Layer5" style="display:none">
+  <form id="form5" name="form5" method="post" action="builders/_selected/forceselected">
+  <p>Build Type 
+      <select name="selected" onchange="change(this.value)">
+        <option value="Dev build">Dev build</option>
+        <option value="Release build">Release build</option>
+        <option value="Coverity build">Coverity build</option>
+        <option value="Generate Release Package">Generate Release Package</option>
+        <option value="Generate Ref delta patch/delta file" selected="selected">Generate Ref delta patch/delta file</option>
+      </select>
+  <p>
+    <label>Your Name
+    <input type="text" name="username" />
+    </label>
+  <p>
+    <label>Your Email
+    <input type="text" name="textfield21" />
+    </label>
+  <p>
+    <label>Your Reason For Build
+    <input type="text" name="comments" />
+    </label>
+  <p>
+    <label>Base Build Link
+    <input type="text" name="textfield23" />
+    </label>
+  <p>
+    <label>Current Build Link
+    <input type="text" name="textfield24" />
+    </label>
+  <p>
+    <label>Output Folder
+    <input type="text" name="textfield25" />
+    </label>
+  <p>
+    <label>
+    <input type="submit" name="Submit5" value="Trigger Build" />
+    </label>
+  
+  </form>
+</div>
+
+
+{%endblock%}

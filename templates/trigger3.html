@@ -1,0 +1,259 @@
+{% extends "layout.html" %}
+{%block content%}
+<script>
+function change(v)
+{
+	for(var i = 1; i< 6; i++)
+	{
+		if(i == v)
+			window.document.getElementById("Layer" + i).style.display = "block";
+		else
+			window.document.getElementById("Layer" + i).style.display = "none";					
+	}
+}
+</script>
+<p align="left"><font size="+2" ><strong>Trigger Build</strong> </font></p>
+<p align="left">To trigger a build, fill out the following fields and push the 'Trigger Build' button</p>
+<form method="get" name="form1">
+  <p> <span class="STYLE1">Please Choose the build type</span>	
+    <select name="menu1" onChange="change(this.value)">
+      <option value="0" selected="selected"></option>
+      <option value="1">Coverity build</option>
+      <option value="2">Release build</option>
+      <option value="3">Dev build</option>
+      <option value="4">Generate Release Package </option>
+      <option value="5">Generate Ref delta patch/delta file</option>
+    </select>
+  </p>
+</form>
+<div id="Layer1" style="display:none">
+  <form name="form1" method="post" action="builders/_selected/forceselected">
+    <label>
+    <input type="hidden" name="selected" value="Coverity build">
+    <br>
+    Your Name
+    <input name="username" type="text" value="Your Name">
+    <br>
+    </label>
+    <p>
+    <label>Your Email
+    <input name="textfield2" type="text" disabled="true" value="Your Email" />
+    </label>
+  </p>
+  <p>
+    <label>Reason for build
+    <input name="textfield3" type="text" disabled="disabled" value="Your Reason" readonly="true" />
+    </label>
+  </p>
+  <p>
+    <label>Manifest Branch
+    <input type="text" name="textfield4" /> 
+    </label>
+    <label></label>
+    <label></label>
+  </p>
+  <p>
+    <label></label>
+  TBD</p>
+  <p>
+    <label></label>
+  </p>
+  <p>
+    <label></label><label></label>
+    <label></label>
+    <label></label>
+    </p>
+  <p>  
+  	<input name="Submit" type="submit" value="Trigger Build">
+  </p>
+  <p></p>
+  </form>
+</div>
+<div id="Layer2" style="display:none">
+ <form name="form2" method="post" action="builders/_selected/forceselected">
+    <label>
+    <input type="hidden" name="selected" value="Release build">
+    <br>
+    Your Name 
+    <input name="username" type="text" value="Your Name" />
+    </label>
+    <label></label>
+  </p>
+  <p>
+    <label>Your Email
+    <input name="textfield2" type="text" disabled="true" value="Your Email" />
+    </label>
+  </p>
+  <p>
+    <label>Reason for build
+    <input name="textfield3" type="text" disabled="disabled" value="Your Reason" readonly="true" />
+    </label>
+  </p>
+  <p>
+    <label>Manifest Branch
+    <input type="text" name="textfield4" /> 
+    </label>
+    <label></label>
+    <label>Urgent
+    <input type="checkbox" name="checkbox" value="checkbox" />
+    </label>
+  </p>
+  <p>
+    <label></label>
+    <label></label>
+    <label></label>
+    <label></label>
+    <label>
+    <input type="radio" name="RadioGroup2" value="Graphics Build" />
+Graphics Build</label>
+    <br />
+    <label>
+    <input type="radio" name="RadioGroup2" value="Android Case Build" />
+Android Case Build</label>
+    <br />
+  </p>
+  <p>
+  	<input name="Submit" type="submit" value="Trigger Build">
+  </p>
+  <p>&nbsp;</p>
+ </form>
+</div>
+<div id="Layer3" style="display:none">
+ <form name="form3" method="post" action="builders/_selected/forceselected">
+    <label>
+    <input type="hidden" name="selected" value="Dev build">
+    <br>
+    <label>Your Name
+    <input name="username" type="text" value="Your Name" />
+    </label>
+    <label></label>
+    </p>
+    <p>
+      <label>Your Email
+        <input name="textfield22" type="text" disabled="true" value="Your Email" />
+      </label>
+    </p>
+    <p>
+      <label>Reason for build
+        <input name="textfield32" type="text" disabled="disabled" value="Your Reason" readonly="true" />
+      </label>
+    </p>
+    <p>
+      <label>Manifest Branch
+        <input type="text" name="textfield42" />
+      </label>
+      <label></label>
+      <label>Urgent
+        <input type="checkbox" name="checkbox2" value="checkbox" />
+      </label>
+    </p>
+    <p>
+      <label></label>
+      <label></label>
+      <label></label>
+      <label></label>
+      <label>
+      <input type="radio" name="RadioGroup2" value="Graphics Build" />
+        Graphics Build</label>
+      <br />
+      <label>
+      <input type="radio" name="RadioGroup2" value="Android Case Build" />
+        Android Case Build</label>
+      <br />
+    </p>
+    <p>
+        <input name="Submit" type="submit" value="Trigger Build">
+    </p>
+ </form>
+</div>
+<div id="Layer4" style="display:none">
+ <form name="form3" method="post" action="builders/_selected/forceselected">
+   <label>
+   <input type="hidden" name="selected" value="Generate Release Package ">
+   <br>
+     <label>Your Name
+     <input name="username" type="text" value="Your Name">
+     </label>
+   </p>
+   <p>
+     <label>Your Email
+     <input name="textfield8" type="text" disabled value="Your Email ">
+     </label>
+   </p>
+   <p>
+     <label>Reason For Build
+     <input name="textfield20" type="text" value="Reason For Build">
+     </label>
+   </p>
+   <p>
+     <label>Base Build Link
+     <input type="text" name="textfield9">
+     </label>
+   </p>
+   <p>
+     <label>Current Build Link
+     <input type="text" name="textfield10">
+     </label>
+   </p>
+   <p>
+     <label>Output Folder
+     <input type="text" name="textfield11">
+     </label>
+   </p>
+   <p>&nbsp;</p>
+   <p>
+     <label>
+     <input name="Submit" type="submit" value="Trigger Build">
+     </label>
+   </p>
+   <p>&nbsp;</p>
+ </form>
+</div>
+ <div id="Layer5" style="display:none">
+  <form name="form4" method="post" action="builders/_selected/forceselected">
+    <label>
+    <input type="hidden" name="selected" value="Generate Ref delta patch/delta file ">
+    <br>
+      <label>Your Name
+      <input name="textfield13" type="text" value="Your Name ">
+      </label>
+    </p>
+    <p>
+      <label>Your Email
+      <input name="textfield14" type="text" disabled value="Your Email ">
+      </label>
+    </p>
+    <p>
+      <label>Reason For Build
+      <input name="textfield19" type="text" value="Reason For Build ">
+      </label>
+    </p>
+    <p>
+      <label>Auto Build Link
+      <input type="text" name="textfield15">
+      </label>
+    </p>
+    <p>
+      <label>Platfrom
+      <input type="text" name="textfield16">
+      </label>
+    </p>
+    <p>
+      <label>Release Name
+      <input type="text" name="textfield17">
+      </label>
+    </p>
+    <p>
+      <label>RC
+      <input type="text" name="textfield18">
+      </label>
+    </p>
+    <p>&nbsp;</p>
+    <p>
+      <label>
+      <input type="submit" name="Submit2" value="Trigger Build">
+      </label>
+    </p>
+  </form>
+</div>
+{%endblock%}
