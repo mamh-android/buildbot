@@ -1,4 +1,19 @@
 {% extends "layout.html" %}
+{% block head %}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv='Expires' content='0'>
+        <meta http-equiv='Pragma' content='no-cache'>
+        <meta http-equiv='Cache-Control' content='no-cache,must-revalidate'>
+    {% if metatags %}
+      {{ metatags }}
+    {% endif %}
+
+    <title>{{ pageTitle|e }}</title>
+    <script  type="text/javascript" src="{{path_to_root}}public.js"></script>
+    <link rel="stylesheet" href="{{ stylesheet }}" type="text/css" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ path_to_root }}rss">
+{% endblock %}
+
 {%block body%}
 <body class="interface" onload="checkSamebranch()" >
 {% endblock%}
@@ -328,8 +343,8 @@
       </span>
     </p>
     <p>
-      <input type="hidden" name = "property2name" value="Project" /> 
-      <label>*Android_Platform
+      <input type="hidden" name = "property2name" value="Manifest_Xml" /> 
+      <label>*Manifest Xml
       <input type="text"  name="property2value" />
       </label>
        <span style=" font-size:12px;color:#999999">
@@ -338,7 +353,7 @@
     </p>
         <p>
       <input type="hidden" name = "property3name" value="Branch_Name" /> 
-      <label>*Product
+      <label>*Branch Name
       <input type="text" name="property3value" />
       </label>
       <span style=" font-size:12px;color:#999999">
@@ -382,8 +397,8 @@
       </span>
     </p>
     <p>
-      <input type="hidden" name = "property2name" value="Project" /> 
-      <label>*Android_Platform
+      <input type="hidden" name = "property2name" value="Manifest_Xml" /> 
+      <label>*Manifest xml
       <input type="text"  name="property2value" />
       </label>
        <span style=" font-size:12px;color:#999999">
@@ -392,7 +407,7 @@
     </p>
         <p>
       <input type="hidden" name = "property3name" value="Branch_Name" /> 
-      <label>*Product
+      <label>*Branch Name
       <input type="text" name="property3value" />
       </label>
       <span style=" font-size:12px;color:#999999">

@@ -56,7 +56,6 @@ class TriggerBuild(HtmlResource, BuildLineMixin):
         yield template.render(**cxt)
     
     def getChild(self, path, req):
-        log.msg("pathis", path)
     	buildername = req.args.get('selected', [""])[0]
         builder_status = self.getStatus(req).getBuilder(buildername)
         if path == "force":
@@ -97,6 +96,7 @@ class Force(ActionResource):
 
         b['stop_url'] = path_to_build(req, build) + '/stop'
         b['start_time'] = build.getTimes()[0]
+        b['properties'] = build.getProperties()
 
         return b
 
@@ -109,12 +109,58 @@ class Force(ActionResource):
         repository = req.args.get("repository", [""])[0]
         project = req.args.get("project", [""])[0]
         selectname = self.builder_status.getName()
-        log.msg("selectnameis", selectname)
         samebranch = []
-        len(samebranch)
-        if (selectname == "generate_patch_file" or selectname == "generate_release_package"):
-            master = self.getBuildmaster(req)
+        buildernames = self.getStatus(req).getBuilderNames()
+        self.status = self.getStatus(req)
+        master = self.getBuildmaster(req)
+        limitionforeachuser = 5
+        buildcountforuser = 0
+        cxt = {}
+
+        """
+        we set a limition builds for each user, they can build servel(here is 5) at 
+        most(the sum of pending buids and running builds). Else, an alert will be shown in
+        the query page.
+
+        FIXME: if one user build 5 or more builds at once, first, the build will be added to the buildsets
+        one by one, the user will be checked and we will judge whether the user has builded too much builds.
+        but the action of adding build the buildsets is asynchronous, so when the next build is checked, the former
+        may have not been added to the buildsets,.
+        """
+        if (selectname != "android_develop_build" and selectname != "android_release_build"):
+            for buildername in buildernames:
+                b = self.status.getBuilder(buildername)
+                cxt['current'] = [self.builder(x, req) for x in b.getCurrentBuilds()]
+                #we
+                for cu in cxt['current']:
+                    if (cu['properties'].getProperty("username", []) == name):
+                        buildcountforuser = buildcountforuser + 1
+                        if (buildcountforuser == limitionforeachuser):
+                            req.addCookie('overlimition', buildcountforuser, path = '/', expires = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime(time.time()+0.5*3600)))    
+                            yield (path_to_query(req))
+                            return 
+                wfd = defer.waitForDeferred(
+                    b.getPendingBuildRequestStatuses())
+                yield wfd
+                statuses = wfd.getResult()
+                for pb in statuses:               
+                    wfd = defer.waitForDeferred(master.db.buildsets.getBuildsetProperties(pb.bsid))
+                    yield wfd
+                    bsp = wfd.getResult()
+                #try: the bsp may do not have the username key,
+                    try:
+                        if (bsp["username"][0] == name):
+                            buildcountforuser = buildcountforuser + 1
+                            if (buildcountforuser == limitionforeachuser):
+                                req.addCookie('overlimition', buildcountforuser, path = '/', expires = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime(time.time()+0.5*3600)))    
+                                yield (path_to_query(req))
+                                return
+                    except:
+                        pass
             properties = getAndCheckProperties(req)
+            #add username propertie, be used to check the same user can only trigger the limition number at most. 
+            #properties['username'] = name
+            properties.setProperty("username", name, "Force build from")
             wfd = defer.waitForDeferred(master.db.sourcestamps.addSourceStamp(branch = None, revision = revision, project = project, repository = repository))
             yield wfd
             ssid = wfd.getResult()
@@ -187,6 +233,34 @@ class Force(ActionResource):
         for u in useableslaves_status:
             useableslaves.append(u.getName())
         while(i < len(branches)):
+            for buildername in buildernames:
+                b = self.status.getBuilder(buildername)
+                cxt['current'] = [self.builder(x, req) for x in b.getCurrentBuilds()]
+                for cu in cxt['current']:
+                    if (cu['properties'].getProperty("username", []) == name):
+                        buildcountforuser = buildcountforuser + 1
+                        if (buildcountforuser == limitionforeachuser):
+                            req.addCookie('overlimition', "5", path = '/', expires = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime(time.time()+0.5*3600)))    
+                            yield (path_to_query(req))
+                            return 
+                wfd = defer.waitForDeferred(
+                    b.getPendingBuildRequestStatuses())
+                yield wfd
+                statuses = wfd.getResult()
+                for pb in statuses:               
+                    wfd = defer.waitForDeferred(master.db.buildsets.getBuildsetProperties(pb.bsid))
+                    yield wfd
+                    bsp = wfd.getResult()
+                    #try: the bsp may do not have the username key,
+                    try:
+                        if (bsp["username"][0] == name):
+                            buildcountforuser = buildcountforuser + 1
+                            if (buildcountforuser == limitionforeachuser):
+                                req.addCookie('overlimition', "5", path = '/', expires = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime(time.time()+0.5*3600)))    
+                                yield (path_to_query(req))
+                                return
+                    except:
+                        pass
             branch = branches[i].strip()
             if(branch == ''):
                 break
@@ -207,8 +281,6 @@ class Force(ActionResource):
             log.msg("useableslaves,%s : idleslaves,%s\n"%(useableslaves, idleslaves))
             #add by zlinghu end
             
-            buildernames = self.getStatus(req).getBuilderNames()
-            self.status = self.getStatus(req)
             cxt = {}
             bbranch = cxt['bbranch'] = []
             for buildername in buildernames:
@@ -243,6 +315,8 @@ class Force(ActionResource):
             #    log.msg("bad revision '%s'" % revision)
             #    yield Redirect(path_to_query(req))
                 properties = getAndCheckProperties(req)
+            #   properties['username'] = name
+                properties.setProperty("username", name, "Force build from")
             #if properties is None:
             #    yield Redirect(path_to_query(req))
                 if not branch:
