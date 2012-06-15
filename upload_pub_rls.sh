@@ -15,7 +15,7 @@ DEST_ROOT=/home/wdong1/publish_android/
 
 case "$#" in
 	7) case "$7" in
-		"--tagsrc") TAG_SRC=1 ;;
+		"--tagsrc");; # TAG_SRC=1 ;;
 		*) echo "wrong parameter $3"
 	   esac ;;
 	6) ;;
