@@ -40,7 +40,7 @@ REVISION_DICT=.revision.pck
 CPATH_DICT=.path.pck
 
 # Fetch code from Developer Server with mrvl-ics branch
-./fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
+. /home/buildfarm/buildbot_script/buildbot/fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
 if [ $? -ne 0 ]; then
 	echo "failed on fetching code from manifest branch"
 	echo $?
