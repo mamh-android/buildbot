@@ -40,7 +40,7 @@ REVISION_DICT=.revision.pck
 CPATH_DICT=.path.pck
 
 # Fetch code from Developer Server with mrvl-ics branch
-. /home/buildfarm/buildbot_script/buildbot/fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
+python /home/buildfarm/buildbot_script/buildbot/fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
 if [ $? -ne 0 ]; then
 	echo "failed on fetching code from manifest branch"
 	echo $?
@@ -48,7 +48,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Output project name and branch name into .name.pck
-. /home/buildfarm/buildbot_script/buildbot/getname.py -o $BRANCH_DICT
+python /home/buildfarm/buildbot_script/buildbot/getname.py -o $BRANCH_DICT
 if [ $? -ne 0 ]; then
 	echo "failed on outputing branch name into dictionary file"
 	echo $?
@@ -56,7 +56,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Fetch code from Developer Server with manifest xml
-. /home/buildfarm/buildbot_script/buildbot/fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
+python /home/buildfarm/buildbot_script/buildbot/fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
 if [ $? -ne 0 ]; then
 	echo "failed on fetching code from manifest xml"
 	echo $?
@@ -64,7 +64,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Output project name and revision number into .revision.pck
-. /home/buildfarm/buildbot_script/buildbot/getname.py -o $REVISION_DICT
+python /home/buildfarm/buildbot_script/buildbot/getname.py -o $REVISION_DICT
 if [ $? -ne 0 ]; then
 	echo "failed on outputing revision number into dictionary file"
 	echo $?
@@ -72,7 +72,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Compare whether different dictories are imported by manifest xml
-. /home/buildfarm/buildbot_script/buildbot/comparedict.py -s $BRANCH_DICT -d $REVISION_DICT
+python /home/buildfarm/buildbot_script/buildbot/comparedict.py -s $BRANCH_DICT -d $REVISION_DICT
 if [ $? -ne 0 ]; then
 	echo "Keys in these two dictionary files are different"
 	echo $?
@@ -80,7 +80,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Output project name and client path into .path.pck
-. /home/buildfarm/buildbot_script/buildbot/getname.py -p -o $CPATH_DICT
+python /home/buildfarm/buildbot_script/buildbot/getname.py -p -o $CPATH_DICT
 if [ $? -ne 0 ]; then
 	echo "failed on outputing client path into dictionary file"
 	echo $?
@@ -88,7 +88,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Compare whether different dictories are imported by manifest xml
-. /home/buildfarm/buildbot_script/buildbot/comparedict.py -s $BRANCH_DICT -d $CPATH_DICT
+python /home/buildfarm/buildbot_script/buildbot/comparedict.py -s $BRANCH_DICT -d $CPATH_DICT
 if [ $? -ne 0 ]; then
 	echo "Keys in these two dictionary files are different"
 	echo $?
@@ -96,7 +96,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Apply tag on working directory
-. /home/buildfarm/buildbot_script/buildbot/tag.py -i $CPATH_DICT -r $REMOTE_MNAME -t $TAG_NAME
+python /home/buildfarm/buildbot_script/buildbot/tag.py -i $CPATH_DICT -r $REMOTE_MNAME -t $TAG_NAME
 if [ $? -ne 0 ]; then
 	echo "Failed to apply tag"
 	echo $?
@@ -104,7 +104,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Upload repository to dest server
-. /home/buildfarm/buildbot_script/buildbot/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_MNAME -r $DEST_ROOT -b $TAG_NAME
+python /home/buildfarm/buildbot_script/buildbot/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_MNAME -r $DEST_ROOT -b $TAG_NAME
 if [ $? -ne 0 ]; then
 	echo "Failed to upload repository to dest server"
 	echo $?
@@ -115,7 +115,7 @@ fi
 	#./push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT --tagsrc
 
 # Verify revision number
-. /home/buildfarm/buildbot_script/buildbot/verify.py --dict-revision=$REVISION_DICT --dict-path=$CPATH_DICT -t $TAG_NAME
+python /home/buildfarm/buildbot_script/buildbot/verify.py --dict-revision=$REVISION_DICT --dict-path=$CPATH_DICT -t $TAG_NAME
 if [ $? -ne 0 ]; then
 	echo "verification fail"
 	echo $?
