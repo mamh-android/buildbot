@@ -8,6 +8,7 @@ check_result() {
     echo
     echo "FAIL: Test is aborted. Current working dir:$(pwd)"
     echo
+    rm -fr /home/buildfarm/buildbot_script/buildbot/${folder_name}
     exit 1
   fi
 }
