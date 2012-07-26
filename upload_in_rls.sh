@@ -43,74 +43,92 @@ cp ${MANIFEST_XML} ./
 MANIFEST_XML=manifest.xml
 # Fetch code from Developer Server with mrvl-ics branch
 python /home/buildfarm/buildbot_script/buildbot/fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
-if [ $? -ne 0 ]; then
+RET=$?
+if [ $RET -ne 0 ]; then
 	echo "failed on fetching code from manifest branch"
-	echo $?
-	exit
+	echo "exit value:" $RET 
+	exit 1
 fi
 
 # Output project name and branch name into .name.pck
 python /home/buildfarm/buildbot_script/buildbot/getname.py -o $BRANCH_DICT
-if [ $? -ne 0 ]; then
+RET=$?
+if [ $RET -ne 0 ]; then
 	echo "failed on outputing branch name into dictionary file"
-	echo $?
-	exit
+	echo "exit value:" $RET
+	exit 1
 fi
 
 # Fetch code from Developer Server with manifest xml
 python /home/buildfarm/buildbot_script/buildbot/fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
-if [ $? -ne 0 ]; then
+RET=$?
+if [ $RET -ne 0 ]; then
 	echo "failed on fetching code from manifest xml"
-	echo $?
-	exit
+	echo "exit value:" $RET 
+	exit 1
 fi
 
 # Output project name and revision number into .revision.pck
 python /home/buildfarm/buildbot_script/buildbot/getname.py -o $REVISION_DICT
-if [ $? -ne 0 ]; then
+RET=$?
+if [ $RET -ne 0 ]; then
 	echo "failed on outputing revision number into dictionary file"
-	echo $?
-	exit
+	echo "exit value:" $RET
+	exit 1
 fi
 
 # Compare whether different dictories are imported by manifest xml
 python /home/buildfarm/buildbot_script/buildbot/comparedict.py -s $BRANCH_DICT -d $REVISION_DICT
-if [ $? -ne 0 ]; then
-	echo "Keys in these two dictionary files are different"
-	echo $?
-	exit
+RET=$?
+if [ $RET -lt 0 ]; then
+    echo "Keys in these two dictionary files are different"
+    echo "exit value:" $RET
+    exit 1
+elif [ $RET -eq 1 ]; then
+    echo "Source repository is the subset of repository that is defined in manifest.xml"
+elif [ $RET -eq 2 ]; then
+    echo "Repository that is defined in manifest.xml is the subset of source repository"
 fi
+
 
 # Output project name and client path into .path.pck
 python /home/buildfarm/buildbot_script/buildbot/getname.py -p -o $CPATH_DICT
-if [ $? -ne 0 ]; then
+RET=$?
+if [ $RET -ne 0 ]; then
 	echo "failed on outputing client path into dictionary file"
-	echo $?
-	exit
+	echo "exit value:" $RET
+	exit 1
 fi
 
 # Compare whether different dictories are imported by manifest xml
 python /home/buildfarm/buildbot_script/buildbot/comparedict.py -s $BRANCH_DICT -d $CPATH_DICT
-if [ $? -ne 0 ]; then
-	echo "Keys in these two dictionary files are different"
-	echo $?
-	exit
+RET=$?
+if [ $RET -lt 0 ]; then
+    echo "Keys in these two dictionary files are different"
+    echo "exit value:" $RET
+    exit 1
+elif [ $RET -eq 1 ]; then
+    echo "Source repository is the subset of repository that is defined in manifest.xml"
+elif [ $RET -eq 2 ]; then
+    echo "Repository that is defined in manifest.xml is the subset of source repository"
 fi
 
 # Apply tag on working directory
 python /home/buildfarm/buildbot_script/buildbot/tag.py -i $CPATH_DICT -r $REMOTE_MNAME -t $TAG_NAME
-if [ $? -ne 0 ]; then
+RET=$?
+if [ $RET -ne 0 ]; then
 	echo "Failed to apply tag"
-	echo $?
-	exit
+	echo "exit value:" $RET
+	exit 1
 fi
 
 # Upload repository to dest server
 python /home/buildfarm/buildbot_script/buildbot/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_MNAME -r $DEST_ROOT -b $TAG_NAME
-if [ $? -ne 0 ]; then
+RET=$?
+if [ $RET -ne 0 ]; then
 	echo "Failed to upload repository to dest server"
-	echo $?
-	exit
+	echo "exit value:" $RET
+	exit 1
 fi
 
 	# Upload commits to source server
@@ -118,8 +136,11 @@ fi
 
 # Verify revision number
 python /home/buildfarm/buildbot_script/buildbot/verify.py --dict-revision=$REVISION_DICT --dict-path=$CPATH_DICT -t $TAG_NAME
-if [ $? -ne 0 ]; then
+RET=$?
+if [ $RET -ne 0 ]; then
 	echo "verification fail"
-	echo $?
-	exit
+	echo "exit value:" $RET
+	exit 1
 fi
+
+echo "upload finished!"
