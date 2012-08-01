@@ -20,7 +20,7 @@ def new_git(dest_server, dest_root, c_path, p_name):
     subprocess.check_call(args, shell=True)
 
     path = dest_root + p_name
-    ssh_args = "ssh -C " + dest_server
+    ssh_args = "ssh -o StrictHostKeyChecking=no -C " + dest_server
     args = ssh_args + " \"test -e " + path + "\""
     ret = subprocess.call(args, shell=True)
     if (ret != 0):
