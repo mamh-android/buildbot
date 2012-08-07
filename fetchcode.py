@@ -27,7 +27,6 @@ def repo_init(src_manifest_path, manifest_branch, manifest_xml, addition):
         arg = "cp -f " + manifest_xml + " .repo/manifests/"
         subprocess.check_call(arg, shell=True)
         arg = "repo init " + " -m " + manifest_xml + addition
-        #arg = "repo init -u " + src_manifest_path + " -m " + manifest_xml + addition
     print arg
     process = subprocess.Popen(arg, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Input Your name, Your email, Is it correct

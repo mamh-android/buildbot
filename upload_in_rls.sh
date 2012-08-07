@@ -1,37 +1,54 @@
 #!/bin/sh
+#
+# Need environment variables:
+#	SYNC_GIT_WORKING_DIR:	working directory
+#	REMOTE_MNAME:		remote target server name in manifest file
+#	DEST_ROOT:		installation path of remote server
+#	REFERENCE_URL:		url of repo reference
+#	SRC_URL:		manifest path in source server
+#	REPO_URL:		repo url
 
+# Command usage:
 #upload_in_rls.sh -t <tag name> -m <manifest xml> -b <manifest branch> --tagsrc
 
-MANIFEST_BRANCH=mk2-ics
-MANIFEST_XML=a.xml
-TAG_NAME=rls-mrvl-android-rc1
-REFERENCE_URL="--reference=/mnt/mirror/default"
-REPO_URL="--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"
+SYNC_GIT_WORKING_DIR?=$(pwd)/in_work
+REMOTE_MNAME?=10.38.32.104
+DEST_ROOT?=/home/wdong1/internal_android/
+REFERENCE_URL?="--reference=/mnt/mirror/default"
+REPO_URL?="--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"
 
-# remote name in manifest default.xml
-REMOTE_MNAME=wdong1@10.38.32.104
-DEST_ROOT=/home/wdong1/internal_android/
+SRC_URL?=ssh://shgit.marvell.com/git/android/platform/manifest.git
 
+#script path
+SCRIPT_PATH=`pwd`
 
 case "$#" in
 	7) case "$7" in
-		"--tagsrc");; #TAG_SRC=1 ;;
-		*) echo "wrong parameter $3"
+		"--tagsrc") TAG_SRC=1 ;;
+		*) echo "wrong parameter $3"; exit 1 ;;
 	   esac ;;
 	6) ;;
-	*) echo "wrong parameter nubmer"; exit ;;
+	*) echo "wrong parameter nubmer"; exit 1 ;;
 esac
 case "$1" in
 	"-t") TAG_NAME=$2 ;;
-	*) echo "wrong parameter $1" ;;
+	*) echo "wrong parameter $1"; exit 1 ;;
 esac
 case "$3" in
-	"-m") MANIFEST_XML=$4 ;;
-	*) echo "wrong parameter $3" ;;
+	"-m") MANIFEST_XML=$4
+		if [ -f $MANIFEST_XML ]; then
+			echo "$MANIFEST_XML exists"
+			MANIFEST_XML=${MANIFEST_XML##*/}
+		else
+			echo "$4 doesn't exist"
+			exit 1
+		fi
+		;;
+	*) echo "wrong parameter $3"; exit 1 ;;
 esac
 case "$5" in
 	"-b") MANIFEST_BRANCH=$6 ;;
-	*) echo "wrong parameter $5" ;;
+	*) echo "wrong parameter $5"; exit 1 ;;
 esac
 
 # Internal variable
@@ -39,19 +56,38 @@ BRANCH_DICT=.branch.pck
 REVISION_DICT=.revision.pck
 CPATH_DICT=.path.pck
 
-cp ${MANIFEST_XML} ./
-MANIFEST_XML=manifest.xml
+# Create working diretory
+mkdir -p $SYNC_GIT_WORKING_DIR
+if [ $? -ne 0 ]; then
+	echo "failed to create directory " $SYNC_GIT_WORKING_DIR
+	exit 1
+fi
+
+cd $SYNC_GIT_WORKING_DIR
+if [ $? -ne 0 ]; then
+	echo "failed to enter " $SYNC_GIT_WORKING_DIR
+	exit 1
+fi
+
+# Clean data
+rm -fr *
+
+# Copy manifest xml into current directory
+echo $MANIFEST_XML
+cp $4 $MANIFEST_XML
+
+echo $SCRIPT_PATH
 # Fetch code from Developer Server with mrvl-ics branch
-python /home/buildfarm/buildbot_script/buildbot/fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
+$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "failed on fetching code from manifest branch"
-	echo "exit value:" $RET 
+	echo "exit value:" $RET
 	exit 1
 fi
 
 # Output project name and branch name into .name.pck
-python /home/buildfarm/buildbot_script/buildbot/getname.py -o $BRANCH_DICT
+$SCRIPT_PATH/getname.py -o $BRANCH_DICT
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "failed on outputing branch name into dictionary file"
@@ -60,16 +96,16 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Fetch code from Developer Server with manifest xml
-python /home/buildfarm/buildbot_script/buildbot/fetchcode.py -u ssh://shgit.marvell.com/git/android/platform/manifest.git -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
+$SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "failed on fetching code from manifest xml"
-	echo "exit value:" $RET 
+	echo "exit value:" $RET
 	exit 1
 fi
 
 # Output project name and revision number into .revision.pck
-python /home/buildfarm/buildbot_script/buildbot/getname.py -o $REVISION_DICT
+$SCRIPT_PATH/getname.py -o $REVISION_DICT
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "failed on outputing revision number into dictionary file"
@@ -78,21 +114,22 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Compare whether different dictories are imported by manifest xml
-python /home/buildfarm/buildbot_script/buildbot/comparedict.py -s $BRANCH_DICT -d $REVISION_DICT
+# $BRANCH_DICT is the parameter source
+# $REVISION_DICT is the parameter destination
+$SCRIPT_PATH/comparedict.py -s $BRANCH_DICT -d $REVISION_DICT
 RET=$?
 if [ $RET -lt 0 ]; then
-    echo "Keys in these two dictionary files are different"
-    echo "exit value:" $RET
-    exit 1
+	echo "Keys in these two dictionary files are different"
+	echo "exit value:" $RET
+	exit 1
 elif [ $RET -eq 1 ]; then
-    echo "Source repository is the subset of repository that is defined in manifest.xml"
+	echo "Source repository is the subset of repository that is defined in manifest.xml"
 elif [ $RET -eq 2 ]; then
-    echo "Repository that is defined in manifest.xml is the subset of source repository"
+	echo "Repository that is defined in manifest.xml is the subset of source repository"
 fi
 
-
 # Output project name and client path into .path.pck
-python /home/buildfarm/buildbot_script/buildbot/getname.py -p -o $CPATH_DICT
+$SCRIPT_PATH/getname.py -p -o $CPATH_DICT
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "failed on outputing client path into dictionary file"
@@ -101,20 +138,22 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Compare whether different dictories are imported by manifest xml
-python /home/buildfarm/buildbot_script/buildbot/comparedict.py -s $BRANCH_DICT -d $CPATH_DICT
+# $BRANCH_DICT is the parameter source
+# $CPATH_DICT is the parameter destination
+$SCRIPT_PATH/comparedict.py -s $BRANCH_DICT -d $CPATH_DICT
 RET=$?
 if [ $RET -lt 0 ]; then
-    echo "Keys in these two dictionary files are different"
-    echo "exit value:" $RET
-    exit 1
+	echo "Keys in these two dictionary files are different"
+	echo "exit value:" $RET
+	exit 1
 elif [ $RET -eq 1 ]; then
-    echo "Source repository is the subset of repository that is defined in manifest.xml"
+	echo "Source repository is the subset of repository that is defined in manifest.xml"
 elif [ $RET -eq 2 ]; then
-    echo "Repository that is defined in manifest.xml is the subset of source repository"
+	echo "Repository that is defined in manifest.xml is the subset of source repository"
 fi
 
 # Apply tag on working directory
-python /home/buildfarm/buildbot_script/buildbot/tag.py -i $CPATH_DICT -r $REMOTE_MNAME -t $TAG_NAME
+$SCRIPT_PATH/tag.py -i $CPATH_DICT -r $REMOTE_MNAME -t $TAG_NAME
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "Failed to apply tag"
@@ -123,7 +162,7 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Upload repository to dest server
-python /home/buildfarm/buildbot_script/buildbot/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_MNAME -r $DEST_ROOT -b $TAG_NAME
+$SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_MNAME -r $DEST_ROOT -b $MANIFEST_BRANCH
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "Failed to upload repository to dest server"
@@ -131,11 +170,19 @@ if [ $RET -ne 0 ]; then
 	exit 1
 fi
 
+if [ ! -z $TAG_SRC ]; then
 	# Upload commits to source server
-	#./push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT --tagsrc
+	$SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT --tagsrc
+	RET=$?
+	if [ $RET -ne 0 ]; then
+		echo "Failed to upload repository to dest server"
+		echo "exit value:" $RET
+		exit 1
+	fi
+fi
 
 # Verify revision number
-python /home/buildfarm/buildbot_script/buildbot/verify.py --dict-revision=$REVISION_DICT --dict-path=$CPATH_DICT -t $TAG_NAME
+$SCRIPT_PATH/verify.py --dict-revision=$REVISION_DICT --dict-path=$CPATH_DICT -t $TAG_NAME
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "verification fail"
