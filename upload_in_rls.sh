@@ -15,7 +15,7 @@
 SYNC_GIT_WORKING_DIR?=$(pwd)/in_work
 REMOTE_SERVER?=10.38.32.191
 REMOTE_MNAME?=mars_in
-DEST_ROOT?=/home/wdong1/internal_android/
+DEST_ROOT?=/mobile/android/default
 REFERENCE_URL?="--reference=/mnt/mirror/default"
 REPO_URL?="--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"
 
