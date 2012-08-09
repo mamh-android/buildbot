@@ -2,6 +2,7 @@
 #
 # Need environment variables:
 #	SYNC_GIT_WORKING_DIR:	working directory
+#	REMOTE_SERVER:		remote target server 
 #	REMOTE_MNAME:		remote target server name in manifest file
 #	DEST_ROOT:		installation path of remote server
 #	REFERENCE_URL:		url of repo reference
@@ -12,6 +13,8 @@
 #upload_pub_rls.sh -t <tag name> -m <manifest xml> -b <manifest branch> --tagsrc
 
 export SYNC_GIT_WORKING_DIR=$(pwd)/pub_work
+export REMOTE_SERVER=10.38.32.104
+export REMOTE_MNAME=mars
 
 #script path
 SCRIPT_PATH=`pwd`

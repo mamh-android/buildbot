@@ -2,6 +2,7 @@
 #
 # Need environment variables:
 #	SYNC_GIT_WORKING_DIR:	working directory
+#	REMOTE_SERVER:		remote target server 
 #	REMOTE_MNAME:		remote target server name in manifest file
 #	DEST_ROOT:		installation path of remote server
 #	REFERENCE_URL:		url of repo reference
@@ -12,7 +13,8 @@
 #upload_in_rls.sh -t <tag name> -m <manifest xml> -b <manifest branch> --tagsrc
 
 SYNC_GIT_WORKING_DIR?=$(pwd)/in_work
-REMOTE_MNAME?=10.38.32.104
+REMOTE_SERVER?=10.38.32.104
+REMOTE_MNAME?=mars_in
 DEST_ROOT?=/home/wdong1/internal_android/
 REFERENCE_URL?="--reference=/mnt/mirror/default"
 REPO_URL?="--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"
@@ -162,7 +164,7 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Upload repository to dest server
-$SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_MNAME -r $DEST_ROOT -b $MANIFEST_BRANCH
+$SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_SERVER -r $DEST_ROOT -b $MANIFEST_BRANCH
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "Failed to upload repository to dest server"

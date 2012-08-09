@@ -75,7 +75,8 @@ def tag_manifest(dest_server, tag_name):
     subprocess.check_call(args, shell=True)
 
 def usage():
-    print "\ttag.py [-i] <input dictionary> [-r] <remote server> [-t] <tag name>"
+    print "\ttag.py [-i] <input dictionary> [-r] <remote server name> [-t] <tag name>"
+    print "\t    [-r] <remote server name>: the server name that is used in manifest xml file."
     print "\t       [-h]"
 
 def main(argv):
