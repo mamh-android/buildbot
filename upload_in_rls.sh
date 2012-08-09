@@ -12,14 +12,14 @@
 # Command usage:
 #upload_in_rls.sh -t <tag name> -m <manifest xml> -b <manifest branch> --tagsrc
 
-SYNC_GIT_WORKING_DIR?=$(pwd)/in_work
-REMOTE_SERVER?=10.38.32.191
-REMOTE_MNAME?=mars_in
-DEST_ROOT?=/mobile/android/default
-REFERENCE_URL?="--reference=/mnt/mirror/default"
-REPO_URL?="--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"
+export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-$(pwd)/in_work}
+export REMOTE_SERVER=${REMOTE_SERVER:-10.38.32.191}
+export REMOTE_MNAME=${REMOTE_MNAME:-mars_in}
+export DEST_ROOT=${DEST_ROOT:-/mobile/android/default}
+export REFERENCE_URL=${REFERENCE_URL:-"--reference=/mnt/mirror/default"}
+export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"}
 
-SRC_URL?=ssh://shgit.marvell.com/git/android/platform/manifest.git
+export SRC_URL=${SRC_URL:-ssh://shgit.marvell.com/git/android/platform/manifest.git}
 
 #script path
 SCRIPT_PATH=`pwd`
