@@ -13,7 +13,7 @@
 #upload_in_rls.sh -t <tag name> -m <manifest xml> -b <manifest branch> --tagsrc
 
 SYNC_GIT_WORKING_DIR?=$(pwd)/in_work
-REMOTE_SERVER?=10.38.32.104
+REMOTE_SERVER?=10.38.32.191
 REMOTE_MNAME?=mars_in
 DEST_ROOT?=/home/wdong1/internal_android/
 REFERENCE_URL?="--reference=/mnt/mirror/default"
