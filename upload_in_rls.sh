@@ -58,6 +58,9 @@ BRANCH_DICT=.branch.pck
 REVISION_DICT=.revision.pck
 CPATH_DICT=.path.pck
 
+# Clean the working directory
+rm -fr $SYNC_GIT_WORKING_DIR
+
 # Create working diretory
 mkdir -p $SYNC_GIT_WORKING_DIR
 if [ $? -ne 0 ]; then
@@ -70,9 +73,6 @@ if [ $? -ne 0 ]; then
 	echo "failed to enter " $SYNC_GIT_WORKING_DIR
 	exit 1
 fi
-
-# Clean data
-rm -fr *
 
 # Copy manifest xml into current directory
 echo $MANIFEST_XML
