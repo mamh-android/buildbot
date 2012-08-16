@@ -163,13 +163,13 @@ def main(argv):
         r_server, r_root = get_remote_url(d_path)
         # upload common git
         push_git_bdict(r_server, r_root, d_path, d_branch, tag_name)
-        # upload manifest git
-        push_manifest(r_server, r_root, branch_name, tag_name)
+        # upload manifest git (use tag name as branch name)
+        push_manifest(r_server, r_root, tag_name, tag_name)
     else:
         # upload common git
         push_git_bname(dest_server, dest_root, d_path, branch_name, tag_name)
-        # upload manifest git
-        push_manifest(dest_server, dest_root, branch_name, tag_name)
+        # upload manifest git (use tag name as branch name)
+        push_manifest(dest_server, dest_root, tag_name, tag_name)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
