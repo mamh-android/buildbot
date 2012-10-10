@@ -18,7 +18,7 @@ def tag_common(tag_name, input_file):
         args = cd_args + " git tag " + tag_name
         subprocess.check_call(args, shell=True)
 
-def update_xml(src_file, pattern, repl):
+def update_xml(src_file, search, target, repl):
     try:
         fp_src = open(src_file, 'r')
         contents = fp_src.readlines()
@@ -29,10 +29,15 @@ def update_xml(src_file, pattern, repl):
     try:
         # replace revision
         fp_dst = open(src_file, 'w')
-        prep = re.compile(pattern)
+        m = re.compile(search)
+        replace = re.compile(target)
         for line in contents:
-            data = prep.sub(repl, line)
-            fp_dst.write(data)
+            result = m.search(line)
+            if result:
+                data = replace.sub(repl, line)
+                fp_dst.write(data)
+            else:
+                fp_dst.write(line)
         fp_dst.close()
     except IOError:
         print "failed to open manifest file with write mode"
@@ -44,19 +49,24 @@ def new_commit(dest_server, tag_name):
     # remove revision that is not default revision
     pattern = 'revision[ ]*=[ ]*\"[^\"]*\"[ ]*/>'
     repl = "/>"
-    update_xml(src_file, pattern, repl)
-    # replace default revision
-    pattern = 'default revision[ ]*=[ ]*\"[^\"]*\"[ ]*'
-    repl = "default revision=\"" + "refs/tags/" + tag_name + "\""
-    update_xml(src_file, pattern, repl)
-    # replace "remote name"
-    pattern = 'remote[ ]*name[ ]*=[ ]*\"[^\"]*\"'
-    repl = "remote  name=\"" + dest_server + "\""
-    update_xml(src_file, pattern, repl)
-    # replace "remote"
+    update_xml(src_file, pattern, pattern, repl)
+    pattern = 'revision[ ]*=[ ]*\"[^\"]*\"[ ]*>'
+    repl = ">"
+    update_xml(src_file, pattern, pattern, repl)
+    # replace "default.*revision"
+    pattern = 'default.*revision[ ]*=[ ]*\"[^\"]*\"'
+    match = 'revision[ ]*=[ ]*\"[^\"]*\"'
+    repl = "revision=\"" + "refs/tags/" + tag_name + "\""
+    update_xml(src_file, pattern, match, repl)
+    # replace "remote.*name"
+    pattern = 'remote.*name[ ]*=[ ]*\"[^\"]*\"'
+    match = 'name[ ]*=[ ]*\"[^\"]*\"'
+    repl = "name=\"" + dest_server + "\""
+    update_xml(src_file, pattern, match, repl)
+    # replace "remote="
     pattern = 'remote[ ]*=[ ]*\"[^\"]*\"'
     repl = "remote=\"" + dest_server + "\""
-    update_xml(src_file, pattern, repl)
+    update_xml(src_file, pattern, pattern, repl)
 
     args = "cd .repo/manifests; git add default.xml"
     subprocess.check_call(args, shell=True)
