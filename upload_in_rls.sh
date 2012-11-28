@@ -192,4 +192,13 @@ if [ $RET -ne 0 ]; then
 	exit 1
 fi
 
+# Register Uploaded Projects by flushing the project_list cache
+ssh github -p 29418 gerrit flush-caches --cache project_list
+RET=$?
+if [ $RET -ne 0 ]; then
+        echo "flush cache fail"
+        echo "exit value:" $RET
+        exit 1
+fi
+
 echo "upload finished!"
