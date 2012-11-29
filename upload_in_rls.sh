@@ -193,7 +193,7 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Register Uploaded Projects by flushing the project_list cache
-ssh github -p 29418 gerrit flush-caches --cache project_list
+ssh $REMOTE_SERVER -p 29418 gerrit flush-caches --cache project_list
 RET=$?
 if [ $RET -ne 0 ]; then
         echo "flush cache fail"
