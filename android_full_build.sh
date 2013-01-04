@@ -1,9 +1,14 @@
 #!/bin/bash
 ids=$1  
-echo $1
+echo Build Branch: $1
+ids_2=$2
+echo Product Type: $2
 rm -f /home/buildfarm/buildbot_script/args.log
 . ~/buildbot_script/buildbot/check_update.sh
 cd ~/aabs
+if [ "$ids_2" = "product_mode_build" ]; then
+  export FLAG_PRODUCT_BUILD="true"
+fi
 var_0=`echo ${ids%%_*}`
 if [ ! "${var_0}" == "rls" ]; then
   platform=`echo ${ids%%_*}`
