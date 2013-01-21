@@ -49,8 +49,8 @@ function clobber(){
 #----------------
 function main(){
 
-	bash ~/buildbot_script/buildbot/genDeltaPatch.sh "${XML_ONE}" "${XML_TWO}"
-	bash ~/buildbot_script/buildbot/genDiff.sh "${FIRST_SYNC_FOLDER}" "${SECOND_SYNC_FOLDER}" "${RELEASE_FOLDER}"
+	bash ~/buildbot_script/buildbot/core/genDeltaPatch.sh "${XML_ONE}" "${XML_TWO}"
+	bash ~/buildbot_script/buildbot/core/genDiff.sh "${FIRST_SYNC_FOLDER}" "${SECOND_SYNC_FOLDER}" "${RELEASE_FOLDER}"
 	
 	#clean the tmp files & folder
 	clobber

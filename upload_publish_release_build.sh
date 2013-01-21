@@ -1,4 +1,3 @@
 #!/bin/bash
-. /home/buildfarm/buildbot_script/buildbot/check_update.sh
-. /home/buildfarm/buildbot_script/buildbot/upload_pub_rls.sh $@
-
+. ~/buildbot_script/buildbot/core/check_update.sh
+. ~/buildbot_script/buildbot/core/upload_pub_rls.sh $@

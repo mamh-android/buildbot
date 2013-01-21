@@ -30,7 +30,7 @@ FOLDER2="$(cd ${2} && pwd)"
 FOLDER1_NAME="${FOLDER1##*/}"
 FOLDER2_NAME="${FOLDER2##*/}"
 
-DIFF_EXECU="/home/buildfarm/buildbot_script/buildbot/diffz"
+DIFF_EXECU="/home/buildfarm/buildbot_script/buildbot/core/diffz"
 DIFF_PARAM="-rsq -x .git -x .repo"
 
 RAWDATA="${RESULT_FOLDER}/RawData"

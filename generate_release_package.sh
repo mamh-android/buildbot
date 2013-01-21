@@ -5,6 +5,6 @@ product=$3
 release=$4
 RC=$5
 Release_package_path=$6
-. ~/buildbot_script/buildbot/check_update.sh
+. ~/buildbot_script/buildbot/core/check_update.sh
 echo $*
-. /home/buildfarm/buildbot_script/buildbot/bbolt_cdrop.sh ${input} ${platform} ${product} ${release} ${RC} ${Release_package_path}
+. ~/buildbot_script/buildbot/core/bbolt_cdrop.sh ${input} ${platform} ${product} ${release} ${RC} ${Release_package_path}

@@ -1,6 +1,6 @@
 #!/bin/bash
 sour=$1
 dest=$2
-. ~/buildbot_script/buildbot/check_update.sh
+. ~/buildbot_script/buildbot/core/check_update.sh
 cd ~/buildbot_script/
-. /home/buildfarm/buildbot_script/buildbot/genDeltaPatchDiffFiles.sh ${sour} ${dest}
+. ~/buildbot_script/buildbot/core/genDeltaPatchDiffFiles.sh ${sour} ${dest}

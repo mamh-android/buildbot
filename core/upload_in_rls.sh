@@ -22,7 +22,7 @@ export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tool
 export SRC_URL=${SRC_URL:-ssh://shgit.marvell.com/git/android/platform/manifest.git}
 
 #script path
-SCRIPT_PATH=`pwd`
+SCRIPT_PATH=`pwd`/core
 
 case "$#" in
 	7) case "$7" in

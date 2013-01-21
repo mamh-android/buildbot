@@ -4,7 +4,7 @@ echo Build Branch: $1
 ids_2=$2
 echo Product Type: $2
 rm -f /home/buildfarm/buildbot_script/args.log
-. ~/buildbot_script/buildbot/check_update.sh
+. ~/buildbot_script/buildbot/core/check_update.sh
 cd ~/aabs
 if [ "$ids_2" = "product_mode_build" ]; then
   export FLAG_PRODUCT_BUILD="true"

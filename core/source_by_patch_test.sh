@@ -65,7 +65,7 @@ cd $test_dir
 tar xzvf $droidall_dir/droid_all_src.tgz -C $droidall_dir
 find $android_dir -type l | xargs rm -f
 find $droidall_dir/source -type l | xargs rm -f
-diff -X $root_dir/exclude.pats -urN $android_dir $droidall_dir/source
+diff -X $root_dir/core/exclude.pats -urN $android_dir $droidall_dir/source
 if [ $? -eq 0 ]; then
   echo "Test passed!"
 else
