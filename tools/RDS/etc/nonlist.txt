@@ -1,0 +1,13 @@
+manifest.xml
+changelog.biweek
+changelog.build
+changelog.day
+changelog.month
+changelog.ms1
+changelog.ms2
+changelog.week
+img
+bin
+uImage
+zImage
+gpt
