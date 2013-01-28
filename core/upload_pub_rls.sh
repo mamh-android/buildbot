@@ -17,7 +17,7 @@ export REMOTE_SERVER=${REMOTE_SERVER:-github.marvell.com}
 export REMOTE_MNAME=${REMOTE_MNAME:-mars}
 
 #script path
-SCRIPT_PATH=`pwd`
+SCRIPT_PATH=`pwd`/core
 
 #call upload_in_rls.sh pushing code to public server
 $SCRIPT_PATH/upload_in_rls.sh $@
