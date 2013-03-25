@@ -48,14 +48,14 @@ case "$7" in
 esac
 
 # Clean the working directory
-#rm -fr $SYNC_GIT_WORKING_DIR
+rm -fr $SYNC_GIT_WORKING_DIR
 
 # Create working diretory
-#mkdir -p $SYNC_GIT_WORKING_DIR
-#if [ $? -ne 0 ]; then
-#        echo "failed to create directory " $SYNC_GIT_WORKING_DIR
-#        exit 1
-#fi
+mkdir -p $SYNC_GIT_WORKING_DIR
+if [ $? -ne 0 ]; then
+        echo "failed to create directory " $SYNC_GIT_WORKING_DIR
+        exit 1
+fi
 
 cd $SYNC_GIT_WORKING_DIR
 if [ $? -ne 0 ]; then
@@ -88,7 +88,7 @@ if [ $RET -ne 0 ]; then
         exit 1
 fi
 
-$SCRIPT_PATH/gerrit_pick_patch.py -p $GERRIT_PATCH --showonly
+$SCRIPT_PATH/gerrit_pick_patch.py -p $GERRIT_PATCH
 RET=$?
 if [ $RET -ne 0 ]; then
         echo "failed on cherry-pick the patches by gerrit patchSetID list"
@@ -97,19 +97,13 @@ if [ $RET -ne 0 ]; then
 fi
 
 ids=$MANIFEST_BRANCH
-echo Build Branch: $ids
+echo "Build Branch: $ids"
 rm -f /home/buildfarm/buildbot_script/args.log
 cd ~/aabs
 var_0=`echo ${ids%%_*}`
 if [ ! "${var_0}" == "rls" ]; then
-  platform=`echo ${ids%%_*}`
-  product=`echo ${ids#*_}`
-  last_build="/autobuild/android/${platform}/LAST_BUILD.${platform}_${product}"
-  target=${platform}-${product}
-  echo "platform $platform" | tee -a /home/buildfarm/buildbot_script/args.log
-  echo "product $product" | tee -a /home/buildfarm/buildbot_script/args.log
-  echo "last_build $last_build" | tee -a /home/buildfarm/buildbot_script/args.log
-  echo $target
+  target=$ids
+  echo "targer $target" | tee -a /home/buildfarm/buildbot_script/args.log
 else
   var_1=`echo ${ids#*_}`
   platform=`echo ${var_1%%_*}`
