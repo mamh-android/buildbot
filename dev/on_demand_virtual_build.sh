@@ -42,9 +42,9 @@ case "$5" in
         "-b") MANIFEST_BRANCH=$6 ;;
         *) echo "wrong parameter $5"; exit 1 ;;
 esac
-case "$6" in
-        "-d") DEST_DIR=/autobuild/odvb/$7 ;;
-        *) echo "wrong parameter $8"; exit 1 ;;
+case "$7" in
+        "-d") DEST_DIR=/autobuild/odvb/$8 ;;
+        *) echo "wrong parameter $7"; exit 1 ;;
 esac
 
 # Clean the working directory
