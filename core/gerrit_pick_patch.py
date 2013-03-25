@@ -101,16 +101,16 @@ def args_from_gerrit_patch_object(gerrit_patch_object):
         else:
             print "change_id = " + r_change_id + " is invalid"
             sys.exit(2)
-        if r_dest_project_name[:17] == "platform/manifest":
+        if r_dest_project_name[:25] == "android/platform/manifest":
             cd_dest_project_name = ".repo/manifests"
             cd_args = "cd " + cd_dest_project_name + ";"
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;cd -;repo sync bionic;"
-        elif r_dest_project_name[:9] == "platform/":
-            cd_dest_project_name = r_dest_project_name[9:]
+        elif r_dest_project_name[:17] == "android/platform/":
+            cd_dest_project_name = r_dest_project_name[17:]
             cd_args = "cd " + cd_dest_project_name + ";"
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
         else:
-            cd_dest_project_name = r_dest_project_name
+            cd_dest_project_name = r_dest_project_name[8:]
             cd_args = "cd " + cd_dest_project_name + ";"
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
         args[i] = cd_args + gitcp_args
