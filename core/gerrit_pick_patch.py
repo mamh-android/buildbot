@@ -16,7 +16,7 @@ import os
 m_user = "buildfarm"
 
 #Code remote server
-m_remote_server = "github-i"
+m_remote_server = "shgit.marvell.com"
 
 #Return different value from gerrit database of one patchsetID(revision)
 def get_from_gerritid(revision, mark):
