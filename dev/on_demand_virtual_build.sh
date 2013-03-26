@@ -131,16 +131,9 @@ export ABS_PUBLISH_DIR=$DEST_DIR
 tools/build_platforms.sh ${target} | tee -a log.txt
 result=`grep ">PASS<" log.txt`
 if [ -n "$result" ]; then
-  nobuild=`grep ">No build<" log.txt`
-  if [ -n "$nobuild" ]; then
-    rm -f log.txt
-    echo "no build"
-    exit 255
-  else
-    echo "success"
-    rm -f log.txt
-    exit 0
-  fi
+  echo "success"
+  rm -f log.txt
+  exit 0
 else
   rm -f log.txt
   exit 1
