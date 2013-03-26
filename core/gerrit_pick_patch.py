@@ -151,8 +151,8 @@ def args_gitshow_from_gerrit_patch_object(gerrit_patch_object):
 #Run args[i] by shell
 def run_args(args):
     for i in range(len(args)):
+        print args[i]
         subprocess.check_call(args[i], shell=True)
-        #print args[i]
 
 #User help
 def usage():
