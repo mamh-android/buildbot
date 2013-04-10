@@ -12,7 +12,7 @@
 #test_setup_code_via_manifest_and_gerrit_patchsetid.sh -m <manifest xml> -b <manifest branch> -g <gerrit patchsetID list>
 #gerrit patchsetID list must be an array of first-order, such as A="001 002 003 004 005"
 
-export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-$(pwd)/odvb_work}
+export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-~/aabs/odvb_work}
 export GERRIT_SERVER=${GERRIT_SERVER:-http://shgit.marvell.com}
 export GERRIT_ADMIN=${GERRIT_MNAME:-buildfarm}
 export REFERENCE_URL=${REFERENCE_URL:-"--reference=/mnt/mirror/default"}
