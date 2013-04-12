@@ -117,6 +117,18 @@ def args_from_gerrit_patch_object(gerrit_patch_object):
             cd_dest_project_name = "kernel/kernel/"
             cd_args = "cd " + cd_dest_project_name + ";"
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
+        elif r_dest_project_name[:42] == "android/device/marvell/pxa988/pxa988common":
+            cd_dest_project_name = "device/marvell/common"
+            cd_args = "cd " + cd_dest_project_name + ";"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
+        elif r_dest_project_name[:36] == "android/device/marvell/pxa988/pxa988":
+            cd_dest_project_name = "device/marvell/pxa988" + r_dest_project_name[36:]
+            cd_args = "cd " + cd_dest_project_name + ";"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
+        elif r_dest_project_name[:38] == "android/device/marvell/pxa1088/pxa1088":
+            cd_dest_project_name = "device/marvell/pxa1088" + r_dest_project_name[38:]
+            cd_args = "cd " + cd_dest_project_name + ";"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
         else:
             cd_dest_project_name = r_dest_project_name[8:]
             cd_args = "cd " + cd_dest_project_name + ";"
