@@ -109,6 +109,14 @@ def args_from_gerrit_patch_object(gerrit_patch_object):
             cd_dest_project_name = r_dest_project_name[17:]
             cd_args = "cd " + cd_dest_project_name + ";"
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
+        elif r_dest_project_name[:14] == "ose/linux/mrvl":
+            cd_dest_project_name = "kernel/kernel/"
+            cd_args = "cd " + cd_dest_project_name + ";"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
+        elif r_dest_project_name[:31] == "android/vendor/marvell/ose/mrvl":
+            cd_dest_project_name = "kernel/kernel/"
+            cd_args = "cd " + cd_dest_project_name + ";"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
         else:
             cd_dest_project_name = r_dest_project_name[8:]
             cd_args = "cd " + cd_dest_project_name + ";"
@@ -139,6 +147,14 @@ def args_gitshow_from_gerrit_patch_object(gerrit_patch_object):
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git format-patch -1 --stdout FETCH_HEAD;"
         elif r_dest_project_name[:9] == "platform/":
             cd_dest_project_name = r_dest_project_name[9:]
+            cd_args = "cd " + cd_dest_project_name + ";"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git format-patch -1 --stdout FETCH_HEAD;"
+        elif r_dest_project_name[:14] == "ose/linux/mrvl":
+            cd_dest_project_name = "kernel/kernel/"
+            cd_args = "cd " + cd_dest_project_name + ";"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git format-patch -1 --stdout FETCH_HEAD;"
+        elif r_dest_project_name[:31] == "android/vendor/marvell/ose/mrvl":
+            cd_dest_project_name = "kernel/kernel/"
             cd_args = "cd " + cd_dest_project_name + ";"
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git format-patch -1 --stdout FETCH_HEAD;"
         else:
