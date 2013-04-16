@@ -88,7 +88,7 @@ def sort_gerrit_patch_object_by_created_on(gerrit_patch_object):
 def generate_path(r_dest_project_name):
     manifest_xml_path = ""
     manifest_xml_name = ""
-    manifest_file = "~/aabs/odvb_work/manifest.xml"
+    manifest_file = "/home/buildfarm/aabs/odvb_work/manifest.xml"
     search = ""
     pat = '\spath=\"([a-zA-Z0-9-_/]*)\"\s'
     if r_dest_project_name[:25] == "android/platform/manifest":
