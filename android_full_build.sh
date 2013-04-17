@@ -2,12 +2,13 @@
 ids=$1  
 echo Build Branch: $1
 ids_2=$2
-echo Product Type: $2
+echo PLATFORM_ANDROID_VARIANT: $2
 rm -f /home/buildfarm/buildbot_script/args.log
 . ~/buildbot_script/buildbot/core/check_update.sh
 cd ~/aabs
-if [ "$ids_2" = "product_mode_build" ]; then
-  export FLAG_PRODUCT_BUILD="true"
+if [ "$ids_2" != "" -a "$ids_2" != "None" ]; then
+  export PLATFORM_ANDROID_VARIANT=$ids_2
+  export ABS_FORCE_BUILD="ture"
 fi
 var_0=`echo ${ids%%_*}`
 if [ ! "${var_0}" == "rls" ]; then

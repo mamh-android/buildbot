@@ -46,7 +46,16 @@ case "$7" in
         "-d") DEST_DIR=/autobuild/odvb/$8 ;;
         *) echo "wrong parameter $7"; exit 1 ;;
 esac
-
+case "$9" in
+        "-v") ids_10=${10}
+                if [ "$ids_10" != "" -a "$ids_10" != "None" ]; then
+                  echo "PLATFORM_ANDROID_VARIANT= $ids_10"
+                  export PLATFORM_ANDROID_VARIANT=$ids_10
+                  export ABS_FORCE_BUILD="ture"
+                fi
+                ;;
+        *) echo "wrong parameter $9"; exit 1 ;;
+esac
 # Clean the working directory
 rm -fr $SYNC_GIT_WORKING_DIR
 
