@@ -13,4 +13,4 @@ folder=`echo ${path##*/}`
 echo $folder
 . ~/buildbot_script/buildbot/core/source_by_patch_test.sh $folder $platform
 #. /home/wdong/buildbot-script/buildbot/delta_patch_test.sh $folder
-cd $folder
+#cd $folder
