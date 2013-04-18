@@ -39,7 +39,9 @@ case "$3" in
         *) echo "wrong parameter $3"; exit 1 ;;
 esac
 case "$5" in
-        "-b") MANIFEST_BRANCH=$6 ;;
+        "-b") MANIFEST_BRANCH=$6
+              echo "MANIFEST_BRANCH= $6"
+            ;;
         *) echo "wrong parameter $5"; exit 1 ;;
 esac
 case "$7" in
@@ -55,6 +57,16 @@ case "$9" in
                 fi
                 ;;
         *) echo "wrong parameter $9"; exit 1 ;;
+esac
+case "${11}" in
+        "-de") ids_12=${12}
+                if [ "$ids_12" != "" -a "$ids_12" != "None" -a "$ids_12" != "AABS_Default" ]; then
+                  echo "ABS_BUILD_DEVICES= $ids_12"
+                  export ABS_BUILD_DEVICES=$ids_12
+                  export ABS_FORCE_BUILD="ture"
+                fi
+                ;;
+        *) echo "wrong parameter ${11}"; exit 1 ;;
 esac
 # Clean the working directory
 rm -fr $SYNC_GIT_WORKING_DIR
