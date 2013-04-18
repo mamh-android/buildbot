@@ -14,7 +14,7 @@
 
 export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-~/aabs/odvb_work}
 export GERRIT_SERVER=${GERRIT_SERVER:-http://shgit.marvell.com}
-export GERRIT_ADMIN=${GERRIT_MNAME:-buildfarm}
+export GERRIT_ADMIN=${GERRIT_ADMIN:-buildfarm}
 export REFERENCE_URL=${REFERENCE_URL:-"--reference=/mnt/mirror/default"}
 export SRC_URL=${SRC_URL:-ssh://shgit.marvell.com/git/android/platform/manifest.git}
 export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"}
@@ -86,7 +86,6 @@ fi
 
 # Copy manifest xml into current directory
 echo $4
-echo MANIFEST = $MANIFEST_XML
 cp $4 $MANIFEST_XML
 
 echo $SCRIPT_PATH
@@ -109,12 +108,17 @@ if [ $RET -ne 0 ]; then
         exit 1
 fi
 
-$SCRIPT_PATH/gerrit_pick_patch.py -p $GERRIT_PATCH
-RET=$?
-if [ $RET -ne 0 ]; then
-        echo "failed on cherry-pick the patches by gerrit patchSetID list"
-        echo "exit value:" $RET
-        exit 1
+# Cherry-pick the listed patched from gerrit to $SYNC_GIT_WORKING_DIR
+if [ "$GERRIT_PATCH" != "" -a "$GERRIT_PATCH" != "None" ]; then
+  $SCRIPT_PATH/gerrit_pick_patch.py -p $GERRIT_PATCH
+  RET=$?
+  if [ $RET -ne 0 ]; then
+    echo "failed on cherry-pick the patches by gerrit patchSetID list"
+    echo "exit value:" $RET
+    exit 1
+  fi
+else
+  echo "Build with a saved manifest $4, without any gerrit patches."
 fi
 
 ids=$MANIFEST_BRANCH
