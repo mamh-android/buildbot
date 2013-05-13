@@ -141,7 +141,7 @@ send_odvb_success_notification() {
 
 send_uprb_success_notification() {
   echo "generating uprb success notification email"
-  GITACCESS_FILE=$(./create_gitaccess.py -b $BRANCH_NAME -t $TAG_NAME)
+  GITACCESS_FILE=$(./core/create_gitaccess.py -b $BRANCH_NAME -t $TAG_NAME)
   echo "gitaccess file "$GITACCESS_FILE
   generate_uprb_success_notification_email | /usr/sbin/sendmail -t $build_maintainer
 }
