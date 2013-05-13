@@ -1,4 +1,5 @@
 #!/bin/bash
+set -o pipefail
 input=$1
 platform=$2
 product=$3

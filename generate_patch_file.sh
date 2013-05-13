@@ -1,4 +1,5 @@
 #!/bin/bash
+set -o pipefail
 sour=$1
 dest=$2
 . ~/buildbot_script/buildbot/core/check_update.sh
