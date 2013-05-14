@@ -10,7 +10,9 @@ BUILDTYPE=
 BRANCH_NAME=
 TAG_NAME=
 GITACCESS_FILE=
+BUILD_NUMBER=
 build_maintainer="yfshi@marvell.com"
+buildbot_url="http://10.38.34.92:8010/builders/"
 STD_LOG=/home/buildfarm/buildbot_script/stdio.log
 PACKAGE_LINK=$( awk -F"<result-dir>|</result-dir>" ' /<result-dir>/ { print $2 } ' $STD_LOG )
 DEV_TEAM="APSE-SE2"
@@ -21,8 +23,8 @@ help() {
     echo
   fi
   echo "HELP!!!!"
-  echo "-e [useremail] -t [build type] -b branch name[] -a [tag name]"
-  echo "-e -t -b -a"
+  echo "-e [useremail] -t [build type] -b branch name[] -a [tag name] -n [build number]"
+  echo "-e -t -b -a -n"
   exit 1
 }
 
@@ -57,6 +59,12 @@ validate_parameters() {
         fi
         TAG_NAME=$2
         ;;
+      "-n")
+        if [ -z "$2" ]; then
+          help "Please give a valid build number."
+        fi
+        BUILD_NUMDER=$2
+        ;;
     esac
     shift 1
   done
@@ -71,6 +79,9 @@ Subject: [$BUILDTYPE] is failed! please check
 
 This is an automated email from the autobuild script. It was
 generated because an error encountered while $BUILDTYPE.
+
+BuildBot Url: $buildbot_url$BUILDTYPE/builds/$BUILD_NUMDER
+
 Please check the build log below and fix the error.
 
 Last part of build log is followed:
