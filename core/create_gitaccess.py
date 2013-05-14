@@ -73,7 +73,11 @@ def main(argv):
             branch = arg
         elif opt in ("-t"):
             tag = arg
-    generate_gitaccess(branch,tag)
+    if (branch == "") or (tag == ""):
+        usage()
+        sys.exit(2)
+    else:
+        generate_gitaccess(branch,tag)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
