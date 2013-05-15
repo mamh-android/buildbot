@@ -107,6 +107,8 @@ def generate_path(r_dest_project_name):
         search = r_dest_project_name[10:]
     elif r_dest_project_name[:5] == "test/":
         search = r_dest_project_name[5:]
+    elif r_dest_project_name[:4] == "pie/":
+        search = r_dest_project_name[4:]
     else:
         print "dest_project_name have not been definted yet, please contact buildbot admin"
         sys.exit(2)
