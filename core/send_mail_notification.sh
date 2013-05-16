@@ -23,8 +23,8 @@ help() {
     echo
   fi
   echo "HELP!!!!"
-  echo "-e [useremail] -t [build type] -b branch name[] -a [tag name] -n [build number]"
-  echo "-e -t -b -a -n"
+  echo "-e [useremail] -t [build type] -b [branch name] -a [tag name] -n [build number] -p [gerrit patch list] -m [manifest.xml]"
+  echo "-e -t -b -a -n -p"
   exit 1
 }
 
@@ -64,6 +64,18 @@ validate_parameters() {
           help "Please give a valid build number."
         fi
         BUILD_NUMDER=$2
+        ;;
+      "-p")
+        if [ -z "$2" ]; then
+          help "Please give a valid gerrit patch list."
+        fi
+        GERRIT_PATCH=$2
+        ;;
+      "-m")
+        if [ -z "$2" ]; then
+          help "Please give a valid manifest.xml."
+        fi
+        MANIFEST_XML=$2
         ;;
     esac
     shift 1
@@ -143,11 +155,17 @@ uuencode $GITACCESS_FILE ${GITACCESS_FILE##/*/}
 send_error_notification() {
   echo "generating error notification email"
   generate_error_notification_email  | /usr/sbin/sendmail -t $build_maintainer
+  if [ $BUILDTYPE == "on_demand_virtual_build" ];then
+    echo "update gerrit review"
+    ./core/gerrit_review_update.py -p $GERRIT_PATCH -m $MANIFEST_XML -r "failure"
+  fi
 }
 
 send_odvb_success_notification() {
   echo "generating odvb success notification email"
   generate_odvb_success_notification_email | /usr/sbin/sendmail -t $build_maintainer
+  echo "update gerrit review"
+  ./core/gerrit_review_update.py -p $GERRIT_PATCH -m $MANIFEST_XML -r "success" -d $PACKAGE_LINK
 }
 
 send_uprb_success_notification() {
