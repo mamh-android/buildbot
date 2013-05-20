@@ -67,6 +67,11 @@ def new_commit(dest_server, tag_name):
     pattern = 'remote[ ]*=[ ]*\"[^\"]*\"'
     repl = "remote=\"" + dest_server + "\""
     update_xml(src_file, pattern, pattern, repl)
+    # remove "project.*revision is not default revision"
+    pattern = 'project.*revision[ ]*=[ ]*\"[^\"]*\"'
+    match = 'revision[ ]*=[ ]*\"[^\"]*\"'
+    repl = ""
+    update_xml(src_file, pattern, match, repl)
 
     args = "cd .repo/manifests; git add default.xml"
     subprocess.check_call(args, shell=True)
