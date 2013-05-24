@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # v1.0
-#    create a gitaccess file for external git release
-#    The tag_name should be followed naming conventions doc
-#    input: branchname, tag_name. output: *.gitaccess included the description(download url)
+#    gerrit auto review script
 #    Author: yfshi@marvell.com
 
 import subprocess
