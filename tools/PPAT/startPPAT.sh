@@ -9,6 +9,10 @@ PPAT_SERVER="10.38.32.203"
 result=`grep ">PASS<" $STD_LOG`
 if [ -n "$result" ]; then
   a=${@//$IDIR/$PACKAGE_LINK}
+  a=${a//','/'\,'}
+  a=${a//'"'/'\"'}
+  echo "************start PPAT with parameters*************"
+  echo $a
   ssh $USER@$PPAT_SERVER /home/buildfarm/ppat/startPPAT.sh $a
   exit 0
 else
