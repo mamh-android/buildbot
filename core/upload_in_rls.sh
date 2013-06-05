@@ -195,6 +195,7 @@ fi
 # Register Uploaded Projects by flushing the project_list cache
 ssh $REMOTE_SERVER -p 29418 gerrit flush-caches --cache project_list
 echo "flushing caches of $REMOTE_SERVER by account $USER RET = $?"
+ssh root@$REMOTE_SERVER /usr/share/gerrit/bin/gerrit.sh restart
 RET=$?
 if [ $RET -ne 0 ]; then
         echo "flush cache fail"
