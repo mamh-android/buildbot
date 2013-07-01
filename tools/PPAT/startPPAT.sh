@@ -4,7 +4,7 @@ STD_LOG=/home/buildfarm/buildbot_script/stdio.log
 PACKAGE_LINK=$( awk -F"<result-dir>http:|</result-dir>" ' /<result-dir>/ { print $2 } ' $STD_LOG )
 IDIR="PROPERTY_DIR"
 USER="buildfarm"
-PPAT_SERVER="10.38.32.203"
+PPAT_SERVER="10.38.32.212"
 
 ids_0=$1
 ids_1=$2
