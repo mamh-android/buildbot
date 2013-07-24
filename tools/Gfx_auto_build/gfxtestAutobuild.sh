@@ -15,7 +15,7 @@ There must be something wrong when git clone the gfx_test_autobuild.git.
 
 So exit test case auto build for this time. Please check.
 	
-The parameters of this auto build are: $in_product, $buildDir, $result_pkg and $information.
+The parameters of this auto build are: $buildDir, $target, $publish
 
 ---
 EOF
