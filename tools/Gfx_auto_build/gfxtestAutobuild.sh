@@ -1,6 +1,20 @@
 #!/bin/bash
 maintainer=liling@marvell.com
 
+ids_0=$1
+ids_1="'"$2"'"
+
+case "$2" in
+    "pxa988_jb4.2")
+    echo export pxa1088dkb_def
+    export TARGET_PRODUCT="pxa1088dkb_def"
+    ;;
+    "eden_jb42")
+    echo export concord_def
+    export TARGET_PRODUCT="concord_def"
+    ;;
+esac
+
 generate_init_is_not_ready_email()
 {
 # --- Email (all stdout will be the email)
@@ -43,7 +57,7 @@ start_gfx_test_autobuild()
     git clone ssh://shgit.marvell.com/git/qae/graphics/gfx_test_autobuild.git
     #cp -r /boot/pxa1088/qad/gfx_test_autobuild ./
 
-    . gfx_test_autobuild/core.sh $* 
+    . gfx_test_autobuild/core.sh $ids_0 $ids_1
     ## change
     #. ~/aabs/gfx_build/gfx_test_autobuild/core.sh $*
 }
@@ -53,7 +67,7 @@ if [ $? -ne 0 ]; then
     exit 0
 fi
 
-if [ $1 == "Ture" ]; then
+if [ $ids_0 == "Ture" ]; then
     echo "Start Gfx test auto build with $@"
     start_gfx_test_autobuild
     exit 0
