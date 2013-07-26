@@ -2,7 +2,7 @@
 maintainer=liling@marvell.com
 
 ids_0=$1
-ids_1="'"$2"'"
+ids_1="""$2"""
 
 case "$2" in
     "pxa988_jb4.2")
