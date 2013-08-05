@@ -45,6 +45,8 @@ def update_xml(src_file, search, target, repl):
         sys.exit(2)
 
 def new_commit(dest_server, tag_name):
+    arg = "cp -f .repo/manifests/manifest.xml .repo/manifests/default.xml"
+    subprocess.check_call(arg, shell=True)
     src_file = ".repo/manifests/default.xml"
     # remove revision that is not default revision
     pattern = 'revision[ ]*=[ ]*\"[^\"]*\"[ ]*/>'
