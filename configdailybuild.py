@@ -66,6 +66,7 @@ class ConfigAutobuild(HtmlResource, BuildLineMixin):
                    'hour':s.hour,
                    'branch':s.branch,
                    'Graphic_Build':s.properties['Graphic_Build'],
+                   'PPAT':s.properties['PPAT'],
                    'Test_Case_Build':s.properties['Test_Case_Build'],
                    'purpose':s.properties['purpose'],
                    'user_info':s.properties['useremail']})
@@ -117,6 +118,10 @@ class addConfigure(ActionResource, BuildLineMixin):
             properties['Graphic_Build'] = "True"
         else:
             properties['Graphic_Build'] = "False"
+        if optional.count('PPAT') == 1:
+            properties['PPAT'] = "True"
+        else:
+            properties['PPAT'] = "False"
         if optional.count('Test_Case_Build') == 1:
             properties['Test_Case_Build'] = "True"
         else:

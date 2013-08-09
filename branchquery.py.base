@@ -1,17 +1,21 @@
+from buildbot.status.web.base import HtmlResource
+import buildbot
+import twisted
+import sys
+import jinja2
 from twisted.web import html
 from twisted.web.util import Redirect
-import urllib, time, csv
+import urllib, time
 from twisted.python import log
 from twisted.internet import defer
 from buildbot import interfaces
 from buildbot.status.web.base import HtmlResource, BuildLineMixin, \
     path_to_build, path_to_slave, path_to_builder, path_to_change, \
     path_to_root, getAndCheckProperties, ICurrentBox, build_get_class, \
-    map_branches, path_to_authfail, path_to_query, ActionResource, DownLoadResource
+    map_branches, path_to_authfail, path_to_query, ActionResource
 
 from buildbot.status.web.build import BuildsResource, StatusResourceBuild
 from buildbot import util
-
 
 class BranchStatus(HtmlResource):
     def __init__(self):
@@ -29,42 +33,11 @@ class BranchStatus(HtmlResource):
         return template.render(**cxt)       
 
     def getChild(self, path, req):
+        log.msg("path is " + path)
         if (path == "submitreason"):
             return setReason(path)
-        elif (path == "export"):
-            return exportData(req)
         else:
             return branchQuery(path)
-
-class exportData(DownLoadResource, BuildLineMixin):
-    def __init__(self, req):
-        DownLoadResource.__init__(self)
-        self.branchname = req.args.get("branchname", [""])[0]
-        self.req = req;
-    def getData(self): 
-        buildernames = self.getStatus(self.req).getBuilderNames()
-        numbuilds = 20000
-        recent = []
-        out = ""
-        for builderName in buildernames:
-            b = self.getStatus(self.req).getBuilder(builderName)
-            for build in b.generateFinishedBuilds(num_builds=int(numbuilds)):
-                if build.source.branch == self.branchname:
-                    recent.append(self.get_line_values(self.req, build, False))
-        out = out + "Time" + "," + "BranchName" + "," + "Result" + ','+ "Reason" + ',' + "builder" + ',' + "Build" + ',' + "Info" + ',' + "Android Build Info" + ',' + "Failure Reason" + ',' + "Owner" + ',' + "Submit Time"
-        for build in recent:
-            out = out + '\n' + build['time'] + ',' + build['branch'] + ',' + build['results'] + ',' + build['reason'].replace(',', '.').replace('\n', '').strip('\n') + ',' + build['builder_name'] + ',' + str(build['buildnum']) + ',' + build['text']
-            if build['text1'].find('http') >= 0:
-                out = out + ',' + build['text2']
-            else:
-                out = out + ',' + build['text1']
-            if build['reason1'] != "":
-                outreason = ''
-                reason1 = build['reason1'].splitlines(True)
-                for r in reason1:
-                    outreason = outreason + r.replace('\n', ' ').replace('\r', '').replace(',', '.')
-                out = out  + ',' + outreason + ',' + build['editperson'] + ',' + build['edittime']
-        return out
 
 class branchQuery(HtmlResource, BuildLineMixin):
     def __init__(self, path):
@@ -113,7 +86,7 @@ class branchQuery(HtmlResource, BuildLineMixin):
     	cxt['current'] = []
     	recent = cxt['recent'] = []
     	sl = cxt['slaves'] = []
-    	numbuilds = int(req.args.get('numbuilds', ['20000'])[0])
+    	numbuilds = int(req.args.get('numbuilds', ['2000'])[0])
     	currentall = []
 
     	for builderName in buildernames:
@@ -159,7 +132,7 @@ class branchQuery(HtmlResource, BuildLineMixin):
                         'builder_url':  (path_to_root(req) + "query/" +
                                 urllib.quote(b.getName(), safe='') + '/cancelbuild')
                     })
-            for build in b.generateFinishedBuilds(num_builds=int(numbuilds)):
+            for build in b.generateFinishedBuilds(num_builds=20000):
                 if build.source.branch == self.branchname:
                     recent.append(self.get_line_values(req, build, False))
         for cu in currentall:

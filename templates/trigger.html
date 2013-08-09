@@ -10,8 +10,12 @@
 
     <title>{{ pageTitle|e }}</title>
     <script  type="text/javascript" src="{{path_to_root}}public.js"></script>
+    <script  type="text/javascript" src="{{path_to_root}}ppat/ppat.js"></script>
+    <script  type="text/javascript" src="{{path_to_root}}ppat/jquery-1.8.2.js"></script>
     <link rel="stylesheet" href="{{ stylesheet }}" type="text/css" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ path_to_root }}rss">
+    <link rel="stylesheet" type="text/css" href="{{path_to_root}}ppat/colorbox.css" media="all" />
+    <script type="text/javascript" src="{{path_to_root}}ppat/jquery.colorbox.js"></script>
 {% endblock %}
 
 {%block body%}
@@ -45,7 +49,18 @@
       <input type="text" name="reason" />
       </label>
     </p>
-	<table id='tb'>
+    <p style=" font-size:12px;color:#999999">To choose a build type. By default, it's userdebug mode build. If use mode enabled, force to be user variant build and publish a rooted ramdisk for debug</p>
+    <p>
+      <input type="hidden" name="property2name" value="Product_Type" />
+      <input type="radio" name="property2value" value="userdebug"  checked="userdebug"/>
+      Userdebug mode build</label>
+      <label>
+      <input type="radio" name="property2value" value="user" />
+      User mode build</label>
+      <input type="radio" name="property2value" value="eng" />
+      Eng mode build</label>
+    </p>
+        <table id='tb'>
 	  <tr>
 		<td>
 		*Manifest Branch
@@ -301,9 +316,14 @@
       example:rc1
 	  </span>
     </p>
-    <p> 
+    <p>
+      <input type="hidden" name = "property6name" value="RPLP" />
+      <label>*RPLP
+      <input type="text" name="property6value" />
+      </label> 
       <span style="font-size:12px;color:#999999">
-       output package name:&lt Platform &gt _&lt Product &gt _&lt ReleaseName &gt &lt RC &gt
+       <!--output package name:&lt Platform &gt _&lt Product &gt _&lt ReleaseName &gt &lt RC &gt-->
+	release package list
       </span>
     </p>
     <p>
@@ -334,12 +354,12 @@
       </label>
     </p>
     <p>
-      <input type="hidden" name = "property1name" value="Target_Name" /> 
-      <label>*TargetName
+      <input type="hidden" name = "property1name" value="Tag_Name" /> 
+      <label>*TagName
       <input type="text" name="property1value" />
       </label>
        <span style=" font-size:12px;color:#999999">
-       target name
+       Code Drop Name: such as pxa978T_ics.r5_rc1, pxa920_ics.beta5_rc1. It will be used as the tag.
       </span>
     </p>
     <p>
@@ -348,7 +368,7 @@
       <input type="text"  name="property2value" />
       </label>
        <span style=" font-size:12px;color:#999999">
-      example:Manifest.xml
+        Manifest File of Build: the saved manifest file of daily build that will be used as the code drop. It will be specified as /android/pxa978T/2012-05-15_pxa978T-ics_r5/manifest.xml
       </span>
     </p>
         <p>
@@ -357,7 +377,7 @@
       <input type="text" name="property3value" />
       </label>
       <span style=" font-size:12px;color:#999999">
-      example:master
+      Release Branch Name: such as rls_pxa978T_ics_r5, rls_pxa920_ics_beta5
 	  </span>
     </p>
    <p>
@@ -388,12 +408,12 @@
       </label>
     </p>
     <p>
-      <input type="hidden" name = "property1name" value="Target_Name" /> 
-      <label>*TargetName
+      <input type="hidden" name = "property1name" value="Tag_Name" /> 
+      <label>*TagName
       <input type="text" name="property1value" />
       </label>
        <span style=" font-size:12px;color:#999999">
-       target name
+       Release Name: such as pxa978T_ics.r5, pxa920_ics.beta5. It will be used as the tag.
       </span>
     </p>
     <p>
@@ -402,7 +422,7 @@
       <input type="text"  name="property2value" />
       </label>
        <span style=" font-size:12px;color:#999999">
-      example:Manifest.xml
+        Manifest File of Build: the saved manifest file of daily build that will be used as the code drop. It will be specified as /android/pxa978T/2012-05-15_pxa978T-ics_r5/manifest.xml
       </span>
     </p>
         <p>
@@ -411,7 +431,7 @@
       <input type="text" name="property3value" />
       </label>
       <span style=" font-size:12px;color:#999999">
-      example:master
+        Release Branch Name: such as rls_pxa978T_ics_r5, rls_pxa920_ics_beta5
 	  </span>
     </p>
    <p>
@@ -421,10 +441,274 @@
     </p>
   </form>
 </div>
+<!--  ******************************* Start ODVB ******************************  -->
+<div id="on_demand_virtual_build" style="display:none">
+  <form id="form8" name="form8" method="post" action="trigger/force" onsubmit= "return triggerValidate(this)">
+    <p>
+      <input name="selected" type="hidden" id="buildtype" value="on_demand_virtual_build" />
+    </p>
+    <p>
+      <!--<label>Your Name-->
+      <input id="username_on_demand_virtual_build" type="hidden" name="username" readonly />
+      </label>
+        </p>
+    <p>
+     <!-- <label>Your Email -->
+      <input id="email_on_demand_virtual_build" readonly type="hidden" name="email" />
+      </label>
+    </p>
+    <p>
+      <label>*Reason For Build
+      <input type="text" name="reason" />
+      </label>
+    </p>
+    <p style=" font-size:12px;color:#999999">To choose a build type. By default, it's userdebug mode build. If user mode enabled, force to be user variant build and publish a rooted ramdisk for debug</p>
+    <p>
+      <input type="hidden" name="property1name" value="Product_Type" />
+      <input type="radio" name="property1value" value="userdebug"  checked="userdebug"/>
+      Userdebug mode build</label>
+      <label>
+      <input type="radio" name="property1value" value="user" />
+      User mode build</label>
+      <input type="radio" name="property1value" value="eng" />
+      Eng mode build</label>
+    </p>
+    <p>
+      <input type="hidden" name = "property2name" value="Gerrit_Patch"/>
+      <label>Gerrit Patch Set ID List (Commit IDs)
+      <input type="text" name="property2value" size = "70"ime-mode:Disabled />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      Gerrit Patch Set ID(commit ID): such as 0932fe02ba6d9117257099b421921f5d32b55bc4,dc0756cfad691c414edcea9f69cb1b4b1946e4c5,d872f547b4ed2d94befd99f21ae274b5884d2af0 and must be divided by ","
+      </span>
+    </p>
+    <p>
+      <input type="hidden" name = "property3name" value="Manifest_Xml" />
+      <label>*Specific Manifest Xml
+      <input type="text"  name="property3value" size = "70"ime-mode:Disabled />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      Manifest File of Build: the saved manifest file of daily build that will be used as the odvb. It will be specified as /autobuild/android/pxa978T/2012-05-15_pxa978T-ics_r5/manifest.xml
+      </span>
+    </p>
+    <p>
+    <input type="hidden" name = "property4name" value="Branch_Name" />
+    *Branch Name:<select id="property4value" name="property4value" onchange="branchSelect();">
+               <option value="">Select</option>
+               <option value="pxa988-jb4.2">pxa988-jb4.2</option>
+               <option value="rls_pxa988_jb4.2_beta3">rls_pxa988_jb4.2_beta3</option> 
+               <option value="eden-jb42">eden-jb42</option>
+               <option value="rls_pxa988_jb_alpha3">rls_pxa988_jb_alpha3</option>
+          </select>
+    <input type="hidden" name = "property5name" value="Build_Device" />
+    DEVICE:<select id="property5value" name = "property5value">
+             <option value="">Select</option>
+         </select>
+    <span style=" font-size:12px;color:#999999">
+    We have only launched ODVB for pxa988-jb4.2, rls_pxa988_jb4.2_beta3 and eden-jb42, please contact the project's integrator and buildbot admin to enable the branches
+    </span>
+    </p>
+    <p>
+      <input type="hidden" name = "property6name" value="Dest_Dir" />
+      <label>*Dest Dir
+      <input type="text" name="property6value" />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      Dest Folder Name: such as power_test, wfdtest, audio_test. It will be created on /autobuild/odvb/XXX-XXX.
+      </span>
+    <p>
+      <label>
+      <input type="submit" name="Submit8" value="Trigger Build" />
+      </label>
+    </p>
+  </form>
+</div>
+<!--  ******************************* End ODVB ******************************  -->
+
+<!--  ******************************* Start PPAT ******************************  -->
+<div id="ppat_test" style="display:none" >
+  <form id="form9" name="form9" method="post" action="trigger/force" onsubmit= "return ppat_triggerValidate(this);">
+    <p>
+<!--      <input name="selected" type="hidden" id="buildtype" value="ppat_test" /> -->
+      *Buildtype:<select id="buildtype" name="selected">
+      <option value="">Select</option>
+      <option value="ppat_test_pxa988">pxa988-jb4.2</option>
+      <option value="ppat_test_eden">eden-jb42</option>
+    </p>
+    <p>
+      <!--<label>Your Name-->
+      <input id="username_ppat_test" type="hidden" name="username" readonly />
+      </label>
+        </p>
+    <p>
+     <!-- <label>Your Email -->
+      <input id="email_ppat_test" readonly type="hidden" name="email" />
+      </label>
+    </p>
+    <p>
+      <label>*Reason For Build
+      <input type="text" name="reason" />
+      <input type="hidden" name = "property4name" value="Reason1"/>
+      <input type="hidden" name = "property5name" value="Etc"/>
+      <input type="hidden" name="property4value" />
+      </label>
+    </p>
+    <p>
+      <input type="hidden" name = "property1name" value="ODVB_Dest_Dir"/>
+      <label>*Image Path
+      <input type="text" name="property1value" size = "80"ime-mode:Disabled />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      the saved Image Path of dailybuild that will be used for PPAT. It will be specified as /autobuild/android/pxa988/2013-06-17_pxa988-jb4.2/
+      </span>
+    </p>
+    <p>
+      <input type="hidden" name = "property3name" value="PPAT_Xml" />
+      <label>
+      <input type="hidden"  name="property3value" size = "70"ime-mode:Disabled readonly />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      </span>
+    </p>
+    <p>
+    <input type="hidden" name = "property6name" value="Build_Device" />
+    *Device:<select id="property6value" name="property6value" onchange="branchSelect2();">
+               <option value="">Select</option>
+               <option value="pxa1088dkb_def:pxa1088dkb">pxa1088dkb_def:pxa1088dkb</option>
+               <option value="pxa1L88dkb_def:pxa1L88dkb">pxa1L88dkb_def:pxa1L88dkb</option>
+               <option value="concord_def:concord">concord_def:concord</option>
+          </select>
+    <input type="hidden" name = "property7name" value="Build_Blf" />
+    *Blf:<select id="property7value" name = "property7value">
+             <option value="">Select</option>
+         </select>
+    <span style=" font-size:12px;color:#999999">
+    Add new device please contact the project's integrator and buildbot admin to enable the branches
+    </span>
+    </p>
+    <p>
+      <input type="hidden" name="property2name" value="PPAT_TEST" />  	
+      <label>
+      <input type="hidden" name="property2value" value="true" />
+      </label>
+    </p>
+    <p>
+      <div id ="org_ppat"> </div>
+    </p>
+    <p>
+      <label>
+      <input type="submit" name="Submit9" value="Trigger Test" />
+      </label>
+    </p>
+  </form>
+</div>
+<!--  ******************************* End PPAT ******************************  -->
+
+<!--  ******************************* Start ODVB & PPAT ******************************  -->
+<div id="on_demand_virtual_build_with_ppat" style="display:none" >
+  <form id="form10" name="form10" method="post" action="trigger/force" onsubmit= "return ppat_triggerValidate(this);">
+    <p>
+      <input name="selected" type="hidden" id="buildtype" value="on_demand_virtual_build_with_ppat" />
+    </p>
+    <p>
+      <!--<label>Your Name-->
+      <input id="username_on_demand_virtual_build_with_ppat" type="hidden" name="username" readonly />
+      </label>
+        </p>
+    <p>
+     <!-- <label>Your Email -->
+      <input id="email_on_demand_virtual_build_with_ppat" readonly type="hidden" name="email" />
+      </label>
+    </p>
+    <p>
+      <label>*Reason For Build
+      <input type="text" name="reason" />
+      <input type="hidden" name = "property4name" value="Reason1"/>
+      <input type="hidden" name="property4value" />
+      </label>
+    </p>
+    <p style=" font-size:12px;color:#999999">To choose a build type. By default, it's userdebug mode build. If user mode enabled, force to be user variant build and publish a rooted ramdisk for debug</p>
+    <p>
+      <input type="hidden" name="property1name" value="Product_Type" />
+      <input type="radio" name="property1value" value="userdebug"  checked="userdebug"/>
+      Userdebug mode build</label>
+      <label>
+      <input type="radio" name="property1value" value="user" />
+      User mode build</label>
+      <input type="radio" name="property1value" value="eng" />
+      Eng mode build</label>
+    </p>
+    <p>
+      <input type="hidden" name = "property5name" value="Gerrit_Patch"/>
+      <label>Gerrit Patch Set ID List (Commit IDs)
+      <input type="text" name="property5value" size = "70"ime-mode:Disabled />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      Gerrit Patch Set ID(commit ID): such as 0932fe02ba6d9117257099b421921f5d32b55bc4,dc0756cfad691c414edcea9f69cb1b4b1946e4c5,d872f547b4ed2d94befd99f21ae274b5884d2af0 and must be divided by ","
+      </span>
+    </p>
+    <p>
+      <input type="hidden" name = "property6name" value="Manifest_Xml" />
+      <label>*Specific Manifest Xml
+ <input type="text"  name="property6value" size = "70"ime-mode:Disabled />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      Manifest File of Build: the saved manifest file of daily build that will be used as the odvb. It will be specified as  /autobuild/android/pxa988/2013-06-17_pxa988-jb4.2/manifest.xml
+      </span>
+    </p>
+    <p>
+      <input type="hidden" name = "property7name" value="Dest_Dir" />
+      <label>
+      <input type="hidden" name="property7value" />
+      </label>
+    <p>
+    <p>
+      <input type="hidden" name = "property2name" value="PPAT_Xml" />
+      <label>
+      <input type="hidden"  name="property2value" size = "70"ime-mode:Disabled readonly />
+      </label>
+      <span style=" font-size:12px;color:#999999">
+      </span>
+    </p>
+    <p>
+    <input type="hidden" name = "property8name" value="Build_Device" />
+    *Device:<select id="property8value" name="property8value" onchange="branchSelect3();">
+               <option value="">Select</option>
+               <option value="pxa1088dkb_def:pxa1088dkb">pxa1088dkb_def:pxa1088dkb</option>
+               <option value="pxa1L88dkb_def:pxa1L88dkb">pxa1L88dkb_def:pxa1L88dkb</option>
+<!--               <option value="pxa988t7_def:pxa988t7">pxa988t7_def:pxa988t7</option> -->
+          </select>
+    <input type="hidden" name = "property9name" value="Build_Blf" />
+    *Blf:<select id="property9value" name = "property9value">
+             <option value="">Select</option>
+         </select>
+    <span style=" font-size:12px;color:#999999">
+    Add new device please contact the project's integrator and buildbot admin to enable the branches
+    </span>
+    </p>
+    <p>
+      <input type="hidden" name="property3name" value="PPAT_TEST" />
+      <label>
+<!-- <input type="hidden" name="property3value" value="true" /> -->
+      </label>
+    </p>
+    <p>
+      <div id ="odvb_ppat"></div>
+    </p>
+    <p>
+      <label>
+      <input type="submit" name="Submit10" value="Trigger Build" />
+      </label>
+    </p>
+  </form>
+</div>
+<!--  ******************************* END ODVB & PPAT ******************************  -->
+
 
 
 <div id="msg" style="position:absolute; left:537px;top:155px;width:218px;height:28px;z-index:1;background-color:#cccccc;display:none" >Too many urgent builds </div>
 <script  language="javascript" type="text/javascript">
-	triggerScript();
+        triggerScript();
 </script>
+
 {%endblock%}

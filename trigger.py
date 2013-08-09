@@ -103,7 +103,7 @@ class Force(ActionResource):
         
     @defer.deferredGenerator
     def performAction(self, req):
-        name = req.args.get("username", ["<unknown>"])[0]
+        name = req.args.get("email", ["<unknown>"])[0]
         reason = req.args.get("reason", ["<no reason specified>"])[0]
         revision = req.args.get("revision", [""])[0]
         repository = req.args.get("repository", [""])[0]
@@ -133,7 +133,7 @@ class Force(ActionResource):
                 cxt['current'] = [self.builder(x, req) for x in b.getCurrentBuilds()]
                 #we
                 for cu in cxt['current']:
-                    if (cu['properties'].getProperty("username", []) == name):
+                    if (cu['properties'].getProperty("email", []) == name):
                         buildcountforuser = buildcountforuser + 1
                         if (buildcountforuser == limitionforeachuser):
                             req.addCookie('overlimition', buildcountforuser, path = '/', expires = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime(time.time()+0.5*3600)))    
@@ -147,9 +147,9 @@ class Force(ActionResource):
                     wfd = defer.waitForDeferred(master.db.buildsets.getBuildsetProperties(pb.bsid))
                     yield wfd
                     bsp = wfd.getResult()
-                #try: the bsp may do not have the username key,
+                #try: the bsp may do not have the email key,
                     try:
-                        if (bsp["username"][0] == name):
+                        if (bsp["email"][0] == name):
                             buildcountforuser = buildcountforuser + 1
                             if (buildcountforuser == limitionforeachuser):
                                 req.addCookie('overlimition', buildcountforuser, path = '/', expires = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime(time.time()+0.5*3600)))    
@@ -158,10 +158,11 @@ class Force(ActionResource):
                     except:
                         pass
             properties = getAndCheckProperties(req)
-            #add username propertie, be used to check the same user can only trigger the limition number at most. 
+            #add email propertie, be used to check the same user can only trigger the limition number at most. 
             #properties['username'] = name
-            properties.setProperty("username", name, "Force build from")
-            wfd = defer.waitForDeferred(master.db.sourcestamps.addSourceStamp(branch = None, revision = revision, project = project, repository = repository))
+            properties.setProperty("useremail", name, "Force build from")
+            properties.setProperty("Reason", reason, "Force build from")
+            wfd = defer.waitForDeferred(master.db.sourcestamps.addSourceStamp(branch = selectname + " " + time.asctime(), revision = revision, project = project, repository = repository))
             yield wfd
             ssid = wfd.getResult()
             r = ("'%s' trigger, reason: %s\n"
@@ -237,7 +238,7 @@ class Force(ActionResource):
                 b = self.status.getBuilder(buildername)
                 cxt['current'] = [self.builder(x, req) for x in b.getCurrentBuilds()]
                 for cu in cxt['current']:
-                    if (cu['properties'].getProperty("username", []) == name):
+                    if (cu['properties'].getProperty("email", []) == name):
                         buildcountforuser = buildcountforuser + 1
                         if (buildcountforuser == limitionforeachuser):
                             req.addCookie('overlimition', "5", path = '/', expires = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime(time.time()+0.5*3600)))    
@@ -251,9 +252,9 @@ class Force(ActionResource):
                     wfd = defer.waitForDeferred(master.db.buildsets.getBuildsetProperties(pb.bsid))
                     yield wfd
                     bsp = wfd.getResult()
-                    #try: the bsp may do not have the username key,
+                    #try: the bsp may do not have the email key,
                     try:
-                        if (bsp["username"][0] == name):
+                        if (bsp["email"][0] == name):
                             buildcountforuser = buildcountforuser + 1
                             if (buildcountforuser == limitionforeachuser):
                                 req.addCookie('overlimition', "5", path = '/', expires = time.strftime("%a %b %d %H:%M:%S %Y", time.gmtime(time.time()+0.5*3600)))    
@@ -316,7 +317,7 @@ class Force(ActionResource):
             #    yield Redirect(path_to_query(req))
                 properties = getAndCheckProperties(req)
             #   properties['username'] = name
-                properties.setProperty("username", name, "Force build from")
+                properties.setProperty("useremail", name, "Force build from")
             #if properties is None:
             #    yield Redirect(path_to_query(req))
                 if not branch:
