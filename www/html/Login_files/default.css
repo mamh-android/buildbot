@@ -1,0 +1,391 @@
+.SharpGridView td
+{
+	padding: 5px 5px 5px 5px;
+}
+
+.ModalBackground 
+{
+	background-color:Gray;
+	filter:alpha(opacity=70);
+	opacity:0.7;
+}
+
+table.UnpaddedTable
+{
+	padding: 0 !important;
+	border: none !important;
+}
+
+table.UnpaddedTable td
+{
+	padding: 0 !important;
+	border: none !important;
+}
+
+a:link, .w, a.w:link, .w a:link
+{
+    color: #0000cc;
+}
+a:visited, .fl:visited
+{
+    color: #551a8b;
+}
+a:active, .fl:active
+{
+    color: #f00;
+}
+.f, .fl:link
+{
+    color: #6f6f6f;
+}
+.f:visited
+{
+    color: #6f6f6f;
+}
+.z
+{
+    display: none;
+}
+
+.header 
+{
+    font-weight:bold;
+    color:Black; 
+}
+
+.inputheader 
+{ 
+    font-family:Arial;
+    font-weight:bold; 
+    font-size:12px;
+    color:#333333; 
+}
+
+.projectHeader
+{
+    background-color:#e4ecf8;
+}
+
+.small {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 8px;
+}
+
+.medium {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+.big {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	font-weight:bold;
+}
+
+.xbig {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #FF0000;
+	font-weight: bold;
+	font-size: 24px;
+}
+
+.input1        
+{	
+	background-color: aliceblue;
+	border: 1px solid #999999 ;
+	font-family:Arial;
+	font-size:11px;
+}
+
+.input2       
+{	
+	border: 1px solid #999999 ;
+	font-family:Arial;
+	font-size:11px;
+	padding-left:3;
+	padding-right:3;
+}
+
+.icon
+{
+    border-width: 0;
+    vertical-align: middle;
+}
+
+.sniplink:visited, .sniplink:link, .sniplink:active, .sniplink
+{
+    color: #676767;
+}
+
+.on, .on:visited, .on:link
+{
+    color: #0000cc;
+}
+.on:active
+{
+    color: #f00000;
+}
+
+.q a:visited, .q a:link, .q a:active, .q
+{
+    color: #0000cc;
+}
+.qo a:visited, .qo a:link, .qo a:active, .qo
+{
+    color: #0000cc;
+}
+
+
+.vlnk a:visited, .vlnk a:link, .vlnk a:active, .vlnk
+{
+    color: #840284;
+}
+
+
+.mbody
+{
+    margin-top: 4px;
+}
+.ar
+{
+    padding-bottom: 6px;
+}
+
+body, td
+{
+    font-family: Arial;
+    font-size: 11px;
+}
+
+input,select,textarea
+{
+    font-family: Arial;
+    font-size: 11px;      
+}
+
+.subject
+{
+   font-family: Arial;
+   font-size: 12px; 
+}
+
+.fixed_width
+{
+    font-family: fixed-width, monospace;
+    font-size: 90%;
+}
+
+form
+{
+    margin: 0;
+}
+
+.tick
+{
+    font-family: webdings;
+    text-decoration: none !important;
+}
+
+.qr
+{
+    width: 100%;
+    padding: 4px;
+    font-family: arial, sans-serif;
+}
+
+table.content td
+{
+    padding: 2px 4px 2px 0px;
+}
+input.ck
+{
+    margin-left: -2px;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.sbox
+{
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+button a:link
+{
+    text-decoration: none;
+    color: black;
+}
+button a:hover
+{
+    text-decoration: none;
+    color: black;
+}
+
+.subcatlist
+{
+    border-top: #ffcc33 1px solid;
+    margin-top: 10px;
+    border-bottom: #ffcc33 1px solid;
+}
+
+.dialogbox
+{
+	background-color:#F2F2F2;
+}
+
+.sec { border:1px solid #cccccc; }
+
+/* CSS classes for the navigation menu at bottom of the page (Previous/More Products, etc) */
+
+.navigation
+{
+	width:600px;
+	margin-top:30px;
+}
+
+#leftnav 
+{
+	float:left;
+	width:180px;
+	text-align:center;
+}
+
+#rightnav 
+{
+	float:right;
+	width:180px;
+	margin-right:20px;
+	text-align:center;
+}
+
+#numnav
+{
+	float:inherit;
+	text-align:center;
+	
+}
+hdCell
+{
+	border: solid 1px #073b96;
+	background-color: #ffffff;
+	font-family: Arial, Verdana, Sans-Serif;
+}
+
+.threadtreeHover
+{
+    vertical-align:top;
+    background-color:#cedcf2;    
+}
+
+.threadExpandColumn
+{
+    background-color: #eeeeee; 
+    vertical-align: top
+}
+
+.threadtreeNodeHoever
+{
+    border: 1px solid #CCCCCC;
+}
+
+.toolbarHover
+{
+  cursor: pointer;
+  background-color:#ffde6b;  
+}
+img
+{
+    border:0;
+    vertical-align:middle;
+}
+
+.tabUnderline
+{
+	border-bottom: #919b9c 1px solid
+}
+
+.rnavBoxWhite {
+    background-color: #FFFFFF;
+	border-top:3px solid #CACACA;
+	border-bottom:3px solid #CACACA;
+	border-left:1px solid #E5E5E5;
+	border-right:1px solid #E5E5E5;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-left: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-right: 10px;
+	margin-right: 10px;
+	width: 100%;
+}
+
+.rnavBoxGray {
+    background-color: #f1f1f1;
+	border-top:3px solid #CACACA;
+	border-bottom:3px solid #CACACA;
+	border-left:1px solid #E5E5E5;
+	border-right:1px solid #E5E5E5;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-left: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-right: 10px;
+	margin-right: 10px;
+	width: 135px;
+}
+.ikb_DHTMLToolTip
+{
+	font-family: Verdana, Arial, Tahoma;
+	font-size: 8pt;
+	color: #003366;
+	border: silver 1px dashed;
+	padding: 6px;
+	visibility: hidden;
+	z-index:100;
+	position: absolute;
+	background-color: #FFFFCC;
+}
+.DHTMLToolTip
+{
+	font-family: Verdana, Arial, Tahoma;
+	font-size: 8pt;
+	color: #003366;
+	border: silver 1px dashed;
+	padding: 6px;
+	visibility: hidden;
+	z-index:100;
+	position: absolute;
+	background-color: #FFFFCC;
+}
+
+#progressBackgroundFilter 
+{
+	position:fixed;
+    top:0px; 
+    bottom:0px; 
+    left:0px;
+    right:0px;
+    overflow:hidden; 
+    padding:0; 
+    margin:0; 
+    background-color: #fcfcfc;
+    filter:alpha(opacity=50);
+    -moz-opacity: .5;
+    opacity: .5;
+    z-index:1000; 
+}
+
+#processMessage 
+{ 
+	position:fixed;
+    top:40%; 
+    left:40%;
+    padding: 20px 20px 20px 20px; 
+    width: 280px; 
+    z-index:1001; 
+    background-color:#fff;
+    border:solid 1px #000;
+}
