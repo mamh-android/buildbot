@@ -137,7 +137,7 @@ and open the template in the editor.
                                     
                                     ?>
                                    
-				    &nbsp; <a href='Doc/publicgit_user_manual.pdf' > <img src ="images/help_browser.png" width="24px" height="24px" alt="User Manual" /></a>
+				    &nbsp; <a href='Doc/publicgit_user_manual.pdf' >User Manual</a>
  
                                     &nbsp; <a href='key.php' > <img src="images/settings.png" width="24px" height="24px" alt="Manage Keys"  /></a>
                                     
