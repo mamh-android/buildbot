@@ -5,12 +5,12 @@ rem use forfile to release the disk space under \android\autobuild
 rem Author: yfshi@marvell.com
 rem ***************************************
 
-set workingdir=E:\RDS\
+set workingdir=C:\RDS\
 set loglocation=%workingdir%etc\logs\releaseautobuild.txt
 set olderthan3m=90
 set olderthan6m=180
 set olderthan1y=365
-set source=X:\android
+set source=D:\autobuild\android
 set email=yfshi@marvell.com
 set blat=%workingdir%blat\full\blat.exe
 set extension=tgz
@@ -32,8 +32,6 @@ echo Deleting files older than %olderthan3m% days with the file extension *.%ext
 echo Deleting files older than %olderthan3m% days with the file extension *.%extension%.>>%loglocation%
 echo Deleting *.* files older than %olderthan6m% days except manifest.xml and changlogs*. 
 echo Deleting *.* files older than %olderthan6m% days except manifest.xml and changlogs*.>>%loglocation%
-echo Deleting files older than %olderthan1y% days except manifest.xml and changlogs*. 
-echo Deleting files older than %olderthan1y% days except manifest.xml and changlogs*.>>%loglocation%
 echo This file may take an extremely long time to run while it looks unresponsive.
 echo Check %loglocation% for progress.
 echo Release List located at %releaselist%
@@ -48,6 +46,17 @@ echo Creating List of files older than 90 days to be removed:>>%loglocation%
 FORFILES /p %source% /s /d -%olderthan3m% /m *.%extension% /c "CMD /C Echo @path>>%releaselist%
 rem FORFILES /p %source% /s /d -%olderthan3m% /m *.%extension% /c "CMD /C Echo @path>>%loglocation%
 
+echo Starting delete...
+echo Starting delete...>>%loglocation%
+date /t >> %loglocation%
+time /t >> %loglocation%
+
+rem *** Removing the files from the %releaselist% listed ***
+for /f "tokens=*" %%a in (%releaselist%) do del %%a
+
+if exist %releaselist% del %releaselist%
+if exist %final_releaselist% del %final_releaselist%
+
 rem ***add *.* files older than 180 days into the releaselist***
 
 echo Creating List of files older than 180 days to be removed: 
@@ -59,10 +68,6 @@ rem FORFILES /p %source% /s /d -%olderthan6m% /m *.* /c "CMD /C Echo @path>>%log
 rem ***remove the manifest and changelog from the releaselist***
 echo remove the manifest and changelog from the releaselist
 findstr /v /g:%nonlist% %releaselist% > %final_releaselist%
-
-rem ***add the manifest and changelog into the releaselist if those files are older than 365 days ***
-echo add the manifest and changelog into the releaselist if those files are older than 365 days
-rem FORFILES /p %source% /s /d -%olderthan1ym% /m *.* /c "CMD /C Echo @path>>%final_releaselist%
 
 echo List of files in the %final_releaselist% to be removed:
 echo List of files in the %final_releaselist% to be removed:>>%loglocation%
@@ -76,7 +81,7 @@ rem *** Removing the files from the %final_releaselist% listed ***
 for /f "tokens=*" %%a in (%final_releaselist%) do del %%a
 
 rem *** delete all the empty directory ***
-if exist >%releaselist% del %releaselist%
+if exist %releaselist% del %releaselist%
 dir /ad/b/s %source% | sort /r >> %releaselist%
 for /f "tokens=*" %%i in (%releaselist%) do rd "%%i"
 
