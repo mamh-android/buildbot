@@ -25,10 +25,10 @@ def generate_args(patch_list,manifest_xml,results,dir_path):
     args = [[]] * len(s_patch_list)    
     if (results == "success"):
         for i in range(len(args)):
-            args[i] = "ssh -p 29418 " + r_user + "@" + gerrit_server + " gerrit review --code-review +1 -m " + generate_message(patch_list,manifest_xml,results,dir_path) + " " + s_patch_list[i]
+            args[i] = "ssh -p 29418 " + r_user + "@" + gerrit_server + " gerrit review --verified +1 -m " + generate_message(patch_list,manifest_xml,results,dir_path) + " " + s_patch_list[i]
     else:
         for i in range(len(args)):
-            args[i] = "ssh -p 29418 " + r_user + "@" + gerrit_server + " gerrit review --code-review -1 -m " + generate_message(patch_list,manifest_xml,results,dir_path) + " " + s_patch_list[i]
+            args[i] = "ssh -p 29418 " + r_user + "@" + gerrit_server + " gerrit review --verified -1 -m " + generate_message(patch_list,manifest_xml,results,dir_path) + " " + s_patch_list[i]
 
     return args
 
