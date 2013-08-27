@@ -3,6 +3,13 @@ maintainer=liling@marvell.com
 
 ids_0=$1
 ids_1="""$2"""
+STD_LOG=/home/buildfarm/buildbot_script/stdio.log
+
+nobuild=`grep ">No build<" $STD_LOG`
+if [ -n "$nobuild" ]; then
+    echo "no build"
+    exit 255
+fi
 
 case "$2" in
     "pxa988_jb4.2")
