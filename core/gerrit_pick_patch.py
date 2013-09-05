@@ -11,6 +11,7 @@ import pickle
 import re
 import sys
 import os
+import csv
 
 #Gerrit admin user
 m_user = "buildfarm"
@@ -179,6 +180,29 @@ def args_gitshow_from_gerrit_patch_object(gerrit_patch_object):
         args[i] = gitcp_args
     return args
 
+#Return revision from changID and patchset
+def return_revision(change_id, patch_set_id):
+    global m_user
+    global m_remote_server
+    table="patch_sets"
+    args = "ssh -p 29418 " + m_user + "@" + m_remote_server + " gerrit gsql -c \"select\ revision\ from\ " + table + "\ WHERE\ change_id=\\\'" + change_id +  "\\\'\ AND\ patch_set_id=\\\'" + patch_set_id + "\\\'\" | head -3 | tail -1"
+    r_text=os.popen(args).read()
+    r_text=r_text.strip()
+    return r_text
+
+#return gerrit patch list via csv
+def return_gerrit_changes(gerrit_patch_csv):
+    a = []
+    in_txt = csv.reader(open(gerrit_patch_csv, "rb"), delimiter = ',')
+    for row in in_txt:
+        rev_list = return_revision(row[14].strip(), row[10].strip())
+        a.append(rev_list)
+    a.pop(0)
+    ignore_list = ['803bafa44521262584fad12de9ad8e5ed697fee2', '69d218cb25a60ee9495e492277fe8b31b4c88878', 'c17afaff4741d08dda389b81b97f4423aec3da97', '40e7f4d41f4039b400375f15119928b9f33cff91', '3c98b9a6b0665259fec8c0c4871495a1a69bebec', '03f1623c5ec97ebaf5f68c2415343701d763ecce', '845fb555b0ef88266497975a5210c935e9f6c501', 'd940ef7c92a1ad94b7735c065972f70d42a55db8', '208e961efefaae564049537ebc448e826414209b', '25a7338dfb1a29d66a59d2aaa0a7172b2adca800', 'ac365c27f34f1c66f9545d564cc131dd90dc1cf9', '0aa28d8e4a4966da0eada4053d6cb45e3485105f']
+    for x in ignore_list:
+        a.remove(x)
+    return a
+
 #Run args[i] by shell
 def run_args(args):
     for i in range(len(args)):
@@ -189,19 +213,22 @@ def run_args(args):
 def usage():
     print "\tgerrit_pick_patch [-m] <gerrit patchsetID for manifest>"
     print "\t      [-p] <gerrit patchset list except patches for manifest> Eks: 001,002,003 the list is splited by ,"
+    print "\t      [-t] <gerrit patch tab.csv file> "
     print "\t      [--showonly] only show the patches from listed patchsetID"
     print "\t      [-h] help"
 
 def main(argv):
     gerrit_patch_manifest = ""
     gerrit_patch_list = ""
+    gerrit_patch_csv = ""
     showonly = ""
     gerrit_patch_manifest_object = ""
     gerrit_patch_list_object = ""
+    gerrit_patch_csv_object = ""
     args_gerrit_patch_manifest_object = ""
     args_gerrit_patch_list_object = ""
     try:
-        opts, args = getopt.getopt(argv, "m:p:h", ["showonly","username","remote"])
+        opts, args = getopt.getopt(argv, "m:p:t:h", ["showonly","username","remote"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -213,10 +240,12 @@ def main(argv):
             gerrit_patch_manifest = arg.split(',')
         elif opt in ("-p"):
             gerrit_patch_list = arg.split(',')
+        elif opt in ("-t"):
+            gerrit_patch_csv = arg
         elif opt in ("--showonly"):
             showonly = 1
 
-    if (gerrit_patch_manifest == "") and (gerrit_patch_list == ""):
+    if (gerrit_patch_manifest == "") and (gerrit_patch_list == "") and (gerrit_patch_csv == ""):
         usage()
         sys.exit(2)
     if (gerrit_patch_manifest != ""):
@@ -225,14 +254,22 @@ def main(argv):
     if (gerrit_patch_list != ""):
         gerrit_patch_list_object = setup_gerrit_patch_object(gerrit_patch_list)
         gerrit_patch_list_object = sort_gerrit_patch_object_by_created_on(gerrit_patch_list_object)
+    if (gerrit_patch_csv != ""):
+        gerrit_patch_list = return_gerrit_changes(gerrit_patch_csv)
+        print gerrit_patch_list
+        gerrit_patch_csv_object = setup_gerrit_patch_object(gerrit_patch_list)
+        gerrit_patch_csv_object = sort_gerrit_patch_object_by_created_on(gerrit_patch_list_object)
     if (showonly == 1):
         args_gerrit_patch_manifest_object = args_gitshow_from_gerrit_patch_object(gerrit_patch_manifest_object)
         args_gerrit_patch_list_object = args_gitshow_from_gerrit_patch_object(gerrit_patch_list_object)
+        args_gerrit_patch_csv_object = args_gitshow_from_gerrit_patch_object(gerrit_patch_csv_object)
     else:
         args_gerrit_patch_manifest_object = args_from_gerrit_patch_object(gerrit_patch_manifest_object)
         args_gerrit_patch_list_object = args_from_gerrit_patch_object(gerrit_patch_list_object)
+        args_gerrit_patch_csv_object = args_from_gerrit_patch_object(gerrit_patch_csv_object)
     run_args(args_gerrit_patch_manifest_object)
     run_args(args_gerrit_patch_list_object)
+    run_args(args_gerrit_patch_csv_object)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
