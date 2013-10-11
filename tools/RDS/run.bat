@@ -43,8 +43,7 @@ rem ***add *.tgz older than 90 days into the releaselist***
 echo Creating List of files older than 90 days to be removed: 
 echo Creating List of files older than 90 days to be removed:>>%loglocation%
 
-FORFILES /p %source% /s /d -%olderthan3m% /m *.%extension% /c "CMD /C Echo @path>>%releaselist%
-rem FORFILES /p %source% /s /d -%olderthan3m% /m *.%extension% /c "CMD /C Echo @path>>%loglocation%
+forfiles /p %source% /s /d -%olderthan3m% /m *.%extension% /c "cmd /c echo @path">>%releaselist%
 
 echo Starting delete...
 echo Starting delete...>>%loglocation%
@@ -57,13 +56,12 @@ for /f "tokens=*" %%a in (%releaselist%) do del %%a
 if exist %releaselist% del %releaselist%
 if exist %final_releaselist% del %final_releaselist%
 
-rem ***add *.* files older than 180 days into the releaselist***
+rem ***add * files except folders older than 180 days into the releaselist***
 
 echo Creating List of files older than 180 days to be removed: 
 echo Creating List of files older than 180 days to be removed:>>%loglocation%
 
-FORFILES /p %source% /s /d -%olderthan6m% /m *.* /c "CMD /C Echo @path>>%releaselist%
-rem FORFILES /p %source% /s /d -%olderthan6m% /m *.* /c "CMD /C Echo @path>>%loglocation%
+forfiles /p %source% /s /d -%olderthan6m% /m * /c "cmd /c if @isdir==FALSE echo @path">>%releaselist%
 
 rem ***remove the manifest and changelog from the releaselist***
 echo remove the manifest and changelog from the releaselist
