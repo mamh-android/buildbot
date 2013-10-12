@@ -20,6 +20,10 @@ case "$2" in
     echo export concord_def
     export TARGET_PRODUCT="concord_def"
     ;;
+    "pxa988_jb4.3")
+    echo export pxa1088dkb_def
+    export TARGET_PRODUCT="pxa1088dkb_def"
+    ;;
 esac
 
 generate_init_is_not_ready_email()
