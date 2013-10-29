@@ -19,6 +19,9 @@ m_user = "buildfarm"
 #Code remote server
 m_remote_server = "shgit.marvell.com"
 
+# Internal variable
+LAST_GERRIT_CSV = "last_gerrit_review.csv"
+
 #Return different value from gerrit database of one patchsetID(revision)
 def get_from_gerritid(revision, mark):
     global m_user
@@ -198,7 +201,18 @@ def return_gerrit_changes(gerrit_patch_csv):
         rev_list = return_revision(row[14].strip(), row[10].strip())
         a.append(rev_list)
     a.pop(0)
-    ignore_list = ['803bafa44521262584fad12de9ad8e5ed697fee2', '69d218cb25a60ee9495e492277fe8b31b4c88878', 'c17afaff4741d08dda389b81b97f4423aec3da97', '40e7f4d41f4039b400375f15119928b9f33cff91', '3c98b9a6b0665259fec8c0c4871495a1a69bebec', '03f1623c5ec97ebaf5f68c2415343701d763ecce', '845fb555b0ef88266497975a5210c935e9f6c501', 'd940ef7c92a1ad94b7735c065972f70d42a55db8', '208e961efefaae564049537ebc448e826414209b', '25a7338dfb1a29d66a59d2aaa0a7172b2adca800', 'ac365c27f34f1c66f9545d564cc131dd90dc1cf9', '0aa28d8e4a4966da0eada4053d6cb45e3485105f']
+    if (os.path.exists(LAST_GERRIT_CSV)):
+        ignore_list = []
+        in_txt = csv.reader(open(LAST_GERRIT_CSV, "rb"), delimiter = ',')
+        for row in in_txt:
+            rev_list = return_revision(row[14].strip(), row[10].strip())
+            ignore_list.append(rev_list)
+        ignore_list.pop(0)
+    else:
+        ignore_list = []
+    #ignore_list = ['803bafa44521262584fad12de9ad8e5ed697fee2', '69d218cb25a60ee9495e492277fe8b31b4c88878', 'c17afaff4741d08dda389b81b97f4423aec3da97', '40e7f4d41f4039b400375f15119928b9f33cff91', '3c98b9a6b0665259fec8c0c4871495a1a69bebec', '03f1623c5ec97ebaf5f68c2415343701d763ecce', '845fb555b0ef88266497975a5210c935e9f6c501', 'd940ef7c92a1ad94b7735c065972f70d42a55db8', '208e961efefaae564049537ebc448e826414209b', '25a7338dfb1a29d66a59d2aaa0a7172b2adca800', 'ac365c27f34f1c66f9545d564cc131dd90dc1cf9', '0aa28d8e4a4966da0eada4053d6cb45e3485105f']
+    print "The last ignore list is:"
+    print ignore_list
     for x in ignore_list:
         a.remove(x)
     return a
@@ -256,9 +270,9 @@ def main(argv):
         gerrit_patch_list_object = sort_gerrit_patch_object_by_created_on(gerrit_patch_list_object)
     if (gerrit_patch_csv != ""):
         gerrit_patch_list = return_gerrit_changes(gerrit_patch_csv)
-        print gerrit_patch_list
         gerrit_patch_csv_object = setup_gerrit_patch_object(gerrit_patch_list)
         gerrit_patch_csv_object = sort_gerrit_patch_object_by_created_on(gerrit_patch_list_object)
+        print gerrit_patch_csv_object
     if (showonly == 1):
         args_gerrit_patch_manifest_object = args_gitshow_from_gerrit_patch_object(gerrit_patch_manifest_object)
         args_gerrit_patch_list_object = args_gitshow_from_gerrit_patch_object(gerrit_patch_list_object)
