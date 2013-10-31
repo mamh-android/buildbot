@@ -33,8 +33,9 @@ echo_out()
 #cd ~/buildbot_script/
 #. ~/buildbot_script/buildbot/core/genDeltaPatchDiffFiles.sh ${sour} ${dest}
 cd ~/buildbot_script
-mkdir workdir
-cd workdir
+rm -fr repo-diff-workdir
+mkdir repo-diff-workdir
+cd repo-diff-workdir
 cp ${sour} ./m1.xml
 cp ${dest} ./m2.xml
 
