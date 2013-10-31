@@ -162,6 +162,75 @@ def args_from_gerrit_patch_object(gerrit_patch_object):
         args[i] = cd_args + gitcp_args
     return args
 
+#generate cd path from project name of manifest.xml for rtvb
+def generate_path_rtvb(r_dest_project_name):
+    manifest_xml_path = ""
+    manifest_xml_name = ""
+    #manifest_file = "/home/buildfarm/aabs/odvb_work/manifest.xml"
+    manifest_file = "/home/buildfarm/aabs/rtvb_work/.repo/manifest.xml"
+    search = ""
+    pat = '\spath=\"([a-zA-Z0-9-_/]*)\"\s'
+    if r_dest_project_name[:25] == "android/platform/manifest":
+        manifest_xml_path = ".repo/manifests"
+    elif r_dest_project_name[:17] == "android/platform/":
+        search = r_dest_project_name[17:]
+    elif r_dest_project_name[:8] == "android/":
+        search = r_dest_project_name[8:]
+    elif r_dest_project_name[:10] == "ose/linux/":
+        search = r_dest_project_name[10:]
+    elif r_dest_project_name[:5] == "test/":
+        search = r_dest_project_name[5:]
+    elif r_dest_project_name[:4] == "pie/":
+        search = r_dest_project_name[4:]
+    else:
+        print "dest_project_name have not been definted yet, please contact buildbot admin"
+        sys.exit(2)
+    try:
+        fp_src = open(manifest_file, 'r')
+    except IOError:
+        print "failed to open manifest file with read mode"
+        sys.exit(2)
+    for line in fp_src.readlines():
+        m = re.search(search,line)
+        if m:
+            a = re.search(pat,line)
+            if a:
+                manifest_xml_path = a.group(1)
+                break
+            else:
+                manifest_xml_path = search
+        else:
+            manifest_xml_path = search
+    return manifest_xml_path
+
+#Generate and return the args[i] from gerrit_patch_object for git check out for rtvb
+def args_from_gerrit_patch_object_rtvb(gerrit_patch_object):
+#    if (gerrit_patch_object == ""): sys.exit()
+    args = [[]] * len(gerrit_patch_object)
+    for i in range(len(gerrit_patch_object)):
+        r_change_id = gerrit_patch_object[i].change_id
+        r_patch_set_id = gerrit_patch_object[i].patch_set_id
+        r_dest_project_name = gerrit_patch_object[i].dest_project_name
+        r_dest_branch_name = gerrit_patch_object[i].dest_branch_name
+        r_patch_folder = ""
+        if len(r_change_id) < 2:
+            r_patch_folder = r_change_id.zfill(2)
+        elif len(r_change_id) > 1:
+            r_patch_folder = r_change_id[-2:]
+        else:
+            print "change_id = " + r_change_id + " is invalid"
+            sys.exit(2)
+        if r_dest_project_name[:25] == "android/platform/manifest":
+            cd_dest_project_name = ".repo/manifests"
+            cd_args = "cd " + cd_dest_project_name + ";"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;cd -;ln -sf manifests/default.xml .repo/manifest.xml;repo sync;"
+        else:
+            cd_dest_project_name = generate_path_rtvb(r_dest_project_name)
+            cd_args = "cd " + cd_dest_project_name + ";"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git checkout FETCH_HEAD;"
+        args[i] = cd_args + gitcp_args
+    return args
+
 #Generate and return the args[i] from gerrit_patch_object for git show
 def args_gitshow_from_gerrit_patch_object(gerrit_patch_object):
 #    if (gerrit_patch_object == ""): sys.exit()
@@ -193,29 +262,19 @@ def return_revision(change_id, patch_set_id):
     r_text=r_text.strip()
     return r_text
 
-#return gerrit patch list via csv
+#return commitID of first from the csv patch list and update the csv by remove the picked patch
 def return_gerrit_changes(gerrit_patch_csv):
+   #if (os.path.exists(LAST_GERRIT_CSV)):
     a = []
     in_txt = csv.reader(open(gerrit_patch_csv, "rb"), delimiter = ',')
     for row in in_txt:
-        rev_list = return_revision(row[14].strip(), row[10].strip())
-        a.append(rev_list)
+        a.append(row)
+    patch_commit_id = return_revision(a[0][14].strip(), a[0][10].strip())
+    patch_commit_id = patch_commit_id.split(',')
     a.pop(0)
-    if (os.path.exists(LAST_GERRIT_CSV)):
-        ignore_list = []
-        in_txt = csv.reader(open(LAST_GERRIT_CSV, "rb"), delimiter = ',')
-        for row in in_txt:
-            rev_list = return_revision(row[14].strip(), row[10].strip())
-            ignore_list.append(rev_list)
-        ignore_list.pop(0)
-    else:
-        ignore_list = []
-    #ignore_list = ['803bafa44521262584fad12de9ad8e5ed697fee2', '69d218cb25a60ee9495e492277fe8b31b4c88878', 'c17afaff4741d08dda389b81b97f4423aec3da97', '40e7f4d41f4039b400375f15119928b9f33cff91', '3c98b9a6b0665259fec8c0c4871495a1a69bebec', '03f1623c5ec97ebaf5f68c2415343701d763ecce', '845fb555b0ef88266497975a5210c935e9f6c501', 'd940ef7c92a1ad94b7735c065972f70d42a55db8', '208e961efefaae564049537ebc448e826414209b', '25a7338dfb1a29d66a59d2aaa0a7172b2adca800', 'ac365c27f34f1c66f9545d564cc131dd90dc1cf9', '0aa28d8e4a4966da0eada4053d6cb45e3485105f']
-    print "The last ignore list is:"
-    print ignore_list
-    for x in ignore_list:
-        a.remove(x)
-    return a
+    out_csv = csv.writer(open(gerrit_patch_csv, 'wb'))
+    out_csv.writerows(a)
+    return patch_commit_id
 
 #Run args[i] by shell
 def run_args(args):
@@ -228,6 +287,8 @@ def usage():
     print "\tgerrit_pick_patch [-m] <gerrit patchsetID for manifest>"
     print "\t      [-p] <gerrit patchset list except patches for manifest> Eks: 001,002,003 the list is splited by ,"
     print "\t      [-t] <gerrit patch tab.csv file> "
+    print "\t          the function is design for rtvb"
+    print "\t          Check-out the patch instead cherry-pick, pick the first patch from tab.csv, and remove it from tab.csv"
     print "\t      [--showonly] only show the patches from listed patchsetID"
     print "\t      [-h] help"
 
@@ -271,16 +332,13 @@ def main(argv):
     if (gerrit_patch_csv != ""):
         gerrit_patch_list = return_gerrit_changes(gerrit_patch_csv)
         gerrit_patch_csv_object = setup_gerrit_patch_object(gerrit_patch_list)
-        gerrit_patch_csv_object = sort_gerrit_patch_object_by_created_on(gerrit_patch_list_object)
-        print gerrit_patch_csv_object
     if (showonly == 1):
         args_gerrit_patch_manifest_object = args_gitshow_from_gerrit_patch_object(gerrit_patch_manifest_object)
         args_gerrit_patch_list_object = args_gitshow_from_gerrit_patch_object(gerrit_patch_list_object)
-        args_gerrit_patch_csv_object = args_gitshow_from_gerrit_patch_object(gerrit_patch_csv_object)
     else:
         args_gerrit_patch_manifest_object = args_from_gerrit_patch_object(gerrit_patch_manifest_object)
         args_gerrit_patch_list_object = args_from_gerrit_patch_object(gerrit_patch_list_object)
-        args_gerrit_patch_csv_object = args_from_gerrit_patch_object(gerrit_patch_csv_object)
+        args_gerrit_patch_csv_object = args_from_gerrit_patch_object_rtvb(gerrit_patch_csv_object)
     run_args(args_gerrit_patch_manifest_object)
     run_args(args_gerrit_patch_list_object)
     run_args(args_gerrit_patch_csv_object)
