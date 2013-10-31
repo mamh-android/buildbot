@@ -16,6 +16,8 @@ DATE=$(date +%Y-%m-%d-%H-%M-%S)
 OUTPUT_FOLDER=/autobuild/code-compare/${DATE}
 OUTPUT_FILE=${OUTPUT_FOLDER}/patch_list.diff
 
+mkdir -p ${OUTPUT_FOLDER}
+
 update_tag()
 {
 	repo forall -c "git tag -f $1 2>/dev/null" && \
@@ -38,7 +40,7 @@ cp ${dest} ./m2.xml
 
 
 #################### sync code and make tag ########################################
-repo init -u ${MANIFEST_GIT} --reference ${REPO_MIRROR}
+repo init -u ${MANIFEST_GIT} --reference ${REPO_MIRROR} --repo-url ${REPO_GIT}
 
 cp ./m1.xml .repo/manifests && cp ./m2.xml .repo/manifests && \
 repo init -m m1.xml && \
