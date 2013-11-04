@@ -36,9 +36,9 @@ def generate_args(patch_list,manifest_xml,results,dir_path):
 def generate_message(patch_list,manifest_xml,results,dir_path):
     message = ""
     if (results == "success"):
-        message = "'\"" + "**Success** Manifest: [" + manifest_xml + "] PatchSets: [" +  patch_list + "] Package Link: [" + dir_path + "]\"'"
+        message = "'\"" + "**Success** [" + manifest_xml + "] PatchSets: [" +  patch_list + "] For: [" + dir_path + "]\"'"
     else:
-        message = "'\"" + "**Failure** Manifest: [" + manifest_xml + "] PatchSets: [" +  patch_list + "]\"'"
+        message = "'\"" + "**Failure** [" + manifest_xml + "] PatchSets: [" +  patch_list + "] For: [" + dir_path + "]\"'"
     return message
 
 #Run args[i] by shell
