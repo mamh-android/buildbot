@@ -36,6 +36,7 @@ BUILD_RESULT=""
 BUILD_RESULT="success"
 LIST_BUILD_RESULT_S=.gerrit.success.list
 LIST_BUILD_RESULT_F=.gerrit.failure.list
+LAST_RESULT_LIST_BACKUP=/autobuild/rtvb/last_result_list_backup/
 
 
 case "$1" in
@@ -291,7 +292,9 @@ done
 #Updating gerrit patch status
 if [ -s $LIST_BUILD_RESULT_F ]; then
     echo "$BUILD_TYPE [$(get_date)] Updating failure gerrit patch"
-    for GERRIT_PATCH in `sort -k2n $LIST_BUILD_RESULT_F | uniq`; do
+    #ingore the failed patches was failed last time
+    new_failed_list=$(grep -v -f $LAST_RESULT_LIST_BACKUP$LIST_BUILD_RESULT_F $LIST_BUILD_RESULT_F)
+    for GERRIT_PATCH in $new_failed_list; do
         $SCRIPT_PATH/gerrit_review_update.py -p $GERRIT_PATCH -m $MANIFEST_BRANCH-${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT -r "failure" -d "RTVB"
     done
 fi
@@ -302,5 +305,9 @@ if [ -s $LIST_BUILD_RESULT_S ]; then
         $SCRIPT_PATH/gerrit_review_update.py -p $GERRIT_PATCH -m $MANIFEST_BRANCH-${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT -r "success" -d "RTVB"
     done
 fi
+
+#backup last result list to fileserver
+cp $LIST_BUILD_RESULT_S $LAST_RESULT_LIST_BACKUP
+cp $LIST_BUILD_RESULT_F $LAST_RESULT_LIST_BACKUP
 
 echo "$BUILD_TYPE [$(get_date)] process is done"
