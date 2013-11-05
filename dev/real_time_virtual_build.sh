@@ -28,6 +28,7 @@ REVISION_DICT=.revision.pck
 CPATH_DICT=.path.pck
 COUNTER_FAILURE=0
 MAKE_JOBS=8
+START_LAST_RUN="false"
 
 BUILD_TYPE="[RTVB]"
 DEST_DIR=~/aabs/rtvb_out/
@@ -210,8 +211,10 @@ gerrit_list=$(echo $(repo forall -c $SCRIPT_PATH/rtvb_patches.sh) | sed 's/ /,/g
 }
 
 # Clean the working directory
+if [ $START_LAST_RUN == "false" ]; then
 rm -rf $SYNC_GIT_WORKING_DIR
 rm -rf $DEST_DIR
+fi
 
 # Create working diretory
 mkdir -p $SYNC_GIT_WORKING_DIR
@@ -229,7 +232,9 @@ fi
 
 # Fetch code from Developer Server with specific branch
 echo "$BUILD_TYPE [$(get_date)] sync code"
-$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
+if [ $START_LAST_RUN == "false" ]; then
+  $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
+fi
 RET=$?
 if [ $RET -ne 0 ]; then
   echo "failed on fetching code from manifest branch"
@@ -245,7 +250,9 @@ echo "$BUILD_TYPE Start aabs build while loop"
   cd $SYNC_GIT_WORKING_DIR
   if [ -n "$(diff first_manifest.xml last_manifest.xml)" ] || [ ! -s last_manifest.xml ] || [ ! -s first_manifest.xml ]; then
     echo "$BUILD_TYPE [$(get_date)] Launch aabs build and return BUILD_RESULT"
-    aabs_build
+    if [ $START_LAST_RUN == "false" ]; then
+      aabs_build
+    fi
       if [ $BUILD_RESULT == "success" ]; then
         echo "$BUILD_TYPE [$(get_date)] build success exit the aabs while loop"
         repo manifest -r -o first_manifest.xml
@@ -262,7 +269,9 @@ echo "$BUILD_TYPE Start aabs build while loop"
 done
 
 #Setup csv for rtvb
-setup_gerritpatches_csv_for_rtvb
+if [ $START_LAST_RUN == "false" ]; then
+  setup_gerritpatches_csv_for_rtvb
+fi
 
 return_make_jobs
 
