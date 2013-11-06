@@ -26,10 +26,12 @@ LAST_GERRIT_CSV = "last_gerrit_review.csv"
 def get_from_gerritid(revision, mark):
     global m_user
     global m_remote_server
-    if mark in ("revision", "uploader_account_id", "draft", "patch_set_id"):
+    #if mark in ("revision", "uploader_account_id", "draft", "patch_set_id"):
+    if mark in ("revision", "patch_set_id"):
         table="patch_sets"
         args="ssh -p 29418 " + m_user + "@" + m_remote_server + " gerrit gsql -c \"select\ " + mark + "\ from\ " + table + "\ where\ revision\=\\\'" + revision + "\\\'\" | head -3 | tail -1"
-    elif mark in ("change_key", "created_on", "last_updated_on", "sort_key", "owner_account_id", "dest_project_name", "dest_branch_name", "open", "status", "nbr_patch_sets", "current_patch_set_id", "subject", "topic", "last_sha1_merge_tested", "mergeable", "row_version", "change_id"):
+    #elif mark in ("change_key", "created_on", "last_updated_on", "sort_key", "owner_account_id", "dest_project_name", "dest_branch_name", "open", "status", "nbr_patch_sets", "current_patch_set_id", "subject", "topic", "last_sha1_merge_tested", "mergeable", "row_version", "change_id"):
+    elif mark in ("created_on", "dest_project_name", "dest_branch_name", "change_id"):
         table="patch_sets"
         tmp_mark=mark
         mark="change_id"
@@ -39,6 +41,8 @@ def get_from_gerritid(revision, mark):
         table="changes"
         mark=tmp_mark
         args="ssh -p 29418 " + m_user + "@" + m_remote_server + " gerrit gsql -c \"select\ " + mark + "\ from\ " + table + "\ where\ change_id\=\\\'" + change_id + "\\\'\" | head -3 | tail -1"
+    elif mark in ("uploader_account_id", "draft", "change_key", "last_updated_on", "sort_key", "owner_account_id", "open", "status", "nbr_patch_sets", "current_patch_set_id", "subject", "topic", "last_sha1_merge_tested", "mergeable", "row_version"):
+        args="echo null"
     else:
         print "mark = " + mark + " is invalid"
         sys.exit(2)
