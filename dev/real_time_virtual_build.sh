@@ -38,6 +38,7 @@ BUILD_RESULT="success"
 LIST_BUILD_RESULT_S=.gerrit.success.list
 LIST_BUILD_RESULT_F=.gerrit.failure.list
 LAST_RESULT_LIST_BACKUP=/autobuild/rtvb/last_result_list_backup/
+FILE_SERVER_HTTP="http://sh-fs04"
 RTVB_MAKE_LOG_BACKUP=/autobuild/rtvb/changeid_make_logs/
 
 
@@ -173,11 +174,12 @@ fi
 
 pick_patch_from_csv_build()
 {
-change_id=$(awk -F"," ' { print $15; exit } ' $GERRIT_CSV)
-patch_set_id=$(awk -F"," ' { print $15; exit } ' $GERRIT_CSV)
-commit_id=$(ssh -p 29418 $GERRIT_ADMIN@$GERRIT_SERVER gerrit gsql -c "select\ revision\ from\ patch_sets\ WHERE\ change_id=\'$change_id\'\ AND\ patch_set_id=\'$patch_set_id\'" | head -3 | tail -1)
-STD_LOG=$RTVB_MAKE_LOG_BACKUP$commit_id
+#change_id=$(awk -F"," ' { print $15; exit } ' $GERRIT_CSV)
+#patch_set_id=$(awk -F"," ' { print $15; exit } ' $GERRIT_CSV)
+#commit_id=$(ssh -p 29418 $GERRIT_ADMIN@$GERRIT_SERVER gerrit gsql -c "select\ revision\ from\ patch_sets\ WHERE\ change_id=\'$change_id\'\ AND\ patch_set_id=\'$patch_set_id\'" | head -3 | tail -1)
+#STD_LOG=$RTVB_MAKE_LOG_BACKUP$commit_id
 cd $SYNC_GIT_WORKING_DIR
+STD_LOG=.rtvb.build.log
 $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m first_manifest.xml $REFERENCE_URL $REPO_URL | tee -a $STD_LOG
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -288,10 +290,12 @@ pick_patch_from_csv_build
 if [ $BUILD_RESULT == "success" ]; then
     echo "$BUILD_TYPE [$(get_date)] build success, create $LIST_BUILD_RESULT_S"
     echo $(repo forall -c $SCRIPT_PATH/rtvb_patches.sh) | sed 's/ /\n/g' >> $LIST_BUILD_RESULT_S
+    rm $STD_LOG
 else
     echo "$BUILD_TYPE [$(get_date)] build failed, create $LIST_BUILD_RESULT_F"
     tmp_a=$(echo $(repo forall -c $SCRIPT_PATH/rtvb_patches.sh) | sed 's/ /:/g')
     echo ${tmp_a%%:*} >> $LIST_BUILD_RESULT_F
+    mv $STD_LOG $RTVB_MAKE_LOG_BACKUP${tmp_a%%:*}.failure.log
 fi
 done
 
@@ -301,7 +305,8 @@ if [ -s $LIST_BUILD_RESULT_F ]; then
     #ingore the failed patches was failed last time
     new_failed_list=$(grep -v -f $LAST_RESULT_LIST_BACKUP$LIST_BUILD_RESULT_F $LIST_BUILD_RESULT_F)
     for GERRIT_PATCH in $new_failed_list; do
-        $SCRIPT_PATH/gerrit_review_update.py -p $GERRIT_PATCH -m $MANIFEST_BRANCH-${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT -r "failure" -d "$RTVB_MAKE_LOG_BACKUP$GERRIT_PATCH"
+        #$SCRIPT_PATH/gerrit_review_update.py -p $GERRIT_PATCH -m $MANIFEST_BRANCH-${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT -r "failure" -d "$RTVB_MAKE_LOG_BACKUP$GERRIT_PATCH"
+        $SCRIPT_PATH/gerrit_review_update.py -p $GERRIT_PATCH -m $MANIFEST_BRANCH-${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT -r "failure" -d "$FILE_SERVER_HTTP$RTVB_MAKE_LOG_BACKUP$GERRIT_PATCH.failure.log"
     done
 fi
 
