@@ -197,8 +197,8 @@ if [ -s $GERRIT_CSV ]; then
         echo "exit value:" $RET
         exit 1
     fi
-    . build/envsetup.sh | tee -a $STD_LOG
-    lunch ${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT | tee -a $STD_LOG
+    . build/envsetup.sh
+    lunch ${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT
     make -j$MAKE_JOBS | tee -a $STD_LOG
     RET=$?
     if [ $RET -eq 0 ]; then
