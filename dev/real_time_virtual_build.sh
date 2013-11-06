@@ -9,14 +9,15 @@
 #       REPO_URL:               repo url
 
 # Command usage:
-#test_setup_code_via_manifest_and_gerrit_patchsetid.sh -b <manifest branch>
+#./dev/real_time_virtual_build.sh -b pxa988-jb4.3 -v userdebug -de pxa1L88dkb_def:pxa1L88dkb
 
 export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-~/aabs/rtvb_work}
-export GERRIT_SERVER=${GERRIT_SERVER:-http://shgit.marvell.com}
+export GERRIT_SERVER=${GERRIT_SERVER:-shgit.marvell.com}
 export GERRIT_ADMIN=${GERRIT_ADMIN:-buildfarm}
 export REFERENCE_URL=${REFERENCE_URL:-"--reference=/mnt/mirror/default"}
 export SRC_URL=${SRC_URL:-ssh://shgit.marvell.com/git/android/platform/manifest.git}
 export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"}
+
 
 #script path
 SCRIPT_PATH=`pwd`/core
@@ -37,6 +38,7 @@ BUILD_RESULT="success"
 LIST_BUILD_RESULT_S=.gerrit.success.list
 LIST_BUILD_RESULT_F=.gerrit.failure.list
 LAST_RESULT_LIST_BACKUP=/autobuild/rtvb/last_result_list_backup/
+RTVB_MAKE_LOG_BACKUP=/autobuild/rtvb/changeid_make_logs/
 
 
 case "$1" in
@@ -171,8 +173,12 @@ fi
 
 pick_patch_from_csv_build()
 {
+change_id=$(awk -F"," ' { print $15; exit } ' $GERRIT_CSV)
+patch_set_id=$(awk -F"," ' { print $15; exit } ' $GERRIT_CSV)
+commit_id=$(ssh -p 29418 $GERRIT_ADMIN@$GERRIT_SERVER gerrit gsql -c "select\ revision\ from\ patch_sets\ WHERE\ change_id=\'$change_id\'\ AND\ patch_set_id=\'$patch_set_id\'" | head -3 | tail -1)
+STD_LOG=$RTVB_MAKE_LOG_BACKUP$commit_id
 cd $SYNC_GIT_WORKING_DIR
-$SCRIPT_PATH/fetchcode.py -u $SRC_URL -m first_manifest.xml $REFERENCE_URL $REPO_URL
+$SCRIPT_PATH/fetchcode.py -u $SRC_URL -m first_manifest.xml $REFERENCE_URL $REPO_URL | tee -a $STD_LOG
 RET=$?
 if [ $RET -ne 0 ]; then
         echo "failed on fetching code from manifest xml"
@@ -181,23 +187,23 @@ if [ $RET -ne 0 ]; then
 fi
 if [ -s $GERRIT_CSV ]; then
     # Setup code via gerrit patch csv
-    echo "$BUILD_TYPE [$(get_date)] Pick one patch from csv for RTVB"
-    $SCRIPT_PATH/gerrit_pick_patch.py -t $GERRIT_CSV
+    echo "$BUILD_TYPE [$(get_date)] Pick one patch from csv for RTVB" | tee -a $STD_LOG
+    $SCRIPT_PATH/gerrit_pick_patch.py -t $GERRIT_CSV | tee -a $STD_LOG
     RET=$?
     if [ $RET -ne 0 ]; then
-        echo "failed on picking patch from $GERRIT_CSV"
+        echo "failed on picking patch from $GERRIT_CSV" | tee -a $STD_LOG
         echo "exit value:" $RET
         exit 1
     fi
-    . build/envsetup.sh
-    lunch ${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT
-    make -j$MAKE_JOBS
+    . build/envsetup.sh | tee -a $STD_LOG
+    lunch ${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT | tee -a $STD_LOG
+    make -j$MAKE_JOBS | tee -a $STD_LOG
     RET=$?
     if [ $RET -eq 0 ]; then
-        echo "$BUILD_TYPE [$(get_date)] success, exit value $RET"
+        echo "$BUILD_TYPE [$(get_date)] success, exit value $RET" | tee -a $STD_LOG
         BUILD_RESULT="success"
     else
-        echo "$BUILD_TYPE [$(get_date)] failure, exit value $RET"
+        echo "$BUILD_TYPE [$(get_date)] failure, exit value $RET" | tee -a $STD_LOG
         BUILD_RESULT="failure"
     fi
 else
@@ -295,7 +301,7 @@ if [ -s $LIST_BUILD_RESULT_F ]; then
     #ingore the failed patches was failed last time
     new_failed_list=$(grep -v -f $LAST_RESULT_LIST_BACKUP$LIST_BUILD_RESULT_F $LIST_BUILD_RESULT_F)
     for GERRIT_PATCH in $new_failed_list; do
-        $SCRIPT_PATH/gerrit_review_update.py -p $GERRIT_PATCH -m $MANIFEST_BRANCH-${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT -r "failure" -d "RTVB"
+        $SCRIPT_PATH/gerrit_review_update.py -p $GERRIT_PATCH -m $MANIFEST_BRANCH-${ABS_BUILD_DEVICES%%:*}-$PLATFORM_ANDROID_VARIANT -r "failure" -d "$RTVB_MAKE_LOG_BACKUP$GERRIT_PATCH"
     done
 fi
 
