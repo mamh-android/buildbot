@@ -26,12 +26,13 @@ def return_gerrit_changes(path, branch, gerrit_open):
     path=path + '$'
     args = "ssh -p 29418 " + m_user + "@" + m_remote_server + " gerrit gsql -c \"select\ *\ from\ changes\ WHERE\ dest_branch_name=\\\'refs/heads/" + branch +  "\\\'\ AND\ open=\\\'" + gerrit_open + "\\\'\ AND\ dest_project_name\ REGEXP\ \\\'" + path + "\\\'\""
     a = []
-    if path == "X" and branch == "X" and gerrit_open == "X":
+    if gerrit_open == "X":
         f = open('tmptxt', 'w')
         f.write(os.popen(args).read())
         f.close()
         in_txt = csv.reader(open("tmptxt", "rb"), delimiter = '|')
         for row in in_txt:
+            print row
             a.append(row)
         a.pop(1)
         a.pop(len(a)-1)
@@ -71,7 +72,7 @@ def return_via_patch_approvals(in_array, category, value, change_open):
     out_array.extend(in_array)
     for rows in in_array:
         a = []
-        args = "ssh -p 29418 " + m_user + "@" + m_remote_server + " gerrit gsql -c \"select\ *\ from\ patch_set_approvals\ WHERE\ VALUE=\\\'" + value +  "\\\'\ AND\ CHANGE_OPEN=\\\'" + change_open + "\\\'\ AND\ CATEGORY_ID=\\\'" + category + "\\\'\ AND\ CHANGE_ID=\\\'" + rows[14].strip() + "\\\'\ AND\ PATCH_SET_ID=\\\'" + rows[10].strip() +"\\\'\""
+        args = "ssh -p 29418 " + m_user + "@" + m_remote_server + " gerrit gsql -c \"select\ *\ from\ patch_set_approvals\ WHERE\ VALUE=\\\'" + value +  "\\\'\ AND\ CHANGE_OPEN=\\\'" + change_open + "\\\'\ AND\ CATEGORY_ID=\\\'" + category + "\\\'\ AND\ CHANGE_ID=\\\'" + rows[13].strip() + "\\\'\ AND\ PATCH_SET_ID=\\\'" + rows[9].strip() +"\\\'\""
         f = open('tmptxt', 'w')
         f.write(os.popen(args).read())
         f.close()
@@ -82,7 +83,7 @@ def return_via_patch_approvals(in_array, category, value, change_open):
         a.pop(0)
         a.pop(len(a)-1)
         if not a:
-            print "changeid with [" + rows[14].strip() + "] is empty patch_set_approvals"
+            print "changeid with [" + rows[13].strip() + "] is empty patch_set_approvals"
             out_array.remove(rows)
     return out_array
 
@@ -94,7 +95,7 @@ def return_umatch_patch_approvals(in_array, category, value, change_open):
     out_array.extend(in_array)
     for rows in in_array:
         a = []
-        args = "ssh -p 29418 " + m_user + "@" + m_remote_server + " gerrit gsql -c \"select\ *\ from\ patch_set_approvals\ WHERE\ VALUE=\\\'" + value +  "\\\'\ AND\ CHANGE_OPEN=\\\'" + change_open + "\\\'\ AND\ CATEGORY_ID=\\\'" + category + "\\\'\ AND\ CHANGE_ID=\\\'" + rows[14].strip() + "\\\'\ AND\ PATCH_SET_ID=\\\'" + rows[10].strip() +"\\\'\""
+        args = "ssh -p 29418 " + m_user + "@" + m_remote_server + " gerrit gsql -c \"select\ *\ from\ patch_set_approvals\ WHERE\ VALUE=\\\'" + value +  "\\\'\ AND\ CHANGE_OPEN=\\\'" + change_open + "\\\'\ AND\ CATEGORY_ID=\\\'" + category + "\\\'\ AND\ CHANGE_ID=\\\'" + rows[13].strip() + "\\\'\ AND\ PATCH_SET_ID=\\\'" + rows[9].strip() +"\\\'\""
         f = open('tmptxt', 'w')
         f.write(os.popen(args).read())
         f.close()
@@ -105,7 +106,7 @@ def return_umatch_patch_approvals(in_array, category, value, change_open):
         a.pop(0)
         a.pop(len(a)-1)
         if a:
-            print "changeid with [" + rows[14].strip() + "] is " + category + "=" + value + ". Remove from the array"
+            print "changeid with [" + rows[13].strip() + "] is " + category + "=" + value + ". Remove from the array"
             out_array.remove(rows)
     return out_array
 
@@ -127,7 +128,7 @@ def return_via_datetime(in_array, date):
 def setup_for_rtvb(fout, d_path, d_branch):
     print "Setup patches csv for rtvb"
     out_csv = csv.writer(open(fout, 'wb'))
-    out_csv.writerows(return_gerrit_changes("X", "X", "X"))
+    #out_csv.writerows(return_gerrit_changes("X", "X", "X"))
     tmp_array=[]
     for name, c_path in d_path.items():
         branch = d_branch.get(name)
@@ -139,11 +140,11 @@ def setup_for_rtvb(fout, d_path, d_branch):
     #Remove date great then 10 days from list
     tmp_array = return_via_datetime(tmp_array, 10)
     #Remove CRVW -2 from list
-    tmp_array = return_umatch_patch_approvals(tmp_array, "CRVW", "-2", "Y")
+    tmp_array = return_umatch_patch_approvals(tmp_array, "Code-Review", "-2", "Y")
     #Remove CRVW -1 from list
-    tmp_array = return_umatch_patch_approvals(tmp_array, "CRVW", "-1", "Y")
+    tmp_array = return_umatch_patch_approvals(tmp_array, "Code-Review", "-1", "Y")
     #Remove VRIF +1 from list
-    tmp_array = return_umatch_patch_approvals(tmp_array, "VRIF", "1", "Y")
+    tmp_array = return_umatch_patch_approvals(tmp_array, "Verified", "1", "Y")
     #sorted by LAST_UPDATED_ON
     tmp_array.sort(key=lambda a: a[2])
     out_csv.writerows(tmp_array)
@@ -204,18 +205,18 @@ def main(argv):
             elif arg[1:2] == "+" and (arg[2:] == "1" or arg[2:] == "2"):
                 review_value = arg[2:]
                 if arg[:1] == "R":
-                    review_category = "CRVW"
+                    review_category = "Code-Review"
                 elif arg[:1] == "V":
-                    review_category = "VRIP"
+                    review_category = "Verified"
                 else:
                     usage()
                     sys.exit(2)
             elif arg[1:2] == "-" and (arg[2:] == "1" or arg[2:] == "2"):
                 review_value = arg[1:]
                 if arg[:1] == "R":
-                    review_category = "CRVW"
+                    review_category = "Code-Review"
                 elif arg[:1] == "V":
-                    review_category = "VRIP"
+                    review_category = "Verified"
                 else:
                     usage()
                     sys.exit(2)

@@ -273,7 +273,7 @@ def return_gerrit_changes(gerrit_patch_csv):
     in_txt = csv.reader(open(gerrit_patch_csv, "rb"), delimiter = ',')
     for row in in_txt:
         a.append(row)
-    patch_commit_id = return_revision(a[0][14].strip(), a[0][10].strip())
+    patch_commit_id = return_revision(a[0][13].strip(), a[0][9].strip())
     patch_commit_id = patch_commit_id.split(',')
     a.pop(0)
     out_csv = csv.writer(open(gerrit_patch_csv, 'wb'))
