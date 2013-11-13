@@ -4,7 +4,8 @@ STD_LOG=/home/buildfarm/buildbot_script/stdio.log
 PACKAGE_LINK=$( awk -F"<result-dir>http:|</result-dir>" ' /<result-dir>/ { print $2 } ' $STD_LOG )
 IDIR="PROPERTY_DIR"
 USER="buildfarm"
-PPAT_SERVER="10.38.32.98"
+PPAT_PXA988_SERVER="10.38.32.98"
+PPAT_EDEN_SERVER="10.38.32.98"
 
 ids_0=$1
 ids_1=$2
@@ -29,8 +30,13 @@ result=`grep ">PASS<" $STD_LOG`
 if [ -n "$result" ]; then
   echo "************start PPAT with parameters*************"
   echo $ids_0 $ids_1 $ids_2 $ids_3 $ids_4 $ids_5 $ids_6 $ids_7 $ids_8 $ids_9 $ids_10 $ids_11 $ids_12 $ids_13 $ids_14 $ids_15 $ids_16 $ids_17
-  ssh $USER@$PPAT_SERVER /home/buildfarm/ppat/startPPAT.sh $ids_0 $ids_1 $ids_2 $ids_3 $ids_4 $ids_5 $ids_6 $ids_7 $ids_8 $ids_9 $ids_10 $ids_11 $ids_12 $ids_13 $ids_14 $ids_15 $ids_16 $ids_17 
-  exit 0
+  if [ $ids_5 = "pxa988-jb4.3" ]; then
+    ssh $USER@$PPAT_PXA988_SERVER /home/buildfarm/ppat/startPPAT.sh $ids_0 $ids_1 $ids_2 $ids_3 $ids_4 $ids_5 $ids_6 $ids_7 $ids_8 $ids_9 $ids_10 $ids_11 $ids_12 $ids_13 $ids_14 $ids_15 $ids_16 $ids_17
+    exit 0
+  elif [ $ids_5 = "eden-jb43" ]; then
+    ssh $USER@$PPAT_EDEN_SERVER /home/buildfarm/ppat/startPPAT.sh $ids_0 $ids_1 $ids_2 $ids_3 $ids_4 $ids_5 $ids_6 $ids_7 $ids_8 $ids_9 $ids_10 $ids_11 $ids_12 $ids_13 $ids_14 $ids_15 $ids_16 $ids_17
+    exit 0
+  fi
 else
   echo "odvb failure"
   exit 1
