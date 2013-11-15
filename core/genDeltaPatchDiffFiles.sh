@@ -1,59 +1,83 @@
-#############################################
-#
-# File: genDeltaPatchDiffFiles.sh
-# Author: YuanZhang
-# Create Data: 06/13/2011
-# Update Date: 04/27/2012
-# ---------------------------------------
-# 
-# Description:
-#
-#  This is the shell script for calling genDeltaPatch.sh and genDiff.sh
-#
-##############################################
+#!/bin/bash
+REPO_GIT="ssh://shgit.marvell.com/git/android/tools/repo.git"
 
-#---------------
-# Global Definition
-#--------------
-CUR_PATH="${PWD}"
-WORKSPACE="${CUR_PATH}"
-FIRST_SYNC_FOLDER="${WORKSPACE}/FirstSyncFolder"
-SECOND_SYNC_FOLDER="${WORKSPACE}/SecondSyncFolder"
-DELTA_RESULT_FOLDER="${WORKSPACE}/DeltaPatchResult"
-DIFF_RESULT_FOLDER="${WORKSPACE}/DiffResult"
+MANIFEST_GIT="ssh://shgit.marvell.com/git/android/platform/manifest.git"
 
-XML_ONE="$1"
-XML_TWO="$2"
+REPO_MIRROR=/mnt/mirror/default
 
-XML_ONE_NAME="${1##*/}"
-XML_TWO_NAME="${2##*/}"
+DATE=$(date +%Y-%m-%d-%H-%M-%S)
 
-RELEASE_FOLDER=`echo ${XML_TWO%%${XML_TWO_NAME}*}`
+OUTPUT_FOLDER=/autobuild/code-compare/${DATE}
+OUTPUT_FILE=${OUTPUT_FOLDER}/patch_list.diff
 
-#--------------------
-# Function: clobber
-# Usage: clean all result
-#-------------------
-function clobber(){
+mkdir -p ${OUTPUT_FOLDER}
 
-	rm -rf "${DELTA_RESULT_FOLDER}" 1>/dev/null 2>&1
-	rm -rf "${DIFF_RESULT_FOLDER}" 1>/dev/null 2>&1
-	rm -rf "${FIRST_SYNC_FOLDER}" 1>/dev/null 2>&1
-	rm -rf "${SECOND_SYNC_FOLDER}" 1>/dev/null 2>&1
-
+update_tag()
+{
+	repo forall -c "git tag -f $1 2>/dev/null" && \
+	repo list > $2
 }
 
-#-----------------
-# Function: main
-# Usage: where the script begin
-#----------------
-function main(){
-
-	bash ~/buildbot_script/buildbot/core/genDeltaPatch.sh "${XML_ONE}" "${XML_TWO}"
-	bash ~/buildbot_script/buildbot/core/genDiff.sh "${FIRST_SYNC_FOLDER}" "${SECOND_SYNC_FOLDER}" "${RELEASE_FOLDER}"
-	
-	#clean the tmp files & folder
-	clobber
+echo_out()
+{
+    echo "$*" >> ${OUTPUT_FILE}
 }
 
-main $*
+cd ~/buildbot_script
+rm -fr repo-diff-workdir
+mkdir repo-diff-workdir
+cd repo-diff-workdir
+cp ${sour} ./m1.xml
+cp ${dest} ./m2.xml
+
+
+#################### sync code and make tag ########################################
+repo init -u ${MANIFEST_GIT} --reference ${REPO_MIRROR} --repo-url ${REPO_GIT}
+
+cp ./m1.xml .repo/manifests && cp ./m2.xml .repo/manifests && \
+repo init -m m1.xml && \
+repo sync && \
+update_tag tag1 list1 && \
+repo init -m m2.xml && \
+repo sync && \
+update_tag tag2 list2
+
+##################### do compare ##################################################
+echo_out --- ${sour}
+echo_out +++ ${dest}
+echo_out
+echo_out Added/Removed projects:
+echo_out =======================
+echo_out
+
+/usr/bin/diff -u list1 list2 |perl -nle "if (/^[-+][^-+]/) { s/^\+/+   /; s/^-/-   /; print }" |LC_ALL=C sort >> ${OUTPUT_FILE}
+
+echo_out
+echo_out Changes in each project:
+echo_out ========================
+echo_out
+
+repo forall -p -c git log --left-right --cherry-pick --date=short --pretty='%m || %h ||  %s (%an) (%cd)' tag1...tag2| \
+    sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g" |  # ansi2txt \
+    perl -ple 's/^>/+/; s/^</-/' >> ${OUTPUT_FILE}    # Convert > to + and < to -
+
+
+############# start to generate patch #############################
+while read -r line
+do
+   if [ -n "$line" ]; then
+    cleanLine=${line%% *}
+    if [ $cleanLine = "project" ]; then
+         projectName=${line#project *}
+         pkgFolder="${OUTPUT_FOLDER}/patch-package/$projectName"
+             mkdir -p $pkgFolder
+             cd $projectName
+             git format-patch -o $pkgFolder tag1...tag2
+         cd -
+    fi
+   fi
+done < ${OUTPUT_FILE}
+cd ${OUTPUT_FOLDER}/patch-package && \
+tree  > "./patch-structure.txt" && cd ../ && \
+tar zcvf patch-package.tgz "patch-package"
+rm -rf "./patch-package"
