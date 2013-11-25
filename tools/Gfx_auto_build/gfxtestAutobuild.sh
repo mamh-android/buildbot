@@ -24,6 +24,10 @@ case "$2" in
     echo export pxa988dkb_def
     export TARGET_PRODUCT="pxa988dkb_def"
     ;;
+    "pxa988_kk4.4")
+    echo export pxa988dkb_def
+    export TARGET_PRODUCT="pxa988dkb_def"
+    ;;
 esac
 
 generate_init_is_not_ready_email()
