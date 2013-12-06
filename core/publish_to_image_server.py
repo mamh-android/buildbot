@@ -89,9 +89,10 @@ def publish_file(src, dst):
     print "Publish is done"
     print "~~<result>PASS</result>"
     print "~~<result-dir>" + build + "</result-dir>"
+    return build
 
 
 #publish_file()
 #run publishing
 #publish_file(create_publish_folder(IMAGE_SERVER))
-publish_file(COSMO_OUT_DIR, IMAGE_SERVER)
+#publish_file(COSMO_OUT_DIR, IMAGE_SERVER)

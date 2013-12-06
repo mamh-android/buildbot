@@ -20,7 +20,7 @@ def generate_log_since(date, files):
     f.close()
 
 def generate_change_log(ref):
-    args = "git log " + ref + ".." + "HEAD"
+    args = "git log " + str(ref) + ".." + "HEAD"
     if not os.path.isdir("out"):
         os.mkdir("out")
     f = open('out/changelog.build', 'w')
