@@ -34,16 +34,21 @@ def run(buildresult):
     global MAIL_LIST
     global COSMO_OUT_DIR
     global IMAGE_SERVER
-    if (buildresult == "success"):
-        branch = os.popen("git branch").read().split()[1]
-        last_build = IMAGE_SERVER + "LAST_BUILD."  + branch
-        if os.path.isfile(last_build):
-            f = open(last_build, 'r')
-            last_rev = f.readline().strip()
-            f.close()
-        else:
-            last_rev = ""
-        current_rev = os.popen("git log -1 " + branch + " --pretty=format:%H").read().split()
+    branch = os.popen("git branch").read().split()[1]
+    last_build = IMAGE_SERVER + "LAST_BUILD."  + branch
+    if os.path.isfile(last_build):
+        infile = open(last_build, 'r')
+        f = infile.read()
+        infile.close()
+        last_rev = f
+    else:
+        last_rev = ""
+    current_rev = os.popen("git log -1 " + branch + " --pretty=format:%H").read().split()
+    if current_rev[0] == last_rev:
+        print "~~<result>PASS</result>"
+        print "~~<result-details>No build</result-details>"
+        exit(255)
+    elif (buildresult == "success"):
         generate_change_log(last_rev)
         image_path = publish_file(COSMO_OUT_DIR, IMAGE_SERVER)
         send_html_mail("It's just a test, build success",ADM_USER,MAIL_LIST,buildresult, image_path)
@@ -51,12 +56,15 @@ def run(buildresult):
             f = open(last_build, 'w')
             f.write(current_rev[0])
             f.close()
+            print "Publish is done"
+            print "~~<result>PASS</result>"
+            print "~~<result-dir>" + image_path + "</result-dir>"
+        exit(0)
     elif (buildresult == "failure"):
         send_html_mail("It's just a test, build failed",ADM_USER,MAIL_LIST,buildresult, "")
-    else:
-        print "~~<result>PASS</result>"
-        print "~~<result-details>No build</result-details>"
         exit(0)
+    else:
+        exit(1)
 
 #User help
 def usage():
@@ -78,11 +86,7 @@ def main(argv):
             sys.exit()
         elif opt in ("-r"):
             build_result = arg
-    if (build_result == ""):
-        usage()
-        sys.exit(2)
-    else:
-        run(get_ret(COSMO_BUILD_LOG))
+    run(get_ret(COSMO_BUILD_LOG))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

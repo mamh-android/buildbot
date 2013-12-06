@@ -86,9 +86,6 @@ def publish_file(src, dst):
     if not os.path.isdir(path):
         os.makedirs(path)
     shutil.copytree(src, build)
-    print "Publish is done"
-    print "~~<result>PASS</result>"
-    print "~~<result-dir>" + build + "</result-dir>"
     return build
 
 
