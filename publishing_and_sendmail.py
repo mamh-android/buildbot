@@ -14,7 +14,7 @@ from publish_to_image_server import *
 
 COSMO_OUT_DIR="out\\"
 IMAGE_SERVER="\\\\sh-srv06\\cosmo_build\\"
-MAIL_LIST = get_mail_list("gr_notice_mail")
+MAIL_LIST = get_mail_list("cosmo-dev")
 COSMO_BUILD_LOG=".cosmo.build.log"
 
 def get_ret(build_log):
@@ -45,13 +45,26 @@ def run(buildresult):
         last_rev = ""
     current_rev = os.popen("git log -1 " + branch + " --pretty=format:%H").read().split()
     if current_rev[0] == last_rev:
+        subject = "[cosmo-auto-build] [" + str(date.today()) + "] Nobuild"
+        text = "This is an automated email from the autobuild script. The \
+        email was generated because the script detects no significant change in \
+        source code since last build.\n\
+\n=============================================================\n\
+Team of APSE\n"
+        send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         print "~~<result>PASS</result>"
         print "~~<result-details>No build</result-details>"
         exit(255)
     elif (buildresult == "success"):
         generate_change_log(last_rev)
         image_path = publish_file(COSMO_OUT_DIR, IMAGE_SERVER)
-        send_html_mail("It's just a test, build success",ADM_USER,MAIL_LIST,buildresult, image_path)
+        subject = "[cosmo-auto-build] [" + str(date.today()) + "] Success"
+        text = "This is an automated email from the autobuild script. It was \
+generated because a new package is generated successfully and \
+the package is changed since last day.\n\
+You can get the package from:\n" + image_path + "\n=============================================================\n\
+Team of APSE\n"
+        send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         if current_rev:
             f = open(last_build, 'w')
             f.write(current_rev[0])
@@ -61,7 +74,13 @@ def run(buildresult):
             print "~~<result-dir>" + image_path + "</result-dir>"
         exit(0)
     elif (buildresult == "failure"):
-        send_html_mail("It's just a test, build failed",ADM_USER,MAIL_LIST,buildresult, "")
+        subject = "[cosmo-auto-build] [" + str(date.today()) + "] Failed"
+        text = "This is an automated email from the autobuild script. It was \
+generated because an error encountered while building the code. \
+The error can be resulted from newly checked in codes.\n\
+\n=============================================================\n\
+Team of APSE\n"
+        send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(0)
     else:
         exit(1)

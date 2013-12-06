@@ -43,7 +43,7 @@ def get_mail_list(mail_list):
         email_list.append(os.popen(args).read().split()[2])
     return email_list
 
-def send_html_mail(subject, from_who, to_who, build_result, image_path):
+def send_html_mail(subject, from_who, to_who, text):
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
@@ -51,15 +51,15 @@ def send_html_mail(subject, from_who, to_who, build_result, image_path):
     msg['To'] = ", ".join(to_who)
 
     # Create the body of the message (a plain-text and an HTML version).
-    text = "Hi!\nHow are you?\nIt's a test link:\n//sh-srv06/"
-    if (build_result == "success"):
-        text = "Hi!\nCosmo build success\nIt's a test link:\n" + image_path
-    elif (build_result == "failure"):
-        text = "Hi!\nCosmo build failed\n"
-    elif (build_result == "nobuild"):
-        text = "Hi!\nCosmo build nobuild\n"
-    else:
-        text = "Hi!\nHow are you?\nIt's a test link:\n"
+    #text = "Hi!\nHow are you?\nIt's a test link:\n//sh-srv06/"
+    #if (build_result == "success"):
+    #    text = "Hi!\nCosmo build success\nIt's a test link:\n" + image_path
+    #elif (build_result == "failure"):
+    #    text = "Hi!\nCosmo build failed\n"
+    #elif (build_result == "nobuild"):
+    #    text = "Hi!\nCosmo build nobuild\n"
+    #else:
+    #    text = "Hi!\nHow are you?\nIt's a test link:\n"
     
     #html sample
     html = """\
@@ -104,7 +104,7 @@ def main(argv):
     results = ""
     dir_path = ""
     get_mail_list()
-    send_html_mail("It's just a test",ADM_USER,["yfshi@marvell.com"],"success")
+    #send_html_mail("It's just a test",ADM_USER,["yfshi@marvell.com"],"success")
     #send_html_mail("It's just a test", ADM_USER, get_mail_list(), "success")
     try:
         opts, args = getopt.getopt(argv,"r:d:h")
