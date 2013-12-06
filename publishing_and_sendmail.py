@@ -13,7 +13,7 @@ from send_mail import *
 from publish_to_image_server import *
 
 COSMO_OUT_DIR="out\\"
-IMAGE_SERVER="X:\\"
+IMAGE_SERVER="\\\\sh-srv06\\cosmo_build\\"
 MAIL_LIST = get_mail_list("gr_notice_mail")
 
 def run(buildresult):
