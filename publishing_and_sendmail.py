@@ -15,6 +15,20 @@ from publish_to_image_server import *
 COSMO_OUT_DIR="out\\"
 IMAGE_SERVER="\\\\sh-srv06\\cosmo_build\\"
 MAIL_LIST = get_mail_list("gr_notice_mail")
+COSMO_BUILD_LOG=".cosmo.build.log"
+
+def get_ret(build_log):
+    global COSMO_BUILD_LOG
+    infile = open(COSMO_BUILD_LOG,"r")
+    text = infile.read()
+    infile.close()
+    search = "    0 Error(s)"
+    index = text.find(search)
+    if not index == (-1):
+        buildresult = "success"
+    else:
+        buildresult = "failure"
+    return buildresult
 
 def run(buildresult):
     global MAIL_LIST
@@ -47,7 +61,7 @@ def run(buildresult):
 #User help
 def usage():
     print "\tpublish_and_sendmail"
-    print "\t      [-r] result <success|failure|nobuild>"
+#    print "\t      [-r] result <success|failure|nobuild>"
     print "\t      [-h] help"
 
 def main(argv):
@@ -68,7 +82,7 @@ def main(argv):
         usage()
         sys.exit(2)
     else:
-        run(build_result)
+        run(get_ret(COSMO_BUILD_LOG))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
