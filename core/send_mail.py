@@ -53,13 +53,13 @@ def send_html_mail(subject, from_who, to_who, build_result, image_path):
     # Create the body of the message (a plain-text and an HTML version).
     text = "Hi!\nHow are you?\nIt's a test link:\n//sh-srv06/"
     if (build_result == "success"):
-        text = "Hi!\nCosmo build success\nIt's a test link:\n//sh-srv06/" + image_path
+        text = "Hi!\nCosmo build success\nIt's a test link:\n" + image_path
     elif (build_result == "failure"):
         text = "Hi!\nCosmo build failed\n"
     elif (build_result == "nobuild"):
         text = "Hi!\nCosmo build nobuild\n"
     else:
-        text = "Hi!\nHow are you?\nIt's a test link:\n//sh-srv06/"
+        text = "Hi!\nHow are you?\nIt's a test link:\n"
     
     #html sample
     html = """\
