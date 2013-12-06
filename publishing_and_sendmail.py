@@ -7,7 +7,7 @@
 import os
 import sys
 #import core script
-sys.path.append("..\\buildscript\\core")
+sys.path.append("..\\build_script\\core")
 from generate_change_log import *
 from send_mail import *
 from publish_to_image_server import *
