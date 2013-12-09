@@ -47,8 +47,8 @@ def run(buildresult):
     if current_rev[0] == last_rev:
         subject = "[cosmo-auto-build] [" + str(date.today()) + "] Nobuild"
         text = "This is an automated email from the autobuild script. The \
-        email was generated because the script detects no significant change in \
-        source code since last build.\n\
+email was generated because the script detects no significant change in \
+source code since last build.\n\
 \n=============================================================\n\
 Team of APSE\n"
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)

@@ -12,9 +12,12 @@ import shutil
 import os
 import sys
 from datetime import date
+from send_mail import *
+MAIL_LIST = get_mail_list("cosmo-admin")
 
 #copy bin and build files from {src} to out, {src} dict will be import from FILES_DICT in cosmo src code
 def copy_dict():
+    global MAIL_LIST
     sys.path.append(os.getcwd())
     from COSMO_FILES_PUBLISH_DICT import FILES_DICT
     for i in FILES_DICT:
@@ -34,11 +37,22 @@ def copy_dict():
                 os.makedirs(path)
             shutil.copy2(i,FILES_DICT[i])
         else:
-            print "publishing failed, file " + i + " dose not existed"
+            p = "publishing failed, file " + i + " dose not existed"
+            print p
+            subject = "[cosmo-auto-build] [" + str(date.today()) + "] Publishing failed"
+            text = "This is an automated email from the autobuild script. The \
+email was generated because publishing failed after a success build.\n\
+\n=============================================================\n" + p + "\n=============================================================\n\
+Team of APSE\n"
+            send_html_mail(subject,ADM_USER,MAIL_LIST,text) 
             exit(2)
 
 def copy_file(src, dst):
     print src
+    global MAIL_LIST
+    global subject
+    global text1
+    global sign
     if os.path.isdir(src):
         p = "copy directory: " + src + "-->" + dst
         print p
@@ -54,7 +68,14 @@ def copy_file(src, dst):
             os.makedirs(path)
         shutil.copy(src, dst)
     else:
-        print "publishing failed, file " + src + " dose not existed"
+        p = "publishing failed, file " + src + " dose not existed"
+        print p
+        subject = "[cosmo-auto-build] [" + str(date.today()) + "] Publishing failed"
+        text = "This is an automated email from the autobuild script. The \
+email was generated because publishing failed after a success build.\n\
+\n=============================================================\n" + p + "\n=============================================================\n\
+Team of APSE\n"
+        send_html_mail(subject,ADM_USER,MAIL_LIST,text) 
         exit(2)
 
 #create a folder according to git branch name and time.today
