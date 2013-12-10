@@ -40,7 +40,7 @@ def run(buildresult):
         infile = open(last_build, 'r')
         f = infile.read()
         infile.close()
-        last_rev = f
+        last_rev = f.split()[0]
     else:
         last_rev = ""
     current_rev = os.popen("git log -1 " + branch + " --pretty=format:%H").read().split()
@@ -68,6 +68,8 @@ Team of APSE\n"
         if current_rev:
             f = open(last_build, 'w')
             f.write(current_rev[0])
+            f.write("\nPackage: ")
+            f.write(image_path)
             f.close()
             print "Publish is done"
             print "~~<result>PASS</result>"
