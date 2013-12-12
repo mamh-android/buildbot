@@ -45,12 +45,11 @@ def run(buildresult):
         last_rev = ""
     current_rev = os.popen("git log -1 " + branch + " --pretty=format:%H").read().split()
     if current_rev[0] == last_rev:
-        subject = "[cosmo-auto-build] [" + str(date.today()) + "] Nobuild"
-        text = "This is an automated email from the autobuild script. The \
-email was generated because the script detects no significant change in \
-source code since last build.\n\
-\n=============================================================\n\
-Team of APSE\n"
+        subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Nobuild"
+        text = "This is an automated email from cosmo auto build system. \
+The email was generated because the system detects no significant change in source code since last build.\n\n\
+Regards,\n\
+Team of Cosmo\n"
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         print "~~<result>PASS</result>"
         print "~~<result-details>No build</result-details>"
@@ -58,12 +57,14 @@ Team of APSE\n"
     elif (buildresult == "success"):
         generate_change_log(last_rev)
         image_path = publish_file(COSMO_OUT_DIR, IMAGE_SERVER)
-        subject = "[cosmo-auto-build] [" + str(date.today()) + "] Success"
-        text = "This is an automated email from the autobuild script. It was \
-generated because a new package is generated successfully and \
-the package is changed since last day.\n\
-You can get the package from:\n" + image_path + "\n=============================================================\n\
-Team of APSE\n"
+        subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Success"
+        text = "This is an automated email from cosmo auto build system. \
+It was generated because a new package was build successfully and the passed the smoke test.\n\n\
+You can download the package at:\n" + image_path + "\n\n\
+The change since last build is listed below:\n\
+" + f + "\n\n\
+Regards,\n\
+Team of Cosmo\n"
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         if current_rev:
             f = open(last_build, 'w')
@@ -76,12 +77,14 @@ Team of APSE\n"
             print "~~<result-dir>" + image_path + "</result-dir>"
         exit(0)
     elif (buildresult == "failure"):
-        subject = "[cosmo-auto-build] [" + str(date.today()) + "] Failed"
-        text = "This is an automated email from the autobuild script. It was \
-generated because an error encountered while building the code. \
-The error can be resulted from newly checked in codes.\n\
-\n=============================================================\n\
-Team of APSE\n"
+        subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Failed"
+        text = "This is an automated email from cosmo auto build system. \
+It was generated because an error encountered while building the code. \
+The error can be resulted from newly checked in codes.\n\n\
+The change since last build is listed below:\n\
+" + f + "\n\n\
+Regards,\n\
+Team of Cosmo\n"
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(0)
     else:
