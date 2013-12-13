@@ -77,12 +77,22 @@ Team of Cosmo\n"
             print "~~<result-dir>" + image_path + "</result-dir>"
         exit(0)
     elif (buildresult == "failure"):
+        failure_log = ""
+        infile = open(last_build, 'r')
+        f = infile.readlines()
+        infile.close()
+        i = len(f)-100
+        while i < len(f):
+            failure_log = failure_log + f[i]
+            i = i + 1
         subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Failed"
         text = "This is an automated email from cosmo auto build system. \
 It was generated because an error encountered while building the code. \
 The error can be resulted from newly checked in codes.\n\n\
 The change since last build is listed below:\n\
 " + f + "\n\n\
+Last part of the build log is followed:\n\
+" + failure_log + "\n\n\
 Regards,\n\
 Team of Cosmo\n"
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
