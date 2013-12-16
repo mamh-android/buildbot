@@ -12,10 +12,11 @@ from generate_change_log import *
 from send_mail import *
 from publish_to_image_server import *
 
-COSMO_OUT_DIR="out\\"
-IMAGE_SERVER="\\\\sh-srv06\\cosmo_build\\"
+COSMO_OUT_DIR = "out\\"
+IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build\\"
 MAIL_LIST = get_mail_list("cosmo-dev")
-COSMO_BUILD_LOG=".cosmo.build.log"
+COSMO_BUILD_LOG = ".cosmo.build.log"
+COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 
 def get_ret(build_log):
     global COSMO_BUILD_LOG
@@ -34,6 +35,7 @@ def run(buildresult):
     global MAIL_LIST
     global COSMO_OUT_DIR
     global IMAGE_SERVER
+    global COSMO_CHANGELOG_BUILD
     branch = os.popen("git branch").read().split()[1]
     last_build = IMAGE_SERVER + "LAST_BUILD."  + branch
     if os.path.isfile(last_build):
@@ -56,13 +58,17 @@ Team of Cosmo\n"
         exit(255)
     elif (buildresult == "success"):
         generate_change_log(last_rev)
+        if os.path.isfile(COSMO_CHANGELOG_BUILD):
+            infile = open(COSMO_CHANGELOG_BUILD, 'r')
+            change_log = infile.read()
+            infile.close()
         image_path = publish_file(COSMO_OUT_DIR, IMAGE_SERVER)
         subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Success"
         text = "This is an automated email from cosmo auto build system. \
-It was generated because a new package was build successfully and the passed the smoke test.\n\n\
+It was generated because a new package was build successfully and passed the smoke test.\n\n\
 You can download the package at:\n" + image_path + "\n\n\
 The change since last build is listed below:\n\
-" + f + "\n\n\
+" + change_log + "\n\n\
 Regards,\n\
 Team of Cosmo\n"
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
@@ -77,6 +83,11 @@ Team of Cosmo\n"
             print "~~<result-dir>" + image_path + "</result-dir>"
         exit(0)
     elif (buildresult == "failure"):
+        generate_change_log(last_rev)
+        if os.path.isfile(COSMO_CHANGELOG_BUILD):
+            infile = open(COSMO_CHANGELOG_BUILD, 'r')
+            change_log = infile.read()
+            infile.close()
         failure_log = ""
         infile = open(last_build, 'r')
         f = infile.readlines()
@@ -90,7 +101,7 @@ Team of Cosmo\n"
 It was generated because an error encountered while building the code. \
 The error can be resulted from newly checked in codes.\n\n\
 The change since last build is listed below:\n\
-" + f + "\n\n\
+" + change_log + "\n\n\
 Last part of the build log is followed:\n\
 " + failure_log + "\n\n\
 Regards,\n\
