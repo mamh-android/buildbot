@@ -15,6 +15,8 @@ from publish_to_image_server import *
 COSMO_OUT_DIR = "out\\"
 IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build\\"
 MAIL_LIST = get_mail_list("cosmo-dev")
+#add Simon Kershaw into MAIL_LIST for specical case
+MAIL_LIST.append('skershaw@marvell.com')
 COSMO_BUILD_LOG = ".cosmo.build.log"
 COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 
