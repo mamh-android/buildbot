@@ -18,16 +18,23 @@ MAIL_LIST = get_mail_list("cosmo-dev")
 #add Simon Kershaw into MAIL_LIST for specical case
 MAIL_LIST.append('skershaw@marvell.com')
 COSMO_BUILD_LOG = ".cosmo.build.log"
+COSMO_DAILY_TEST_LOG = "test\\.cosmo.dailytest.log"
 COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 
 def get_ret(build_log):
     global COSMO_BUILD_LOG
+    global COSMO_DAILY_TEST_LOG
     infile = open(COSMO_BUILD_LOG,"r")
     text = infile.read()
     infile.close()
     search = "    0 Error(s)"
-    index = text.find(search)
-    if not index == (-1):
+    no_err = text.find(search)
+    infile = open(COSMO_DAILY_TEST_LOG,"r")
+    text = infile.read()
+    infile.close()
+    search = "*** Cosmo Daily Test: all runnings success"
+    no_failure = text.find(search)
+    if not no_err == (-1) and not no_failure == (-1):
         buildresult = "success"
     else:
         buildresult = "failure"
