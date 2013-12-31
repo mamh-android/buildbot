@@ -134,7 +134,7 @@ EOF
 generate_uprb_success_notification_email() {
 cat <<-EOF
 From: $build_maintainer
-To: $USEREMAIL
+To: $USEREMAIL;gqxu@marvell.com
 Subject: [$BUILDTYPE] is done.
 
 This is an automated email from the autobuild script. It was
