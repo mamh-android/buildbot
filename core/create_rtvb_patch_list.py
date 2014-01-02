@@ -61,12 +61,15 @@ def setup_json_str_file(fout, d_path, d_branch):
         #Create all list
         all_json_list.extend(return_json_str_list(path_name, branch))
     all_json_list = sorted(all_json_list, key=lambda patch: patch['createdOn'])
-    with open(fout, 'w') as outfile:
-        json.dump(all_json_list, outfile)
+    outfile = open(fout, 'w')
+    for json_str in all_json_list:
+        json.dump(json_str, outfile)
+        outfile.write('\n')
+    outfile.close()
 
 #User help
 def usage():
-    print "\tcreate_csv [-o] <output file>"
+    print "\tcreate_rtvb [-o] <output file>"
     print "\t      [-b] {branch file from getname}"
     print "\t      [-p] {path file from getname}"
     print "\t      [-h] help"
