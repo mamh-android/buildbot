@@ -50,6 +50,7 @@ def return_json_str_list(project, branch):
         if not jsonstr.has_key('runTimeMilliseconds'):
             json_list.append(jsonstr)
     return json_list
+
 #
 def setup_json_str_file(fout, d_path, d_branch):
     print "Setup patches list file for rtvb"
@@ -60,7 +61,7 @@ def setup_json_str_file(fout, d_path, d_branch):
         print branch
         #Create all list
         all_json_list.extend(return_json_str_list(path_name, branch))
-    all_json_list = sorted(all_json_list, key=lambda patch: patch['createdOn'])
+    all_json_list = sorted(all_json_list, key=lambda patch: patch['currentPatchSet']['createdOn'])
     outfile = open(fout, 'w')
     for json_str in all_json_list:
         json.dump(json_str, outfile)
