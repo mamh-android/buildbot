@@ -23,7 +23,7 @@ export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tool
 SCRIPT_PATH=`pwd`/core
 
 # Internal variable
-GERRIT_CSV=gerrit_review_rtvb.csv
+GERRIT_CSV=.gerrit_review_rtvb
 BRANCH_DICT=.branch.pck
 REVISION_DICT=.revision.pck
 CPATH_DICT=.path.pck
@@ -163,7 +163,7 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Create gerrit patch csv
-$SCRIPT_PATH/create_csv.py -o $GERRIT_CSV -b $BRANCH_DICT -p $CPATH_DICT --rtvb
+$SCRIPT_PATH/create_rtvb_patch_list.py -o $GERRIT_CSV -b $BRANCH_DICT -p $CPATH_DICT
 RET=$?
 if [ $RET -ne 0 ]; then
         echo "failed on creating $GERRIT_CSV"
@@ -190,7 +190,7 @@ fi
 if [ -s $GERRIT_CSV ]; then
     # Setup code via gerrit patch csv
     echo "$BUILD_TYPE [$(get_date)] Pick one patch from csv for RTVB" | tee -a $STD_LOG
-    $SCRIPT_PATH/gerrit_pick_patch.py -t $GERRIT_CSV | tee -a $STD_LOG
+    $SCRIPT_PATH/gerrit_pick_patch_new.py -t $GERRIT_CSV | tee -a $STD_LOG
     RET=$?
     if [ $RET -ne 0 ]; then
         echo "failed on picking patch from $GERRIT_CSV" | tee -a $STD_LOG
