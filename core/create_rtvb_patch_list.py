@@ -42,7 +42,7 @@ def run_command(*argv, **env):
 
 #project: branch: is:open (Verified<=0 or CodeReview>=0)
 def return_json_str_list(project, branch):
-    cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON NOT age:5day project:^.*%s branch:%s is:open (Verified<=0 OR CodeReview>=0)" % (m_user, m_remote_server, project, branch)
+    cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON NOT age:5day project:^.*%s branch:%s is:open (NOT Verified+1 AND CodeReview>=0)" % (m_user, m_remote_server, project, branch)
     (status, remote_output) = run_command_status(cmd)
     json_list = []
     for output in remote_output.split('\n'):
