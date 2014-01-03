@@ -200,7 +200,7 @@ def return_gerrit_revisions(gerrit_patch_file):
 #Return revision list from topic
 def return_revisions_from_topic(topic):
     revisions = []
-    cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON topic:%s" % (m_user, m_remote_server, topic)
+    cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON status:open topic:%s" % (m_user, m_remote_server, topic)
     (status, remote_output) = run_command_status(cmd)
     json_list = []
     for output in remote_output.split('\n'):
