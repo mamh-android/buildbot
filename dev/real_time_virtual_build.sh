@@ -272,7 +272,11 @@ echo "$BUILD_TYPE Start aabs build while loop"
         sleep 600
       fi
   fi
-  echo "$BUILD_TYPE Resync the code"
+  if [ $COUNTER_FAILURE -gt 4 ]; then
+    echo "$BUILD_TYPE build failed 5 times"
+    exit 1
+  fi
+  echo "$BUILD_TYPE COUNTER_FAILURE:($COUNTER_FAILURE), Resync the code"
   repo sync
   repo manifest -r -o last_manifest.xml
 done
