@@ -195,7 +195,7 @@ def return_gerrit_revisions(gerrit_patch_file):
         revisions.append(json_list[0]['currentPatchSet']['revision'])
     else:
         print "cherry pick patches with topic:%s" % (json_list[0]['topic'])
-        revisions = return_revisions_from_topic(json_list[0]['topic'])
+        revisions = return_revisions_from_topic(json_list[0]['topic'], d_path, d_branch)
 #remove the first line and dump it to file
     outfile = open(gerrit_patch_file, 'w')
     json_list.pop(0)
@@ -211,7 +211,9 @@ def return_revisions_from_topic(topic, d_path, d_branch):
     json_list = []
     for path_name, c_path in d_path.items():
         branch = d_branch.get(path_name)
-        cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON project:^.*%s branch:%s status:open topic:%s" % (m_user, m_remote_server, d_path, branch, topic)
+        print path_name
+        print branch
+        cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON project:^.*%s branch:%s status:open topic:%s" % (m_user, m_remote_server, path_name, branch, topic)
         (status, remote_output) = run_command_status(cmd)
         for output in remote_output.split('\n'):
             jsonstr = json.loads(output)
@@ -228,6 +230,12 @@ def run_args(args):
     for i in range(len(args)):
         print args[i]
         subprocess.check_call(args[i], shell=True)
+
+def run_args_rtvb(args):
+    for i in range(len(args)):
+        print args[i]
+        subprocess.Popen(args[i], shell=True)
+        os.wait()
 
 #User help
 def usage():
@@ -264,11 +272,11 @@ def main(argv):
     if (gerrit_patch_list != ""):
         args_list = args_from_jsonstr_list(return_gerrit_query_jsonstr(gerrit_patch_list))
         print args_list
+        run_args(args_list)
     elif (gerrit_patch_file != ""):
         args_list = args_from_jsonstr_list_rtvb(return_gerrit_query_jsonstr(return_gerrit_revisions(gerrit_patch_file)))
         print args_list
-
-    run_args(args_list)
+        run_args_rtvb(args_list)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
