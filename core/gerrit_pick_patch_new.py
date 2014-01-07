@@ -21,6 +21,16 @@ m_user = "buildfarm"
 #Code remote server
 m_remote_server = "shgit.marvell.com"
 
+# Project and branch list
+path_list = ".path.pck"
+branch_list = ".branch.pck"
+fp = open(path_list, "r")
+d_path = pickle.load(fp)
+fp.close()
+fp = open(branch_list, "r")
+d_branch = pickle.load(fp)
+fp.close()
+
 VERBOSE = False
 
 def run_command_status(*argv, **env):
@@ -43,8 +53,6 @@ def run_command(*argv, **env):
 
 #Return different value from gerrit query
 def return_gerrit_query_jsonstr(revisions):
-    global m_user
-    global m_remote_server
     jsonstr = [[]] * len(revisions)
     for i in range(len(revisions)):
         cmd = "ssh -p 29418 %s@%s gerrit query --patch-sets --format=JSON commit:%s" % (m_user, m_remote_server, revisions[i])
@@ -198,15 +206,17 @@ def return_gerrit_revisions(gerrit_patch_file):
     return revisions
 
 #Return revision list from topic
-def return_revisions_from_topic(topic):
+def return_revisions_from_topic(topic, d_path, d_branch):
     revisions = []
-    cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON status:open topic:%s" % (m_user, m_remote_server, topic)
-    (status, remote_output) = run_command_status(cmd)
     json_list = []
-    for output in remote_output.split('\n'):
-        jsonstr = json.loads(output)
-        if not jsonstr.has_key('runTimeMilliseconds'):
-            json_list.append(jsonstr)
+    for path_name, c_path in d_path.items():
+        branch = d_branch.get(path_name)
+        cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON project:^.*%s branch:%s status:open topic:%s" % (m_user, m_remote_server, d_path, branch, topic)
+        (status, remote_output) = run_command_status(cmd)
+        for output in remote_output.split('\n'):
+            jsonstr = json.loads(output)
+            if not jsonstr.has_key('runTimeMilliseconds'):
+                json_list.append(jsonstr)
 #sorted by createdOn
     json_list = sorted(json_list, key=lambda patch: patch['currentPatchSet']['createdOn'])
     for jsonstr in json_list:
