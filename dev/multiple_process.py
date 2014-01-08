@@ -53,10 +53,10 @@ def exec_commands(cmds):
     processes = {}
     while True:
         while cmds and len(processes) < max_task:
-            task = cmds.pop(0)
+            task = os.getcwd() + '/' + list2cmdline(cmds.pop(0))
             p = subprocess.Popen(task, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
             processes[p.pid] = p
-            print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, list2cmdline(task))
+            print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, task)
      
         if not processes and not cmds:
             print "tasklist done"
@@ -72,14 +72,14 @@ def exec_commands(cmds):
                     fail(processes[pid])
 
 commands_1 = [
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test1.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test2.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test3.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test4.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test1.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test2.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test3.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test4.py"]
+    ["test1.py"],
+    ["test2.py"],
+    ["test3.py"],
+    ["test4.py"],
+    ["test1.py"],
+    ["test2.py"],
+    ["test3.py"],
+    ["test4.py"]
 ]
 
 commands_2 = [
@@ -95,7 +95,6 @@ commands_2 = [
 
 cmds_array = []
 cmds_array.append(commands_1)
-cmds_array.append(commands_2)
 
 for raw in cmds_array:
     exec_commands(raw)

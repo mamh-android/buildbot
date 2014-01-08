@@ -54,10 +54,10 @@ def exec_commands(cmds):
     processes = {}
     while True:
         while cmds and len(processes) < max_task:
-            task = cmds.pop(0)
+            task = os.getcwd() + '\\' + list2cmdline(cmds.pop(0))
             p = subprocess.Popen(task, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
             processes[p.pid] = p
-            print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, list2cmdline(task))
+            print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, task)
      
         if not processes and not cmds:
             print "tasklist done"
