@@ -52,6 +52,7 @@ def exec_commands(cmds):
     while True:
         while cmds and len(processes) < max_task:
             task = os.getcwd() + '\\' + cmds.pop(0)
+            task = task.replace("\\test\\", "\\", 1)
             p = subprocess.Popen(task, stdout=subprocess.PIPE,stderr=subprocess.STDOUT, shell='Ture')
             processes.append(p)
             print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, task)
@@ -86,35 +87,35 @@ def create_dir(d):
         print "Create %s" % (d)
 
 commands_1 = [
-    "bin\\cosmo.exe -c xml\\cosmo_3H5.xml",
-    "bin\\cosmo.exe -c xml\\c1.1_3H5.xml",
-    "bin\\cosmo.exe -c xml\\us2_3H5.xml",
-    "bin\\cosmo.exe -c xml\\c1_3H5.xml",
-    "bin\\cosmo.exe -c xml\\c1_3H7.xml",
-    "bin\\cosmo.exe -c xml\\c1_IMX132.xml",
-    "bin\\cosmo.exe -c xml\\c1_IMX135.xml",
-    "bin\\cosmo.exe -c xml\\c1_OV5647_QTech.xml",
-    "bin\\cosmo.exe -c xml\\c1_OV5647_Darling.xml",
-    "bin\\cosmo.exe -c xml\\c1_OV5647_Sunny.xml",
-    "bin\\cosmo.exe -c xml\\c1_OV5647_Suyin.xml",
-    "bin\\cosmo.exe -c xml\\c1_OV8825.xml",
-    "bin\\cosmo.exe -c xml\\c1_OV8850.xml"
+    "bin\\cosmo.exe -c ..\\xml\\cosmo_3H5.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1.1_3H5.xml",
+    "bin\\cosmo.exe -c ..\\xml\\us2_3H5.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_3H5.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_3H7.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_IMX132.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_IMX135.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_OV5647_QTech.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_OV5647_Darling.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_OV5647_Sunny.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_OV5647_Suyin.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_OV8825.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1_OV8850.xml"
 ]
 
 commands_2 = [
-    "bin\\cosmo.exe -s test\\cosmo_3H5.sim",
-    "bin\\cosmo.exe -s test\\c1.1_3H5.sim",
-    "bin\\cosmo.exe -s test\\us2_3H5.sim",
-    "bin\\cosmo.exe -s test\\c1_3H5_lab.sim",
-    "bin\\cosmo.exe -s test\\c1_3H7_lab.sim",
-    "bin\\cosmo.exe -s test\\c1_IMX132_lab.sim",
-    "bin\\cosmo.exe -s test\\c1_IMX135_lab.sim",
-    "bin\\cosmo.exe -s test\\c1_OV5647_QTech_lab.sim",
-    "bin\\cosmo.exe -s test\\c1_OV5647_Darling_lab.sim",
-    "bin\\cosmo.exe -s test\\c1_OV5647_Sunny_lab.sim",
-    "bin\\cosmo.exe -s test\\c1_OV5647_Suyin_lab.sim",
-    "bin\\cosmo.exe -s test\\c1_OV8825_lab.sim",
-    "bin\\cosmo.exe -s test\\c1_OV8850_lab.sim"
+    "bin\\cosmo.exe -s ..\\test\\cosmo_3H5.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1.1_3H5.sim",
+    "bin\\cosmo.exe -s ..\\test\\us2_3H5.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_3H5_lab.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_3H7_lab.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_IMX132_lab.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_IMX135_lab.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_OV5647_QTech_lab.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_OV5647_Darling_lab.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_OV5647_Sunny_lab.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_OV5647_Suyin_lab.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_OV8825_lab.sim",
+    "bin\\cosmo.exe -s ..\\test\\c1_OV8850_lab.sim"
 ]
 
 def main(argv):
