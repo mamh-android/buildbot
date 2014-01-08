@@ -114,6 +114,7 @@ commands_2 = [
 
 def main(argv):
     print "[Cosmo Daily Test][%s]=======Start=======" % (str(datetime.datetime.now()))
+    print "working dir:%s" % (os.getcwd())
     create_dir('DailyAutoTestResult')
     cmds_array = []
     cmds_array.append(commands_1)
@@ -121,6 +122,7 @@ def main(argv):
     for raw in cmds_array:
         exec_commands(raw)
     print "[Cosmo Daily Test][%s]=======End=======" % (str(datetime.datetime.now()))
+    print "*** Cosmo Daily Test: all runnings success"
 
 if __name__ == "__main__":
     main(sys.argv[1:])
