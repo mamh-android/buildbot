@@ -4,6 +4,7 @@ import os
 import sys
 import datetime
 import subprocess
+import time
 from subprocess import Popen
 
 def cpu_count():
@@ -38,11 +39,7 @@ def exec_commands(cmds):
     def done(p):
         return p.poll() is not None
     def success(p):
-        '''Print stdout and return 0 after a task success
-        '''
-        print "[AutoTest][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
-        print p.stdout.read()
-        return 0
+        return p.returncode == 0
     def fail(p):
         print "[AutoTest][%s][PID:%s] exit with none Zero" % (str(datetime.datetime.now()), p.pid)
         print p.stdout.read()
@@ -51,26 +48,34 @@ def exec_commands(cmds):
     '''MAX task count 
     '''
     max_task = cpu_count()
-    processes = {}
+    processes = []
     while True:
         while cmds and len(processes) < max_task:
             task = os.getcwd() + '\\' + cmds.pop(0)
             p = subprocess.Popen(task, stdout=subprocess.PIPE,stderr=subprocess.STDOUT, shell='Ture')
-            processes[p.pid] = p
+            processes.append(p)
             print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, task)
-     
+
+        for p in processes:
+            if done(p):
+                if success(p):
+                    '''Print stdout after a task success
+                    '''
+                    print "[AutoTest][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
+                    print p.stdout.read()
+                    processes.remove(p)
+                    print processes
+                else:
+                    fail(p)
+
         if not processes and not cmds:
             print "tasklist done"
             break
-        elif processes:
-            print "wait for cpu idle..."
-            (pid, status) = os.wait()
-            if pid in processes:
-                if not status:
-                    success(processes[pid])
-                    del processes[pid]
-                else:
-                    fail(processes[pid])
+            '''(pid, status) = os.wait()
+               Availability: Unix
+            '''
+        else:
+            time.sleep(5)
 
 def create_dir(d):
     try:
