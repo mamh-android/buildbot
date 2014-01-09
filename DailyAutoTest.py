@@ -5,6 +5,7 @@ import sys
 import datetime
 import subprocess
 import time
+import hashlib
 from subprocess import Popen
 
 def cpu_count():
@@ -42,18 +43,25 @@ def exec_commands(cmds):
         return p.returncode == 0
     def fail(p):
         print "[AutoTest][%s][PID:%s] exit with none Zero" % (str(datetime.datetime.now()), p.pid)
-        print p.stdout.read()
+        f = open(stdout_pid[p.pid], 'r')
+        print f.read()
+        f.close
         sys.exit(1)
     
     '''MAX task count 
     '''
     max_task = cpu_count()
     processes = []
+    stdout_pid = {}
     while True:
         while cmds and len(processes) < max_task:
             task = os.getcwd() + '\\' + cmds.pop(0)
             task = task.replace("\\test\\", "\\", 1)
-            p = subprocess.Popen(task, stdout=subprocess.PIPE,stderr=subprocess.STDOUT, shell='Ture')
+            h = hashlib.new('ripemd160')
+            h.update(task)
+            stdout_tmp = 'tmp\\' + h.hexdigest()
+            p = subprocess.Popen(task, stdout=open(stdout_tmp, 'w'))
+            stdout_pid[p.pid] = stdout_tmp
             processes.append(p)
             print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, task)
 
@@ -63,7 +71,9 @@ def exec_commands(cmds):
                     '''Print stdout after a task success
                     '''
                     print "[AutoTest][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
-                    print p.stdout.read()
+                    f = open(stdout_pid[p.pid], 'r')
+                    print f.read()
+                    f.close
                     processes.remove(p)
                     print processes
                 else:
