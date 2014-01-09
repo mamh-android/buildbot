@@ -106,10 +106,14 @@ Team of Cosmo\n"
         infile = open(COSMO_BUILD_LOG, 'r')
         f = infile.readlines()
         infile.close()
-        i = len(f)-100
-        while i < len(f):
-            failure_log = failure_log + f[i]
-            i = i + 1
+        if len(f) > 200:
+            i = len(f)-100
+            while i < len(f):
+                failure_log = failure_log + f[i]
+                i = i + 1
+        else:
+            for log in f:
+                failure_log = failure_log + log
         subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Build Failed"
         text = "This is an automated email from cosmo auto build system. \
 It was generated because an error encountered while building the code. \
@@ -132,10 +136,14 @@ Team of Cosmo\n"
         infile = open(COSMO_DAILY_TEST_LOG, 'r')
         f = infile.readlines()
         infile.close()
-        i = len(f)-100
-        while i < len(f):
-            failure_log = failure_log + f[i]
-            i = i + 1
+        if len(f) > 200:
+            i = len(f)-100
+            while i < len(f):
+                failure_log = failure_log + f[i]
+                i = i + 1
+        else:
+            for log in f:
+                failure_log = failure_log + log
         subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Autotest Failed"
         text = "This is an automated email from cosmo auto build system. \
 It was generated because an error encountered while building the code. \
