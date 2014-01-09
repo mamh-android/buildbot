@@ -97,19 +97,10 @@ def create_dir(d):
         print "Create %s" % (d)
 
 commands_1 = [
-    "bin\\cosmo.exe -c ..\\xml\\cosmo_3H5.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1.1_3H5.xml",
-    "bin\\cosmo.exe -c ..\\xml\\us2_3H5.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_3H5.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_3H7.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_IMX132.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_IMX135.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_OV5647_QTech.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_OV5647_Darling.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_OV5647_Sunny.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_OV5647_Suyin.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_OV8825.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1_OV8850.xml"
+    "bin\\cosmo.exe -c ..\\xml\\cosmo.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1.1.xml",
+    "bin\\cosmo.exe -c ..\\xml\\us2.xml",
+    "bin\\cosmo.exe -c ..\\xml\\c1.xml",
 ]
 
 commands_2 = [
