@@ -50,7 +50,7 @@ def exec_commands(cmds):
     
     '''MAX task count 
     '''
-    max_task = cpu_count()
+    max_task = cpu_count()*2
     processes = []
     stdout_pid = {}
     while True:
@@ -59,7 +59,7 @@ def exec_commands(cmds):
             task = task.replace("\\test\\", "\\", 1)
             h = hashlib.new('ripemd160')
             h.update(task)
-            stdout_tmp = 'tmp\\' + h.hexdigest()
+            stdout_tmp = 'DailyAutoTestLog\\' + h.hexdigest()
             p = subprocess.Popen(task, stdout=open(stdout_tmp, 'w'))
             stdout_pid[p.pid] = stdout_tmp
             processes.append(p)
@@ -132,6 +132,7 @@ def main(argv):
     print "[Cosmo Daily Test][%s]=======Start=======" % (str(datetime.datetime.now()))
     print "working dir:%s" % (os.getcwd())
     create_dir('DailyAutoTestResult')
+    create_dir('DailyAutoTestLog')
     cmds_array = []
     cmds_array.append(commands_1)
     cmds_array.append(commands_2)
