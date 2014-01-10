@@ -22,8 +22,6 @@ COSMO_DAILY_TEST_LOG = ".cosmo.dailytest.log"
 COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 
 def get_ret():
-    global COSMO_BUILD_LOG
-    global COSMO_DAILY_TEST_LOG
     infile = open(COSMO_BUILD_LOG,"r")
     text = infile.read()
     infile.close()
@@ -44,12 +42,6 @@ def get_ret():
     return buildresult
 
 def run(buildresult):
-    global MAIL_LIST
-    global COSMO_OUT_DIR
-    global IMAGE_SERVER
-    global COSMO_CHANGELOG_BUILD
-    global COSMO_BUILD_LOG
-    global COSMO_DAILY_TEST_LOG
     branch = os.popen("git branch").read().split()[1]
     last_build = IMAGE_SERVER + "LAST_BUILD."  + branch
     if os.path.isfile(last_build):
@@ -61,11 +53,16 @@ def run(buildresult):
         last_rev = ""
     current_rev = os.popen("git log -1 " + branch + " --pretty=format:%H").read().split()
     if current_rev[0] == last_rev:
-        subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Nobuild"
-        text = "This is an automated email from cosmo auto build system. \
-The email was generated because the system detects no significant change in source code since last build.\n\n\
-Regards,\n\
-Team of Cosmo\n"
+#Nobuild mail
+        subject = "[cosmo-autobuild-%s][%s] Nobuild" % (branch, str(date.today()))
+        text = '''
+This is an automated email from cosmo auto build system. The email
+was generated because the system detects no significant change in
+source code since last build.
+
+Regards,
+Team of Cosmo'''
+
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         print "~~<result>PASS</result>"
         print "~~<result-details>No build</result-details>"
@@ -77,14 +74,22 @@ Team of Cosmo\n"
             change_log = infile.read()
             infile.close()
         image_path = publish_file(COSMO_OUT_DIR, IMAGE_SERVER)
-        subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Success"
-        text = "This is an automated email from cosmo auto build system. \
-It was generated because a new package was build successfully and passed the smoke test.\n\n\
-You can download the package at:\n" + image_path + "\n\n\
-The change since last build is listed below:\n\
-" + change_log + "\n\n\
-Regards,\n\
-Team of Cosmo\n"
+#Success mail
+        subject = "[cosmo-autobuild-%s][%s] Success" % (branch, str(date.today()))
+        text = '''
+This is an automated email from cosmo auto build system. It was
+generated because a new package was build successfully and passed
+the smoke test.
+
+You can download the package at:
+%s
+
+The change since last build is listed below:
+%s
+
+Regards,
+Team of Cosmo''' % (image_path, change_log)
+
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         if current_rev:
             f = open(last_build, 'w')
@@ -114,16 +119,22 @@ Team of Cosmo\n"
         else:
             for log in f:
                 failure_log = failure_log + log
-        subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Build Failed"
-        text = "This is an automated email from cosmo auto build system. \
-It was generated because an error encountered while building the code. \
-The error can be resulted from newly checked in codes.\n\n\
-The change since last build is listed below:\n\
-" + change_log + "\n\n\
-Last part of the build log is followed:\n\
-" + failure_log + "\n\n\
-Regards,\n\
-Team of Cosmo\n"
+#Build Failed mail
+        subject = "[cosmo-autobuild-%s][%s] Build Failed" % (branch, str(date.today()))
+        text = '''
+This is an automated email from cosmo auto build system. It was
+generated because an error encountered while building the code.
+The error can be resulted from newly checked in codes.
+
+The change since last build is listed below:
+%s
+
+Last part of the build log is followed:
+%s
+
+Regards,
+Team of Cosmo''' % (change_log, failure_log)
+
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(0)
     elif (buildresult == "autotest_failure"):
@@ -144,16 +155,21 @@ Team of Cosmo\n"
         else:
             for log in f:
                 failure_log = failure_log + log
-        subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Autotest Failed"
-        text = "This is an automated email from cosmo auto build system. \
-It was generated because an error encountered while building the code. \
-The error can be resulted from newly checked in codes.\n\n\
-The change since last build is listed below:\n\
-" + change_log + "\n\n\
-Last part of the build log is followed:\n\
-" + failure_log + "\n\n\
-Regards,\n\
-Team of Cosmo\n"
+        subject = "[cosmo-autobuild-%s][%s] Autotest Failed" % (branch, str(date.today()))
+        text = '''
+This is an automated email from cosmo auto build system. It was
+generated because an error encountered while building the code.
+The error can be resulted from newly checked in codes.
+
+The change since last build is listed below:
+%s
+
+Last part of the build log is followed:
+%s
+
+Regards,
+Team of Cosmo''' % (change_log, failure_log)
+
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(0)
     else:

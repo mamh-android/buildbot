@@ -40,12 +40,18 @@ def copy_dict():
         else:
             p = "publishing failed, file " + i + " dose not existed"
             print p
-            subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Publishing failed"
-            text = "This is an automated email from cosmo auto build system. \
-The email was generated because publishing failed after a success build.\n\n\
-\n=============================================================\n" + p + "\n=============================================================\n\n\
-Regards,\n\
-Team of Cosmo\n"
+            subject = "[cosmo-autobuild-%s][%s] Publishing failed" % (branch, str(date.today()))
+            text = '''
+This is an automated email from cosmo auto build system. The email
+was generated because publishing failed after a success build.
+
+=============================================================
+%s
+=============================================================
+
+Regards,
+Team of Cosmo''' % (p)
+
             send_html_mail(subject,ADM_USER,MAIL_LIST,text) 
             exit(2)
 
@@ -73,12 +79,18 @@ def copy_file(src, dst):
     else:
         p = "publishing failed, file " + src + " dose not existed"
         print p
-        subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Publishing failed"
-        text = "This is an automated email from cosmo auto build system. \
-The email was generated because publishing failed after a success build.\n\n\
-\n=============================================================\n" + p + "\n=============================================================\n\n\
-Regards,\n\
-Team of Cosmo\n"
+        subject = "[cosmo-autobuild-%s][%s] Publishing failed" % (branch, str(date.today()))
+        text = '''
+This is an automated email from cosmo auto build system. The email
+was generated because publishing failed after a success build.
+
+=============================================================
+%s
+=============================================================
+
+Regards,
+Team of Cosmo''' % (p)
+
         send_html_mail(subject,ADM_USER,MAIL_LIST,text) 
         exit(2)
 
