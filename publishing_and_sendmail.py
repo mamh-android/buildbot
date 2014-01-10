@@ -18,7 +18,7 @@ MAIL_LIST = get_mail_list("cosmo-dev")
 #add Simon Kershaw into MAIL_LIST for specical case
 MAIL_LIST.append('skershaw@marvell.com')
 COSMO_BUILD_LOG = ".cosmo.build.log"
-COSMO_DAILY_TEST_LOG = "test\\.cosmo.dailytest.log"
+COSMO_DAILY_TEST_LOG = ".cosmo.dailytest.log"
 COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 
 def get_ret():

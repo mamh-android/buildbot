@@ -56,7 +56,7 @@ def exec_commands(cmds):
     while True:
         while cmds and len(processes) < max_task:
             task = os.getcwd() + '\\' + cmds.pop(0)
-            task = task.replace("\\test\\", "\\", 1)
+            task = task.replace("\\DailyAutoTestResult\\", "\\", 1)
             h = hashlib.new('ripemd160')
             h.update(task)
             stdout_tmp = 'DailyAutoTestLog\\' + h.hexdigest()
@@ -122,7 +122,8 @@ commands_2 = [
 def main(argv):
     print "[Cosmo Daily Test][%s]=======Start=======" % (str(datetime.datetime.now()))
     print "working dir:%s" % (os.getcwd())
-    create_dir('..\\DailyAutoTestResult')
+    create_dir('DailyAutoTestResult')
+    os.chdir('DailyAutoTestResult')
     create_dir('DailyAutoTestLog')
     cmds_array = []
     cmds_array.append(commands_1)
