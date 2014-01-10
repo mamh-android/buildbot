@@ -122,7 +122,7 @@ commands_2 = [
 def main(argv):
     print "[Cosmo Daily Test][%s]=======Start=======" % (str(datetime.datetime.now()))
     print "working dir:%s" % (os.getcwd())
-    create_dir('DailyAutoTestResult')
+    create_dir('..\\DailyAutoTestResult')
     create_dir('DailyAutoTestLog')
     cmds_array = []
     cmds_array.append(commands_1)
