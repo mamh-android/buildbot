@@ -20,6 +20,7 @@ def copy_dict():
     global MAIL_LIST
     sys.path.append(os.getcwd())
     from COSMO_FILES_PUBLISH_DICT import FILES_DICT
+    branch = os.popen("git branch").read().split()[1]
     for i in FILES_DICT:
         print i
         if os.path.isdir(i):
@@ -39,11 +40,12 @@ def copy_dict():
         else:
             p = "publishing failed, file " + i + " dose not existed"
             print p
-            subject = "[cosmo-auto-build] [" + str(date.today()) + "] Publishing failed"
-            text = "This is an automated email from the autobuild script. The \
-email was generated because publishing failed after a success build.\n\
-\n=============================================================\n" + p + "\n=============================================================\n\
-Team of APSE\n"
+            subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Publishing failed"
+            text = "This is an automated email from cosmo auto build system. \
+The email was generated because publishing failed after a success build.\n\n\
+\n=============================================================\n" + p + "\n=============================================================\n\n\
+Regards,\n\
+Team of Cosmo\n"
             send_html_mail(subject,ADM_USER,MAIL_LIST,text) 
             exit(2)
 
@@ -53,6 +55,7 @@ def copy_file(src, dst):
     global subject
     global text1
     global sign
+    branch = os.popen("git branch").read().split()[1]
     if os.path.isdir(src):
         p = "copy directory: " + src + "-->" + dst
         print p
@@ -70,11 +73,12 @@ def copy_file(src, dst):
     else:
         p = "publishing failed, file " + src + " dose not existed"
         print p
-        subject = "[cosmo-auto-build] [" + str(date.today()) + "] Publishing failed"
-        text = "This is an automated email from the autobuild script. The \
-email was generated because publishing failed after a success build.\n\
-\n=============================================================\n" + p + "\n=============================================================\n\
-Team of APSE\n"
+        subject = "[cosmo-autobuild-" + branch + "] [" + str(date.today()) + "] Publishing failed"
+        text = "This is an automated email from cosmo auto build system. \
+The email was generated because publishing failed after a success build.\n\n\
+\n=============================================================\n" + p + "\n=============================================================\n\n\
+Regards,\n\
+Team of Cosmo\n"
         send_html_mail(subject,ADM_USER,MAIL_LIST,text) 
         exit(2)
 
