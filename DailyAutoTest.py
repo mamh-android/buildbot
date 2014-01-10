@@ -55,12 +55,12 @@ def exec_commands(cmds):
     stdout_pid = {}
     while True:
         while cmds and len(processes) < max_task:
-            task = os.getcwd() + '\\' + cmds.pop(0)
-            task = task.replace("\\DailyAutoTestResult\\", "\\", 1)
+            task = cmds.pop(0)
             h = hashlib.new('ripemd160')
             h.update(task)
+            stdout_tmp = h.hexdigest()
             stdout_tmp = 'DailyAutoTestLog\\' + h.hexdigest()
-            p = subprocess.Popen(task, stdout=open(stdout_tmp, 'w'))
+            p = subprocess.Popen(task, stdout=open(stdout_tmp, 'w'), cwd=os.getcwd())
             stdout_pid[p.pid] = stdout_tmp
             processes.append(p)
             print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, task)
@@ -97,26 +97,26 @@ def create_dir(d):
         print "Create %s" % (d)
 
 commands_1 = [
-    "bin\\cosmo.exe -c ..\\xml\\cosmo.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1.1.xml",
-    "bin\\cosmo.exe -c ..\\xml\\us2.xml",
-    "bin\\cosmo.exe -c ..\\xml\\c1.xml",
+    "..\\bin\\cosmo.exe -c ..\\xml\\cosmo.xml",
+    "..\\bin\\cosmo.exe -c ..\\xml\\c1.1.xml",
+    "..\\bin\\cosmo.exe -c ..\\xml\\us2.xml",
+    "..\\bin\\cosmo.exe -c ..\\xml\\c1.xml",
 ]
 
 commands_2 = [
-    "bin\\cosmo.exe -s ..\\test\\cosmo_3H5.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1.1_3H5.sim",
-    "bin\\cosmo.exe -s ..\\test\\us2_3H5.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_3H5_lab.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_3H7_lab.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_IMX132_lab.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_IMX135_lab.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_OV5647_QTech_lab.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_OV5647_Darling_lab.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_OV5647_Sunny_lab.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_OV5647_Suyin_lab.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_OV8825_lab.sim",
-    "bin\\cosmo.exe -s ..\\test\\c1_OV8850_lab.sim"
+    "..\\bin\\cosmo.exe -s ..\\test\\cosmo_3H5.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1.1_3H5.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\us2_3H5.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_3H5_lab.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_3H7_lab.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_IMX132_lab.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_IMX135_lab.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV5647_QTech_lab.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV5647_Darling_lab.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV5647_Sunny_lab.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV5647_Suyin_lab.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV8825_lab.sim",
+    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV8850_lab.sim"
 ]
 
 def main(argv):
