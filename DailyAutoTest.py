@@ -95,7 +95,7 @@ def create_dir(d):
 def return_idel_log_file(max_task):
     sub_path = 'DailyAutoTestLog\\'
     for i in range(max_task):
-        log_name = sub_path + i
+        log_name = sub_path + str(i)
         if not os.path.exists(log_name):
             break
     return log_name
