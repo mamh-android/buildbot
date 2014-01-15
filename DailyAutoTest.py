@@ -70,7 +70,7 @@ def exec_commands(cmds):
                     f = open(stdout_pid[p.pid], 'r')
                     print f.read()
                     f.close
-                    os.remove(stdout_pid[p.pid])
+                    #os.remove(stdout_pid[p.pid])
                     processes.remove(p)
                 else:
                     fail(p)
