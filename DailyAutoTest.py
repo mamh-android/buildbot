@@ -5,7 +5,6 @@ import sys
 import datetime
 import subprocess
 import time
-import hashlib
 from subprocess import Popen
 
 def cpu_count():
@@ -50,16 +49,13 @@ def exec_commands(cmds):
     
     '''MAX task count 
     '''
-    max_task = cpu_count()*2
+    max_task = cpu_count()-1
     processes = []
     stdout_pid = {}
     while True:
         while cmds and len(processes) < max_task:
             task = cmds.pop(0)
-            h = hashlib.new('ripemd160')
-            h.update(task)
-            stdout_tmp = h.hexdigest()
-            stdout_tmp = 'DailyAutoTestLog\\' + h.hexdigest()
+            stdout_tmp = return_idel_log_file(max_task)
             p = subprocess.Popen(task, stdout=open(stdout_tmp, 'w'), cwd=os.getcwd())
             stdout_pid[p.pid] = stdout_tmp
             processes.append(p)
@@ -68,14 +64,14 @@ def exec_commands(cmds):
         for p in processes:
             if done(p):
                 if success(p):
-                    '''Print stdout after a task success
+                    '''Print stdout after a task success and remove the tmp log
                     '''
                     print "[AutoTest][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
                     f = open(stdout_pid[p.pid], 'r')
                     print f.read()
                     f.close
+                    os.remove(stdout_pid[p.pid])
                     processes.remove(p)
-                    print processes
                 else:
                     fail(p)
 
@@ -95,6 +91,14 @@ def create_dir(d):
     except Exception:
         os.mkdir(d)
         print "Create %s" % (d)
+
+def return_idel_log_file(max_task):
+    sub_path = 'DailyAutoTestLog\\'
+    for i in range(max_task):
+        log_name = sub_path + i
+        if not os.path.exists(log_name):
+            break
+    return log_name
 
 commands_1 = [
     "..\\bin\\cosmo.exe -c ..\\xml\\cosmo.xml",
