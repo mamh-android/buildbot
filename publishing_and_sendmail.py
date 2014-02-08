@@ -41,7 +41,8 @@ def get_ret():
     print "*****BUILDR******" + buildresult
     return buildresult
 
-def run(buildresult):
+def run(buildresult,build_nr):
+    build_link = "http://buildbot.marvell.com:8010/builders/cosmo_build/builds/" + build_nr
     branch = os.popen("git branch").read().split()[1]
     last_build = IMAGE_SERVER + "LAST_BUILD."  + branch
     if os.path.isfile(last_build):
@@ -60,8 +61,11 @@ This is an automated email from cosmo auto build system. The email
 was generated because the system detects no significant change in
 source code since last build.
 
+BuildBot Url:
+%s
+
 Regards,
-Team of Cosmo'''
+Team of Cosmo''' % (build_link)
 
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         print "~~<result>PASS</result>"
@@ -81,6 +85,9 @@ This is an automated email from cosmo auto build system. It was
 generated because a new package was build successfully and passed
 the smoke test.
 
+BuildBot Url:
+%s
+
 You can download the package at:
 %s
 
@@ -88,7 +95,7 @@ The change since last build is listed below:
 %s
 
 Regards,
-Team of Cosmo''' % (image_path, change_log)
+Team of Cosmo''' % (build_link, image_path, change_log)
 
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         if current_rev:
@@ -126,6 +133,9 @@ This is an automated email from cosmo auto build system. It was
 generated because an error encountered while building the code.
 The error can be resulted from newly checked in codes.
 
+BuildBot Url:
+%s
+
 The change since last build is listed below:
 %s
 
@@ -133,7 +143,7 @@ Last part of the build log is followed:
 %s
 
 Regards,
-Team of Cosmo''' % (change_log, failure_log)
+Team of Cosmo''' % (build_link, change_log, failure_log)
 
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(0)
@@ -161,6 +171,9 @@ This is an automated email from cosmo auto build system. It was
 generated because an error encountered while building the code.
 The error can be resulted from newly checked in codes.
 
+BuildBot Url:
+%s
+
 The change since last build is listed below:
 %s
 
@@ -168,7 +181,7 @@ Last part of the build log is followed:
 %s
 
 Regards,
-Team of Cosmo''' % (change_log, failure_log)
+Team of Cosmo''' % (build_link, change_log, failure_log)
 
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(0)
@@ -183,9 +196,9 @@ def usage():
 
 def main(argv):
     last_rev = ""
-    build_result = ""
+    build_nr = ""
     try:
-        opts, args = getopt.getopt(argv,"r:h")
+        opts, args = getopt.getopt(argv,"n:h")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -193,9 +206,12 @@ def main(argv):
         if opt in ("-h"):
             usage()
             sys.exit()
-        elif opt in ("-r"):
-            build_result = arg
-    run(get_ret())
+        elif opt in ("-n"):
+            build_nr = arg
+    if (build_nr == ""):
+        usage()
+        sys.exit(2)
+    run(get_ret(),build_nr)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
