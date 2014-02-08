@@ -25,8 +25,8 @@ case "$2" in
     export TARGET_PRODUCT="pxa988dkb_def"
     ;;
     "pxa988_kk4.4")
-    echo export pxa1L88dkb_def
-    export TARGET_PRODUCT="pxa1L88dkb_def"
+    echo export pxa1L88dkb_tz
+    export TARGET_PRODUCT="pxa1L88dkb_tz"
     ;;
 esac
 
