@@ -4,6 +4,7 @@ maintainer=liling@marvell.com
 ids_0=$1
 ids_1="""$2"""
 STD_LOG=/home/buildfarm/buildbot_script/stdio.log
+TARGET_PRODUCT=""
 
 nobuild=`grep ">No build<" $STD_LOG`
 if [ -n "$nobuild" ]; then
@@ -14,19 +15,23 @@ fi
 case "$2" in
     "pxa988_jb4.2")
     echo export pxa1088dkb_def
-    export TARGET_PRODUCT="pxa1088dkb_def"
+    TARGET_PRODUCT="pxa1088dkb_def"
+    #export TARGET_PRODUCT="pxa1088dkb_def"
     ;;
     "eden_jb42")
     echo export concord_def
-    export TARGET_PRODUCT="concord_def"
+    TARGET_PRODUCT="concord_def"
+    #export TARGET_PRODUCT="concord_def"
     ;;
     "pxa988_jb4.3")
     echo export pxa988dkb_def
-    export TARGET_PRODUCT="pxa988dkb_def"
+    TARGET_PRODUCT="pxa988dkb_def"
+    #export TARGET_PRODUCT="pxa988dkb_def"
     ;;
     "pxa988_kk4.4")
-    echo export pxa1L88dkb_tz
-    export TARGET_PRODUCT="pxa1L88dkb_tz"
+    echo export pxa1L88dkb_def
+    TARGET_PRODUCT="pxa1L88dkb_def"
+    #export TARGET_PRODUCT="pxa1L88dkb_tz"
     ;;
 esac
 
@@ -72,7 +77,7 @@ start_gfx_test_autobuild()
     git clone ssh://shgit.marvell.com/git/qae/graphics/gfx_test_autobuild.git
     #cp -r /boot/pxa1088/qad/gfx_test_autobuild ./
 
-    . gfx_test_autobuild/core.sh $ids_0 $ids_1
+    . gfx_test_autobuild/core.sh $ids_0 $ids_1 $TARGET_PRODUCT
     ## change
     #. ~/aabs/gfx_build/gfx_test_autobuild/core.sh $*
 }
