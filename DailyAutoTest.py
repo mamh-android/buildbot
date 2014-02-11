@@ -38,7 +38,6 @@ def cpu_count():
         except (ValueError, OSError, AttributeError):
             pass
     print "CPU core counter:%d" % (num)
-
     return num
 
 def exec_commands(cmds):
@@ -53,6 +52,7 @@ def exec_commands(cmds):
         return p.returncode == 0
     def fail(p,log):
         print "[AutoTest][%s][PID:%s] exit with none Zero, please check the log %s" % (str(datetime.datetime.now()), p.pid, log)
+        sys.stdout.flush()
         #f = open(stdout_pid[p.pid], 'r')
         #print f.read()
         #f.close
@@ -79,6 +79,7 @@ def exec_commands(cmds):
             print stdout_log
             processes.append(p)
             print "[AutoTest][%s][PID:%s]'%s' append to CPU log captured to >> %s" % (str(datetime.datetime.now()), p.pid, task, stdout_tmp)
+            sys.stdout.flush()
 
         for p in processes:
             if done(p):
@@ -86,6 +87,7 @@ def exec_commands(cmds):
                     '''Print stdout after a task success and remove the tmp log
                     '''
                     print "[AutoTest][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
+                    sys.stdout.flush()
                     #f = open(stdout_pid[p.pid], 'r')
                     #print f.read()
                     #f.close
