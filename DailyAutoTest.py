@@ -1,11 +1,22 @@
 #!/usr/bin/python
 
 import os
-import sys
 import datetime
 import subprocess
 import time
 from subprocess import Popen
+
+''' Force Python's print function to output to the screen.
+'''
+class flushfile(object):
+    def __init__(self, f):
+        self.f = f
+    def write(self, x):
+        self.f.write(x)
+        self.f.flush()
+
+import sys
+sys.stdout = flushfile(sys.stdout)
 
 def cpu_count():
     ''' Returns the number of CPUs in the system
@@ -40,11 +51,11 @@ def exec_commands(cmds):
         return p.poll() is not None
     def success(p):
         return p.returncode == 0
-    def fail(p):
-        print "[AutoTest][%s][PID:%s] exit with none Zero" % (str(datetime.datetime.now()), p.pid)
-        f = open(stdout_pid[p.pid], 'r')
-        print f.read()
-        f.close
+    def fail(p,log):
+        print "[AutoTest][%s][PID:%s] exit with none Zero, please check the log %s" % (str(datetime.datetime.now()), p.pid, log)
+        #f = open(stdout_pid[p.pid], 'r')
+        #print f.read()
+        #f.close
         sys.exit(1)
     
     '''MAX task count 
@@ -52,14 +63,22 @@ def exec_commands(cmds):
     max_task = cpu_count()-1
     processes = []
     stdout_pid = {}
+    stdout_log = {}
+    for i in range(max_task):
+        stdout_log[str(i)] = 0
     while True:
         while cmds and len(processes) < max_task:
             task = cmds.pop(0)
-            stdout_tmp = return_idel_log_file(max_task)
-            p = subprocess.Popen(task, stdout=open(stdout_tmp, 'w'), cwd=os.getcwd())
+            stdout_tmp = return_idel_log_file(max_task, stdout_log)
+            sub_path = 'DailyAutoTestLog\\'
+            stdout_tmp_s = sub_path + str(stdout_tmp)
+            p = subprocess.Popen(task, stdout=open(stdout_tmp_s, 'a'), cwd=os.getcwd())
             stdout_pid[p.pid] = stdout_tmp
+            print stdout_pid
+            stdout_log[stdout_tmp] = p.pid
+            print stdout_log
             processes.append(p)
-            print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, task)
+            print "[AutoTest][%s][PID:%s]'%s' append to CPU log captured to >> %s" % (str(datetime.datetime.now()), p.pid, task, stdout_tmp)
 
         for p in processes:
             if done(p):
@@ -67,13 +86,14 @@ def exec_commands(cmds):
                     '''Print stdout after a task success and remove the tmp log
                     '''
                     print "[AutoTest][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
-                    f = open(stdout_pid[p.pid], 'r')
-                    print f.read()
-                    f.close
+                    #f = open(stdout_pid[p.pid], 'r')
+                    #print f.read()
+                    #f.close
                     #os.remove(stdout_pid[p.pid])
+                    stdout_log[stdout_pid[p.pid]] = 0
                     processes.remove(p)
                 else:
-                    fail(p)
+                    fail(p,stdout_pid[p.pid])
 
         if not processes and not cmds:
             print "tasklist done"
@@ -92,11 +112,10 @@ def create_dir(d):
         os.mkdir(d)
         print "Create %s" % (d)
 
-def return_idel_log_file(max_task):
-    sub_path = 'DailyAutoTestLog\\'
-    for i in range(max_task):
-        log_name = sub_path + str(i)
-        if not os.path.exists(log_name):
+def return_idel_log_file(max_task, stdout_log):
+    for i in stdout_log:
+        log_name = str(i)
+        if not stdout_log[i]:
             break
     return log_name
 
