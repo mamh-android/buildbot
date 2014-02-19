@@ -119,22 +119,22 @@ def return_idel_log_file(max_task, stdout_log):
             break
     return log_name
 
-commands_1 = []
-xml_file = glob.glob("..\\xml\\*.xml")
-for i in xml_file:
-    commands_1.append("..\\bin\\cosmo.exe -c %s" % (i))
-
-commands_2 = []
-sim_file = glob.glob("..\\sim\\*.sim")
-for i in sim_file:
-    commands_2.append("..\\bin\\cosmo.exe -s %s" % (i))
-
 def main(argv):
     print "[Cosmo Daily Test][%s]=======Start=======" % (str(datetime.datetime.now()))
     print "working dir:%s" % (os.getcwd())
     create_dir('DailyAutoTestResult')
     os.chdir('DailyAutoTestResult')
     create_dir('DailyAutoTestLog')
+    #create a command list for xml
+    commands_1 = []
+    xml_file = glob.glob("..\\xml\\*.xml")
+    for i in xml_file:
+        commands_1.append("..\\bin\\cosmo.exe -c %s" % (i))
+    #create a command list for sim
+    commands_2 = []
+    sim_file = glob.glob("..\\test\\*.sim")
+    for i in sim_file:
+        commands_2.append("..\\bin\\cosmo.exe -s %s" % (i))
     cmds_array = []
     cmds_array.append(commands_1)
     cmds_array.append(commands_2)
