@@ -4,6 +4,7 @@ import os
 import datetime
 import subprocess
 import time
+import glob
 from subprocess import Popen
 
 ''' Force Python's print function to output to the screen.
@@ -118,28 +119,15 @@ def return_idel_log_file(max_task, stdout_log):
             break
     return log_name
 
-commands_1 = [
-    "..\\bin\\cosmo.exe -c ..\\xml\\cosmo.xml",
-    "..\\bin\\cosmo.exe -c ..\\xml\\c1.1.xml",
-    "..\\bin\\cosmo.exe -c ..\\xml\\us2.xml",
-    "..\\bin\\cosmo.exe -c ..\\xml\\c1.xml",
-]
+commands_1 = []
+xml_file = glob.glob("..\\xml\\*.xml")
+for i in xml_file:
+    commands_1.append("..\\bin\\cosmo.exe -c %s" % (i))
 
-commands_2 = [
-    "..\\bin\\cosmo.exe -s ..\\test\\cosmo_3H5.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1.1_3H5.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\us2_3H5.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_3H5_lab.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_3H7_lab.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_IMX132_lab.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_IMX135_lab.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV5647_QTech_lab.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV5647_Darling_lab.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV5647_Sunny_lab.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV5647_Suyin_lab.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV8825_lab.sim",
-    "..\\bin\\cosmo.exe -s ..\\test\\c1_OV8850_lab.sim"
-]
+commands_2 = []
+sim_file = glob.glob("..\\sim\\*.sim")
+for i in sim_file:
+    commands_2.append("..\\bin\\cosmo.exe -s %s" % (i))
 
 def main(argv):
     print "[Cosmo Daily Test][%s]=======Start=======" % (str(datetime.datetime.now()))
