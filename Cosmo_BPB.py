@@ -14,6 +14,17 @@ COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 PROJECT = "cosmo"
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
 
+''' Force Python's print function to output to the screen.
+'''
+class flushfile(object):
+    def __init__(self, f):
+        self.f = f
+    def write(self, x):
+        self.f.write(x)
+        self.f.flush()
+
+sys.stdout = flushfile(sys.stdout)
+
 def return_message(build_type, build_nr, result):
     message =  "Buildbot finished compiling your patchset "
     message += "on configuration: %s " % build_type
