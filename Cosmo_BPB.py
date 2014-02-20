@@ -12,7 +12,7 @@ COSMO_OUT_DIR = "out\\"
 IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build\\"
 COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 PROJECT = "cosmo"
-BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_build/builds/"
+BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
 
 def return_message(build_type, build_nr, result):
     message =  "Buildbot finished compiling your patchset "
