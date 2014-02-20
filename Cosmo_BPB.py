@@ -14,10 +14,10 @@ PROJECT = "cosmo"
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_build/builds/"
 
 def return_message(build_type, build_nr, result):
-    message =  "Buildbot finished compiling your patchset\n"
-    message += "on configuration: %s\n" % build_type
-    message += "Buildbot Url: %s\n" % build_nr
-    message += "The result is: %s\n" % result
+    message =  "Buildbot finished compiling your patchset "
+    message += "on configuration: %s " % build_type
+    message += "Buildbot Url: %s " % build_nr
+    message += "The result is: %s " % result
     # message
     message = '"' + message + '"'
     return message
@@ -37,7 +37,7 @@ def send_codereview(project, revision, message=None, verified=0, reviewed=0):
 
 def run(last_rev, build_nr=0):
     # cherry pick last rev
-    c_cherrypick = ['python']
+    c_cherrypick = []
     c_cherrypick.append('..\\build_script\\core\\cherry_pick_open_patch.py')
     c_cherrypick.append('-c %s' % last_rev)
     ret = os.system(' '.join(c_cherrypick))
