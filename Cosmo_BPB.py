@@ -6,6 +6,7 @@
 import os
 import sys
 import getopt
+import datetime
 
 COSMO_OUT_DIR = "out\\"
 IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build\\"
@@ -37,28 +38,38 @@ def send_codereview(project, revision, message=None, verified=0, reviewed=0):
 
 def run(last_rev, build_nr=0):
     # cherry pick last rev
+    print "[Cosmo-BPB][%s] Start patch cherry-pick" % (str(datetime.datetime.now()))
     c_cherrypick = []
     c_cherrypick.append('..\\build_script\\core\\cherry_pick_open_patch.py')
     c_cherrypick.append('-c %s' % last_rev)
     ret = os.system(' '.join(c_cherrypick))
     if not (ret==0):
+        print "[Cosmo-BPB][%s] Failed patch cherry-pick" % (str(datetime.datetime.now()))
         message = return_message('[cherry-pick]', BUILDBOT_URL + build_nr, 'failed')
         send_codereview(PROJECT, last_rev, message, '-1', '-1')
         exit(1)
+    print "[Cosmo-BPB][%s] End patch cherry-pick" % (str(datetime.datetime.now()))
     # MSBuild
+    print "[Cosmo-BPB][%s] Start MSBuild" % (str(datetime.datetime.now()))
     c_msbuild = ['MSBuild', 'Cosmo.sln', '/t:Rebuild', '/p:Configuration=Release']
     ret = os.system(' '.join(c_msbuild))
     if not (ret==0):
+        print "[Cosmo-BPB][%s] Failed MSBuild" % (str(datetime.datetime.now()))
         message = return_message('[MSBuild]', BUILDBOT_URL + build_nr, 'failed')
         send_codereview(PROJECT, last_rev, message, '-1', '-1')
         exit(1)
+    print "[Cosmo-BPB][%s] End MSBuild" % (str(datetime.datetime.now()))
     # auto test
+    print "[Cosmo-BPB][%s] Start Autotest" % (str(datetime.datetime.now()))
     c_dailytest = ['..\\build_script\\DailyAutoTest.py']
     ret = os.system(' '.join(c_dailytest))
     if not (ret==0):
+        print "[Cosmo-BPB][%s] Failed Autotest" % (str(datetime.datetime.now()))
         message = return_message('[Package-auto-test]', BUILDBOT_URL + build_nr, 'failed')
         send_codereview(PROJECT, last_rev, message, '-1', '-1')
         exit(1)
+    print "[Cosmo-BPB][%s] End Autotest" % (str(datetime.datetime.now()))
+    print "[Cosmo-BPB][%s] All success, updating gerritreview" % (str(datetime.datetime.now()))
     message = return_message('[By-Patch-Build]', BUILDBOT_URL + build_nr, 'success')
     send_codereview(PROJECT, last_rev, message, '1', '1')
     exit(0)
