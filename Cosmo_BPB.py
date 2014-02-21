@@ -136,7 +136,7 @@ def main(argv):
         elif opt in ("-n"):
             build_nr = arg
         elif opt in ("-b"):
-            branch = arg
+            branch = arg.split('/')[0]
     if not last_rev or not build_nr or not branch:
         usage()
         sys.exit(2)
