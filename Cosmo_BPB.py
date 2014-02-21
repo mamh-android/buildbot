@@ -9,8 +9,7 @@ import getopt
 import datetime
 
 COSMO_OUT_DIR = "out\\"
-IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build\\"
-COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
+IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build_bpb\\"
 PROJECT = "cosmo"
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
 
@@ -25,11 +24,13 @@ class flushfile(object):
 
 sys.stdout = flushfile(sys.stdout)
 
-def return_message(build_type, build_nr, result):
+def return_message(build_type, build_nr, result, rev=None):
     message =  "Buildbot finished compiling your patchset "
     message += "on configuration: %s " % build_type
     message += "Buildbot Url: %s " % build_nr
     message += "The result is: %s " % result
+    if (result == 'success'):
+        message += "Package at: %s%s " % (IMAGE_SERVER, rev)
     # message
     message = '"' + message + '"'
     return message
@@ -79,9 +80,21 @@ def run(last_rev, build_nr=0):
         message = return_message('[Package-auto-test]', BUILDBOT_URL + build_nr, 'failed')
         send_codereview(PROJECT, last_rev, message, '-1', '-1')
         exit(1)
+    # Publishing
+    print "[Cosmo-BPB][%s] Start Publishing" % (str(datetime.datetime.now()))
+    c_publishing = ['..\\build_script\\core\\publish_results.py']
+    c_publishing.append('-s %s' % COSMO_OUT_DIR)
+    c_publishing.append('-d %s' % IMAGE_SERVER)
+    c_publishing.append('-r %s' % last_rev)
+    ret = os.system(' '.join(c_publishing))
+    if not (ret==0):
+        print "[Cosmo-BPB][%s] Failed Publishing" % (str(datetime.datetime.now()))
+        message = return_message('[Package-publishing]', BUILDBOT_URL + build_nr, 'failed')
+        send_codereview(PROJECT, last_rev, message, '-1', '-1')
+        exit(1)
     print "[Cosmo-BPB][%s] End Autotest" % (str(datetime.datetime.now()))
     print "[Cosmo-BPB][%s] All success, updating gerritreview" % (str(datetime.datetime.now()))
-    message = return_message('[By-Patch-Build]', BUILDBOT_URL + build_nr, 'success')
+    message = return_message('[By-Patch-Build]', BUILDBOT_URL + build_nr, 'success', last_rev)
     send_codereview(PROJECT, last_rev, message, '1', '1')
     exit(0)
 
