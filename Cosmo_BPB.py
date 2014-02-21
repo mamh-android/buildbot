@@ -39,7 +39,7 @@ def send_codereview(project, revision, message=None, verified=0, reviewed=0):
     command = ["ssh", "buildfarm@privgit.marvell.com", "-p", "29418",
                "gerrit", "review", "--project %s" % str(project)]
     if message:
-        command.append("--message '%s'" % message.replace("'","\""))
+        command.append("--message '%s'" % message.replace('\\','\\\\\\\\'))
     if verified:
         command.extend(["--verified %d" % int(verified)])
     if reviewed:
