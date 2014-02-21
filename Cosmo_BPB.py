@@ -7,6 +7,8 @@ import os
 import sys
 import getopt
 import datetime
+sys.path.append('test')
+from PerCommitPostBuild import *
 
 COSMO_OUT_DIR = "out\\"
 IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build_bpb\\"
@@ -71,13 +73,22 @@ def run(last_rev, build_nr=0):
         send_codereview(PROJECT, last_rev, message, '-1', '-1')
         exit(1)
     print "[Cosmo-BPB][%s] End MSBuild" % (str(datetime.datetime.now()))
-    # auto test
-    print "[Cosmo-BPB][%s] Start Autotest" % (str(datetime.datetime.now()))
-    c_dailytest = ['..\\build_script\\DailyAutoTest.py']
-    ret = os.system(' '.join(c_dailytest))
+    # auto test calib
+    print "[Cosmo-BPB][%s] Start calib" % (str(datetime.datetime.now()))
+    c_calib = ['..\\build_script\\core\\mulit_core_task_run.py -c "..\\bin\\cosmo.exe" -l "%s"' % (','.join(calib_commands))]
+    ret = os.system(' '.join(c_calib))
     if not (ret==0):
-        print "[Cosmo-BPB][%s] Failed Autotest" % (str(datetime.datetime.now()))
-        message = return_message('[Package-auto-test]', BUILDBOT_URL + build_nr, 'failed')
+        print "[Cosmo-BPB][%s] Failed calib" % (str(datetime.datetime.now()))
+        message = return_message('[Package-calib]', BUILDBOT_URL + build_nr, 'failed')
+        send_codereview(PROJECT, last_rev, message, '-1', '-1')
+        exit(1)
+    # auto test simu
+    print "[Cosmo-BPB][%s] Start simu" % (str(datetime.datetime.now()))
+    c_simu = ['..\\build_script\\core\\mulit_core_task_run.py -c "..\\bin\\cosmo.exe" -l "%s"' % (','.join(simu_commands))]
+    ret = os.system(' '.join(c_simu))
+    if not (ret==0):
+        print "[Cosmo-BPB][%s] Failed simu" % (str(datetime.datetime.now()))
+        message = return_message('[Package-simu]', BUILDBOT_URL + build_nr, 'failed')
         send_codereview(PROJECT, last_rev, message, '-1', '-1')
         exit(1)
     # Publishing
