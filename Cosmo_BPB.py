@@ -50,12 +50,13 @@ def send_codereview(project, revision, message=None, verified=0, reviewed=0):
     print command
     os.system(' '.join(command))
 
-def run(last_rev, build_nr=0):
+def run(last_rev, build_nr=0, branch='master'):
     # cherry pick last rev
     print "[Cosmo-BPB][%s] Start patch cherry-pick" % (str(datetime.datetime.now()))
     c_cherrypick = []
     c_cherrypick.append('..\\build_script\\core\\cherry_pick_open_patch.py')
     c_cherrypick.append('-c %s' % last_rev)
+    c_cherrypick.append('-b %s' % branch)
     ret = os.system(' '.join(c_cherrypick))
     if not (ret==0):
         print "[Cosmo-BPB][%s] Failed patch cherry-pick" % (str(datetime.datetime.now()))
@@ -114,13 +115,15 @@ def usage():
     print "\tpublish_and_sendmail"
     print "\t      [-r] revision"
     print "\t      [-n] build nr from buildbot"
+    print "\t      [-b] event.change.branch"
     print "\t      [-h] help"
 
 def main(argv):
     last_rev = ""
     build_nr = ""
+    branch = ""
     try:
-        opts, args = getopt.getopt(argv,"r:n:h")
+        opts, args = getopt.getopt(argv,"r:n:b:h")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -132,11 +135,13 @@ def main(argv):
             last_rev = arg
         elif opt in ("-n"):
             build_nr = arg
-    if not last_rev or not build_nr:
+        elif opt in ("-b"):
+            branch = arg
+    if not last_rev or not build_nr or not branch:
         usage()
         sys.exit(2)
 
-    run(last_rev, build_nr)
+    run(last_rev, build_nr, branch)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

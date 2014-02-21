@@ -86,10 +86,10 @@ def gerrit_checkout(revision):
     print arg
     subprocess.check_call(arg, shell=True)
 
-def run(revision):
+def run(revision, branch='master'):
    arg = "git fetch origin"
    subprocess.check_call(arg, shell=True)
-   arg = "git reset --hard %s" % (cosmo_branch)
+   arg = "git reset --hard origin/%s" % branch
    subprocess.check_call(arg, shell=True)
    gerrit_checkout(revision)
    rev_list = return_dependencies_list()
@@ -97,13 +97,16 @@ def run(revision):
 
 #User help
 def usage():
-    print "\tcherry-pick all the dependencies patch and gerrit status open patch [-c] commitID"
+    print "\tcherry-pick all the dependencies patch and gerrit status open patch"
+    print "\t      [-c] commitID"
+    print "\t      [-b] working on branch"
     print "\t      [-h] help"
 
 def main(argv):
     commit_id = ""
+    branch = ""
     try:
-        opts, args = getopt.getopt(argv, "c:h")
+        opts, args = getopt.getopt(argv, "c:b:h")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -114,11 +117,13 @@ def main(argv):
         elif opt in ("-c"):
             commit_id = arg
             print commit_id
+        elif opt in ("-b"):
+            branch = arg
 
-    if commit_id == "":
+    if not commit_id or not branch:
         usage()
         sys.exit(2)
-    run(commit_id)
+    run(commit_id, branch)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
