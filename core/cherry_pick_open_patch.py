@@ -68,6 +68,7 @@ def return_gerrit_patch_status(revision):
 def setup_code_by_cherry_pick(revisions, branch='master'):
     arg = "git reset --hard origin/%s" % (branch)
     subprocess.check_call(arg, shell=True)
+    print "%s patches will be cherry-picked to origin/%s" % (len(revisions), branch)
     for rev in revisions:
         arg = "git cherry-pick %s" % (rev)
         (status, remote_output) = run_command_status(arg)
