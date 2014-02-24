@@ -31,7 +31,7 @@ def return_message(build_type, build_nr, result, rev=None):
     message += "Buildbot Url: %s " % build_nr
     message += "The result is: %s " % result
     if (result == 'success'):
-        message += "Package at: %s%s " % (IMAGE_SERVER, rev)
+        message += "Package at: file:%s%s/ " % (IMAGE_SERVER.replace('\\','/'), rev)
     # message
     message = '"' + message + '"'
     return message
@@ -40,7 +40,7 @@ def send_codereview(project, revision, message=None, verified=0, reviewed=0):
     command = ["ssh", "buildfarm@privgit.marvell.com", "-p", "29418",
                "gerrit", "review", "--project %s" % str(project)]
     if message:
-        command.append("--message '%s'" % message.replace('\\','\\\\\\\\'))
+        command.append("--message '%s'" % message)
     if verified:
         command.extend(["--verified %d" % int(verified)])
     if reviewed:
