@@ -65,8 +65,8 @@ def return_gerrit_patch_status(revision):
     return not jsonstr.has_key('runTimeMilliseconds')
 
 #re-setup code by cherry-pick the patches
-def setup_code_by_cherry_pick(revisions):
-    arg = "git reset --hard %s" % (cosmo_branch)
+def setup_code_by_cherry_pick(revisions, branch='master'):
+    arg = "git reset --hard origin/%s" % (branch)
     subprocess.check_call(arg, shell=True)
     for rev in revisions:
         arg = "git cherry-pick %s" % (rev)
@@ -93,7 +93,7 @@ def run(revision, branch='master'):
    subprocess.check_call(arg, shell=True)
    gerrit_checkout(revision)
    rev_list = return_dependencies_list()
-   setup_code_by_cherry_pick(rev_list)
+   setup_code_by_cherry_pick(rev_list, branch)
 
 #User help
 def usage():
