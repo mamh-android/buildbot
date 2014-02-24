@@ -7,8 +7,7 @@ import os
 import sys
 import getopt
 import datetime
-sys.path.append('test')
-from PerCommitPostBuild import *
+import ConfigParser
 
 COSMO_OUT_DIR = "out\\"
 IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build_bpb\\"
@@ -50,7 +49,7 @@ def send_codereview(project, revision, message=None, verified=0, reviewed=0):
     print command
     os.system(' '.join(command))
 
-def run(last_rev, build_nr=0, branch='master'):
+def run(last_rev, build_nr=0, branch='master', config_file='..\\test\\example.cfg'):
     # cherry pick last rev
     print "[Cosmo-BPB][%s] Start patch cherry-pick" % (str(datetime.datetime.now()))
     c_cherrypick = []
@@ -74,6 +73,11 @@ def run(last_rev, build_nr=0, branch='master'):
         send_codereview(PROJECT, last_rev, message, '-1', '-1')
         exit(1)
     print "[Cosmo-BPB][%s] End MSBuild" % (str(datetime.datetime.now()))
+    # Load ConfigParser from config_file
+    config = ConfigParser.RawConfigParser()
+    config.read(config_file)
+    calib_commands = filter(lambda x: len(x) > 0, config.get('Calib', 'calib_commands').split('\n'))
+    simu_commands = filter(lambda x: len(x) > 0, config.get('Simu', 'simu_commands').split('\n'))
     # auto test calib
     print "[Cosmo-BPB][%s] Start calib" % (str(datetime.datetime.now()))
     c_calib = ['..\\build_script\\core\\mulit_core_task_run.py -c "..\\bin\\cosmo.exe" -l "%s"' % (','.join(calib_commands))]
@@ -116,14 +120,16 @@ def usage():
     print "\t      [-r] revision"
     print "\t      [-n] build nr from buildbot"
     print "\t      [-b] event.change.branch"
+    print "\t      [-f] test set cfg file"
     print "\t      [-h] help"
 
 def main(argv):
     last_rev = ""
     build_nr = ""
     branch = ""
+    config_file = ""
     try:
-        opts, args = getopt.getopt(argv,"r:n:b:h")
+        opts, args = getopt.getopt(argv,"r:n:b:f:h")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -137,11 +143,13 @@ def main(argv):
             build_nr = arg
         elif opt in ("-b"):
             branch = arg.split('/')[0]
-    if not last_rev or not build_nr or not branch:
+        elif opt in ("-f"):
+            config_file = arg
+    if not last_rev or not build_nr or not branch or not config_file:
         usage()
         sys.exit(2)
 
-    run(last_rev, build_nr, branch)
+    run(last_rev, build_nr, branch, config_file)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
