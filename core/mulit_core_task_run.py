@@ -52,7 +52,7 @@ def exec_commands(cmds):
     def success(p):
         return p.returncode == 0
     def fail(p,log):
-        print "[AutoTest][%s][PID:%s] exit with none Zero, please check the log %s" % (str(datetime.datetime.now()), p.pid, log)
+        print "[Cosmo-MCR][%s][PID:%s] exit with none Zero, please check the log %s" % (str(datetime.datetime.now()), p.pid, log)
         #f = open(stdout_pid[p.pid], 'r')
         #print f.read()
         #f.close
@@ -78,14 +78,14 @@ def exec_commands(cmds):
             stdout_log[stdout_tmp] = p.pid
             print stdout_log
             processes.append(p)
-            print "[AutoTest][%s][PID:%s]'%s' append to CPU log captured to >> %s" % (str(datetime.datetime.now()), p.pid, task, stdout_tmp)
+            print "[Cosmo-MCR][%s][PID:%s]'%s' append to CPU log captured to >> %s" % (str(datetime.datetime.now()), p.pid, task, stdout_tmp)
 
         for p in processes:
             if done(p):
                 if success(p):
                     '''Print stdout after a task success and remove the tmp log
                     '''
-                    print "[AutoTest][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
+                    print "[Cosmo-MCR][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
                     #f = open(stdout_pid[p.pid], 'r')
                     #print f.read()
                     #f.close
@@ -120,7 +120,7 @@ def return_idel_log_file(max_task, stdout_log):
     return log_name
 
 def run(main_exe, cmd_list):
-    print "[Cosmo Daily Test][%s]=======Start=======" % (str(datetime.datetime.now()))
+    print "[Cosmo-MCR][%s]=======Start=======" % (str(datetime.datetime.now()))
     print "working dir:%s" % (os.getcwd())
     if not os.path.isdir('DailyAutoTestResult'):
         create_dir('DailyAutoTestResult')
@@ -136,7 +136,7 @@ def run(main_exe, cmd_list):
     for raw in cmds_array:
         print raw
         exec_commands(raw)
-    print "[Cosmo Daily Test][%s]=======End=======" % (str(datetime.datetime.now()))
+    print "[Cosmo-MCR][%s]=======End=======" % (str(datetime.datetime.now()))
     print "*** Cosmo Daily Test: all runnings success"
 
 #User help
