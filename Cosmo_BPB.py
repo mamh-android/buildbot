@@ -116,7 +116,7 @@ def run(last_rev, build_nr=0, branch='master', config_file='..\\test\\example.cf
 
 #User help
 def usage():
-    print "\tpublish_and_sendmail"
+    print "\tCosmo_PBP.py"
     print "\t      [-r] revision"
     print "\t      [-n] build nr from buildbot"
     print "\t      [-b] event.change.branch"
