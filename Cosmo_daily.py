@@ -106,17 +106,18 @@ def send_html_mail(subject, from_who, to_who, text):
 
 def return_failure_log(logfile):
     failure_log = ""
-    infile = open(logfile, 'r')
-    f = infile.readlines()
-    infile.close()
-    if len(f) > 200:
-        i = len(f)-100
-        while i < len(f):
-            failure_log = failure_log + f[i]
-            i = i + 1
-    else:
-        for log in f:
-            failure_log = failure_log + log
+    if os.path.isfile(logfile):
+        infile = open(logfile, 'r')
+        f = infile.readlines()
+        infile.close()
+        if len(f) > 200:
+            i = len(f)-100
+            while i < len(f):
+                failure_log = failure_log + f[i]
+                i = i + 1
+        else:
+            for log in f:
+                failure_log = failure_log + log
     return failure_log
 
 def return_text(changefile):

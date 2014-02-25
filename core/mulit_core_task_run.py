@@ -74,7 +74,7 @@ def exec_commands(cmds):
             stdout_tmp = return_idel_log_file(max_task, stdout_log)
             sub_path = 'DailyAutoTestLog\\'
             stdout_tmp_s = sub_path + str(stdout_tmp)
-            p = subprocess.Popen(task, stdout=open(stdout_tmp_s, 'a'), cwd=os.getcwd())
+            p = subprocess.Popen(task, stdout=open(stdout_tmp_s, 'a', 0), cwd=os.getcwd())
             stdout_pid[p.pid] = stdout_tmp
             print stdout_pid
             stdout_log[stdout_tmp] = p.pid
