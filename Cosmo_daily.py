@@ -170,12 +170,12 @@ def run(build_nr=0, branch='master', rev='Release'):
         infile.close()
         last_rev = f.split()[0]
     else:
-        last_rev = ""
+        last_rev = "none"
     current_rev = os.popen("git log -1 origin/" + branch + " --pretty=format:%H").read().split()
     if current_rev[0] == last_rev:
         # Nobuild mail
         subject, text = return_mail_text('[Cosmo-daily]', branch, build_nr, 'nobuild', None, None, None)
-        send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+        send_html_mail(subject,BF_ADMIN,MAIL_LIST,text)
         exit(0)
     c_gcl = ['..\\build_script\\core\\generate_change_log.py -r %s' % last_rev]
     ret = os.system(' '.join(c_gcl))
