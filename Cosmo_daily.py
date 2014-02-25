@@ -30,7 +30,7 @@ GERRIT_SERVER = "privgit.marvell.com"
 SMTP_SERVER = "10.68.76.51"
 
 #Buildfarm Maintainer
-BF_ADM = "yfshi@marvell.com"
+BF_ADMIN = "yfshi@marvell.com"
 
 ''' Force Python's print function to output to the screen.
 '''
@@ -50,6 +50,7 @@ def return_mail_text(build_type, branch, build_nr, result, changelog, failurelog
     message += "Buildbot Url:\n%s%s\n\n" % (BUILDBOT_URL, build_nr)
     if (result == 'failed'):
         message += "The change since last build is listed below:\n%s\n\n" % changelog
+        message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
         message += "You can download the package at:\n%s\n\n" % (image_link)
         message += "The change since last build is listed below:\n%s\n\n" % changelog
@@ -149,6 +150,8 @@ def check_publish_folder(IMAGE_SERVER, branch):
 def run(build_nr=0, branch='master', rev='Release'):
     # git reset --hard branch
     print "[Cosmo-daily][%s] Start git reset --hard %s" % (str(datetime.datetime.now()), branch)
+    c_gitfetch = ['git', 'fetch', 'origin']
+    ret = os.system(' '.join(c_gitfetch))
     c_resetbranch = ['git', 'reset', '--hard', 'origin/%s' % branch]
     ret = os.system(' '.join(c_resetbranch))
     if not (ret==0):
@@ -195,13 +198,13 @@ def run(build_nr=0, branch='master', rev='Release'):
     print "[Cosmo-daily][%s] End MSBuild" % (str(datetime.datetime.now()))
     # Load all calib and simu from xml and test
     calib_commands = []
-    xml_file = glob.glob("..\\xml\\*.xml")
+    xml_file = glob.glob("xml\\*.xml")
     for i in xml_file:
-        calib_commands.append("..\\bin\\cosmo.exe -c %s" % (i))
+        calib_commands.append("-c ..\\%s" % (i))
     simu_commands = []
-    sim_file = glob.glob("..\\test\\*.sim")
+    sim_file = glob.glob("test\\*.sim")
     for i in sim_file:
-        simu_commands.append("..\\bin\\cosmo.exe -s %s" % (i))
+        simu_commands.append("-s ..\\%s" % (i))
     # auto test calib
     print "[Cosmo-daily][%s] Start calib" % (str(datetime.datetime.now()))
     c_calib = ['..\\build_script\\core\\mulit_core_task_run.py -c "..\\bin\\cosmo.exe" -l "%s"' % (','.join(calib_commands))]
@@ -277,7 +280,7 @@ def main(argv):
         usage()
         sys.exit(2)
 
-    run(last_rev, build_nr, branch)
+    run(build_nr, branch)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

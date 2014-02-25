@@ -53,9 +53,11 @@ def exec_commands(cmds):
         return p.returncode == 0
     def fail(p,log):
         print "[Cosmo-MCR][%s][PID:%s] exit with none Zero, please check the log %s" % (str(datetime.datetime.now()), p.pid, log)
-        #f = open(stdout_pid[p.pid], 'r')
-        #print f.read()
-        #f.close
+        sub_path = 'DailyAutoTestLog\\'
+        stdout_tmp = sub_path + log
+        f = open(stdout_tmp, 'r')
+        print f.read()
+        f.close
         sys.exit(1)
     
     '''MAX task count 
