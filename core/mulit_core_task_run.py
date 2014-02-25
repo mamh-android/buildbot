@@ -57,7 +57,7 @@ def exec_commands(cmds):
         stdout_tmp = sub_path + log
         f = open(stdout_tmp, 'r')
         print f.read()
-        f.close
+        f.close()
         sys.exit(1)
     
     '''MAX task count 
@@ -66,6 +66,7 @@ def exec_commands(cmds):
     processes = []
     stdout_pid = {}
     stdout_log = {}
+    open_file = {}
     for i in range(max_task):
         stdout_log[str(i)] = 0
     while True:
@@ -74,8 +75,10 @@ def exec_commands(cmds):
             stdout_tmp = return_idel_log_file(max_task, stdout_log)
             sub_path = 'DailyAutoTestLog\\'
             stdout_tmp_s = sub_path + str(stdout_tmp)
-            p = subprocess.Popen(task, stdout=open(stdout_tmp_s, 'a', 0), cwd=os.getcwd())
+            stdout_file = open(stdout_tmp_s, 'a+')
+            p = subprocess.Popen(task, stdout=stdout_file, cwd=os.getcwd())
             stdout_pid[p.pid] = stdout_tmp
+            open_file[p.pid] = stdout_file
             print stdout_pid
             stdout_log[stdout_tmp] = p.pid
             print stdout_log
@@ -88,13 +91,15 @@ def exec_commands(cmds):
                     '''Print stdout after a task success and remove the tmp log
                     '''
                     print "[Cosmo-MCR][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
-                    #f = open(stdout_pid[p.pid], 'r')
-                    #print f.read()
-                    #f.close
-                    #os.remove(stdout_pid[p.pid])
                     stdout_log[stdout_pid[p.pid]] = 0
                     processes.remove(p)
+                    # flush the file
+                    open_file[p.pid].flush()
+                    open_file[p.pid].close()
                 else:
+                    # flush the file
+                    open_file[p.pid].flush()
+                    open_file[p.pid].close()
                     fail(p,stdout_pid[p.pid])
 
         if not processes and not cmds:
