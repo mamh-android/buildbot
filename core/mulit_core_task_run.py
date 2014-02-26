@@ -51,11 +51,9 @@ def exec_commands(cmds):
         return p.poll() is not None
     def success(p):
         return p.returncode == 0
-    def fail(p,log):
-        print "[Cosmo-MCR][%s][PID:%s] exit with none Zero, please check the log %s" % (str(datetime.datetime.now()), p.pid, log)
-        sub_path = 'DailyAutoTestLog\\'
-        stdout_tmp = sub_path + log
-        f = open(stdout_tmp, 'r')
+    def fail(p):
+        print "[Cosmo-MCR][%s][PID:%s] %s exit with none Zero, please check the log below:" % (str(datetime.datetime.now()), p.pid, log_file[p.pid])
+        f = open(log_file[p.pid], 'r')
         print f.read()
         f.close()
         sys.exit(1)
@@ -66,7 +64,7 @@ def exec_commands(cmds):
     processes = []
     stdout_pid = {}
     stdout_log = {}
-    open_file = {}
+    log_file = {}
     for i in range(max_task):
         stdout_log[str(i)] = 0
     while True:
@@ -75,13 +73,12 @@ def exec_commands(cmds):
             stdout_tmp = return_idel_log_file(max_task, stdout_log)
             sub_path = 'DailyAutoTestLog\\'
             stdout_tmp_s = sub_path + str(stdout_tmp)
-            stdout_file = open(stdout_tmp_s, 'a+')
-            p = subprocess.Popen(task, stdout=stdout_file, cwd=os.getcwd())
+            p = subprocess.Popen(task, stdout=open(stdout_tmp_s, 'a+', 0), cwd=os.getcwd())
             stdout_pid[p.pid] = stdout_tmp
-            open_file[p.pid] = stdout_file
             print stdout_pid
             stdout_log[stdout_tmp] = p.pid
             print stdout_log
+            log_file[p.pid] = task.split(' ')[2].split('\\')[2] + '.log'
             processes.append(p)
             print "[Cosmo-MCR][%s][PID:%s]'%s' append to CPU log captured to >> %s" % (str(datetime.datetime.now()), p.pid, task, stdout_tmp)
 
@@ -93,14 +90,8 @@ def exec_commands(cmds):
                     print "[Cosmo-MCR][%s][PID:%s] exit with Zero" % (str(datetime.datetime.now()), p.pid)
                     stdout_log[stdout_pid[p.pid]] = 0
                     processes.remove(p)
-                    # flush the file
-                    open_file[p.pid].flush()
-                    open_file[p.pid].close()
                 else:
-                    # flush the file
-                    open_file[p.pid].flush()
-                    open_file[p.pid].close()
-                    fail(p,stdout_pid[p.pid])
+                    fail(p)
 
         if not processes and not cmds:
             print "tasklist done"
