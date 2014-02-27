@@ -1,6 +1,6 @@
 #!/usr/bin/python
-# v1.1
-#    Cosmo Daily Build Script(Cosmo_daily)
+# v1.0
+#    Image Auto Test Script(IMAUTO)
 #    Author: yfshi@marvell.com
 
 import os
@@ -48,7 +48,7 @@ sys.stdout = flushfile(sys.stdout)
 
 def return_mail_text(build_type, branch, build_nr, result, failurelog, cfg_file, image_link=None):
     subject = "[imauto-%s][%s] %s %s" % (branch, str(date.today()), build_type, result)
-    message =  "This is an automated email from cosmo auto build system.\n"
+    message =  "This is an automated email from auto build system.\n"
     message += "It was generated because %s %s\n\n" % (build_type, result)
     message += "Buildbot Url:\n%s%s\n\n" % (BUILDBOT_URL, build_nr)
     if (result == 'failed'):
@@ -202,8 +202,6 @@ def main(argv):
         usage()
         sys.exit(2)
 
-    print fwversion
-    print calversion
     setup_testfile(TEST_CFG, path, sensor, resolution, focus, testimage, isp, fwversion, calversion)
     run(build_nr, TEST_CFG, path, '1')
 
