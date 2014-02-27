@@ -29,10 +29,11 @@ SMTP_SERVER = "10.68.76.51"
 
 #Buildfarm Maintainer
 BF_ADMIN = "yfshi@marvell.com"
+CAM_QAE_ADMIN = "yzhan45@marvell.com"
 
 #Mail list
 MAIL_LIST = []
-MAIL_LIST.append(BF_ADMIN)
+MAIL_LIST.append(CAM_QAE_ADMIN)
 
 ''' Force Python's print function to output to the screen.
 '''
@@ -45,12 +46,13 @@ class flushfile(object):
 
 sys.stdout = flushfile(sys.stdout)
 
-def return_mail_text(build_type, branch, build_nr, result, changelog, image_link=None):
-    subject = "[cosmo-autobuild-%s][%s] %s %s" % (branch, str(date.today()), build_type, result)
+def return_mail_text(build_type, branch, build_nr, result, failurelog, cfg_file, image_link=None):
+    subject = "[imauto-%s][%s] %s %s" % (branch, str(date.today()), build_type, result)
     message =  "This is an automated email from cosmo auto build system.\n"
     message += "It was generated because %s %s\n\n" % (build_type, result)
     message += "Buildbot Url:\n%s%s\n\n" % (BUILDBOT_URL, build_nr)
     if (result == 'failed'):
+        message += "CFG file is followed:\n%s\n\n" % cfg_file
         message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
         message += "You can download the package at:\n%s\n\n" % (image_link)
@@ -116,17 +118,18 @@ def run(build_nr, cfg_file, image_link, run_type='1', branch='master'):
     # imauto run
     print "[imauto][%s] Start imauto" % (str(datetime.datetime.now()))
     c_imauto = ['perl test.pl %s %s' % (cfg_file, run_type)]
-    ret = os.system(' '.join(c_simu))
+    ret = os.system(' '.join(c_imauto))
     if not (ret==0):
         print "[imauto][%s] Failed imauto" % (str(datetime.datetime.now()))
         failure_log = return_failure_log(IMAUTO_LOG)
-        subject, text = return_mail_text('[imauto]', branch, build_nr, 'failed', failure_log, None)
+        cfg_file = return_failure_log(TEST_CFG)
+        subject, text = return_mail_text('[imauto]', branch, build_nr, 'failed', failure_log, cfg_file,None)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
     # All success
     print "[imauto][%s] End Autotest" % (str(datetime.datetime.now()))
     print "[imauto][%s] All success" % (str(datetime.datetime.now()))
-    subject, text = return_mail_text('[imauto]', branch, build_nr, 'success', None, image_link)
+    subject, text = return_mail_text('[imauto]', branch, build_nr, 'success', None, cfg_file, image_link)
     send_html_mail(subject,ADM_USER,MAIL_LIST,text)
     exit(0)
 
