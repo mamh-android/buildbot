@@ -55,6 +55,7 @@ def return_mail_text(build_type, branch, build_nr, result, failurelog, cfg_file,
         message += "CFG file is followed:\n%s\n\n" % cfg_file
         message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
+        message += "CFG file is followed:\n%s\n\n" % cfg_file
         message += "You can download the package at:\n%s\n\n" % (image_link)
     message +="Regards,\nTeam of CameraQAE\n"
     return subject, message
@@ -129,6 +130,7 @@ def run(build_nr, cfg_file, image_link, run_type='1', branch='master'):
     # All success
     print "[imauto][%s] End Autotest" % (str(datetime.datetime.now()))
     print "[imauto][%s] All success" % (str(datetime.datetime.now()))
+    cfg_file = return_failure_log(TEST_CFG)
     subject, text = return_mail_text('[imauto]', branch, build_nr, 'success', None, cfg_file, image_link)
     send_html_mail(subject,ADM_USER,MAIL_LIST,text)
     exit(0)
