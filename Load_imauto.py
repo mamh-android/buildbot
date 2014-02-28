@@ -113,7 +113,7 @@ def run(build_nr, cfg_file, image_link, run_type='1', branch='master'):
     if not (ret==0):
         print "[imauto][%s] Failed git reset --hard" % (str(datetime.datetime.now()))
         subject, text = return_mail_text('git-reset', branch, build_nr, 'failed', None, None, None)
-        send_html_mail(subject,ADM_USER,BF_ADMIN,text)
+        send_html_mail(subject,ADM_USER,BF_ADMIN.split(),text)
         exit(1)
     print "[imauto][%s] End git reset --hard" % (str(datetime.datetime.now()))
     # imauto run
