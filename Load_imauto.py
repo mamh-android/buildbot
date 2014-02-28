@@ -16,7 +16,7 @@ from email.mime.text import MIMEText
 
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/image_auto_test/builds/"
 IMAUTO_LOG = ".imauto.build.log"
-TEST_CFG = "test.cfg"
+TEST_CFG = "test.txt"
 
 #Gerrit admin user
 ADM_USER = "buildfarm"
