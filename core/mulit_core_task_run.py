@@ -52,7 +52,7 @@ def exec_commands(cmds):
     def success(p):
         return p.returncode == 0
     def fail(p):
-        print "[Cosmo-MCR][%s][PID:%s] %s exit with none Zero, please check the log below:" % (str(datetime.datetime.now()), p.pid, log_file[p.pid])
+        print "[Cosmo-MCR][%s][PID:%s] exit with none Zero, please check the log below:" % (str(datetime.datetime.now()), p.pid)
         f = open(log_file[p.pid], 'r')
         print f.read()
         f.close()
