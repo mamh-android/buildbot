@@ -76,8 +76,8 @@ def run(last_rev, build_nr=0, branch='master', config_file='..\\test\\example.cf
     # Load ConfigParser from config_file
     config = ConfigParser.RawConfigParser()
     config.read(config_file)
-    calib_commands = filter(lambda x: len(x) > 0, config.get('Calib', 'calib_commands').split('\n'))
-    simu_commands = filter(lambda x: len(x) > 0, config.get('Simu', 'simu_commands').split('\n'))
+    calib_commands = filter(lambda x: len(x) > 0, config.get('Calib', 'calib_commands').replace('\\\\','\\').split('\n'))
+    simu_commands = filter(lambda x: len(x) > 0, config.get('Simu', 'simu_commands').replace('\\\\','\\').split('\n'))
     # auto test calib
     print "[Cosmo-BPB][%s] Start calib" % (str(datetime.datetime.now()))
     c_calib = ['..\\build_script\\core\\mulit_core_task_run.py -c "..\\bin\\cosmo.exe" -l "%s"' % (','.join(calib_commands))]
