@@ -95,7 +95,7 @@ def setup_testfile(filename, path, sensor, resolution, focus, testimage=None, is
     config.set('optional', 'FWVersion', FWVersion)
     config.set('optional', 'CalVersion', CalVersion)
     config.add_section('mandatory')
-    config.set('mandatory', 'Path', path)
+    config.set('mandatory', 'Path', ("%s") % path)
     config.set('mandatory', 'Sensor', sensor)
     config.set('mandatory', 'Resolution', resolution)
     config.set('mandatory', 'Focus', focus)
