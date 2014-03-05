@@ -1,0 +1,151 @@
+
+<%bolck content%>
+<script>
+
+</script>
+<body>
+<div id="Layer1" style="display:block">
+  <form name="form2" method="post" action="">
+    <label>Build Type
+    <input name="textfield" type="text" disabled value="Coverity build">
+    </label>
+    <br>
+    <input type="radio" name="RadioGroup1" value="Delta Reference Patch" />
+Delta Reference Patch</label>
+    <br />
+    <label>
+    <input type="radio" name="RadioGroup1" value="Delta File" />
+Delta File</label>
+    <br />
+    <br />
+    <label>Your Name 
+    <input name="textfield" type="text"  disabled="disabled" value="Your Name" />
+    </label>
+    <label></label>
+  </p>
+  <p>
+    <label>Your Email
+    <input name="textfield2" type="text" disabled="true" value="Your Email" />
+    </label>
+  </p>
+  <p>
+    <label>Reason for build
+    <input name="textfield3" type="text" disabled="disabled" value="Your Reason" readonly="true" />
+    </label>
+  </p>
+  <p>
+    <label>Manifest Branch
+    <input type="text" name="textfield4" /> 
+    </label>
+  </p>
+  <p>
+    <label></label>
+  TBD</p>
+  <p>
+    <label></label>
+  </p>
+  <p><input name="Build" type="button" value="Build"  align="middle" />
+  </p>
+  <p></p>
+  </form>
+</div>
+<div id="Layer2" style="display:none">
+ <form name="form2" method="post" action="">
+    <label>Build Type
+	<input name="selected" type="text" disabled value="runtests">
+    </label>
+    <label><br>
+    <br>
+    Your Name 
+    <input name="textfield" type="text"  disabled="disabled" value="Your Name" />
+    </label>
+  </p>
+  <p>
+    <label>Your Email
+    <input name="textfield2" type="text" disabled="true" value="Your Email" />
+    </label>
+  </p>
+  <p>
+    <label>Reason for build
+    <input name="textfield3" type="text" disabled="disabled" value="Your Reason" readonly="true" />
+    </label>
+  </p>
+  <p>
+    <label>Manifest Branch
+    <input type="text" name="textfield4" /> 
+    </label>
+    <label>Urgent
+    <input type="checkbox" name="checkbox" value="checkbox" />
+    </label>
+  </p>
+  <p>
+    <label>
+    <input type="radio" name="RadioGroup2" value="Graphics Build" />
+Graphics Build</label>
+    <br />
+    <label>
+    <input type="radio" name="RadioGroup2" value="Android Case Build" />
+Android Case Build</label>
+    <br />
+  </p>
+  <p><input name="Build" type="button" value="Build" align="middle" />
+  </p>
+  <p>&nbsp;</p>
+ </form>
+</div>
+<div id="Layer3" style="display:none">
+ <form name="form2" method="post" action="">
+    <label>Build Type
+    <input name="selected" type="text" disabled value="Dev build">
+    </label><p>
+    <label>Your Name
+    <input name="textfield5" type="text"  disabled="disabled" value="Your Name" />
+    </label>
+    <label></label>
+    </p>
+    <p>
+      <label>Your Email
+        <input name="textfield22" type="text" disabled="true" value="Your Email" />
+      </label>
+    </p>
+    <p>
+      <label>Reason for build
+        <input name="textfield32" type="text" disabled="disabled" value="Your Reason" readonly="true" />
+      </label>
+    </p>
+    <p>
+      <label>Manifest Branch
+        <input type="text" name="textfield42" />
+      </label>
+      <label></label>
+      <label>Urgent
+        <input type="checkbox" name="checkbox2" value="checkbox" />
+      </label>
+    </p>
+    <p>
+      <label>
+      <input type="radio" name="RadioGroup2" value="Graphics Build" />
+        Graphics Build</label>
+      <br />
+      <label>
+      <input type="radio" name="RadioGroup2" value="Android Case Build" />
+        Android Case Build</label>
+      <br />
+    </p>
+    <p>
+      <input name="Build2" type="button" value="Build" align="middle" />
+    </p>
+ </form>
+</div>
+  <p align="center"><font size="+2" face="宋体"><strong>Trigger Build</strong> </font></p>
+<form method="get" name="form1">
+  <p> Please Choose the build type	
+    <select name="menu1" onChange="changeLayer(this.value)">
+      <option value="1">Coverity build</option>
+      <option value="2">Release build</option>
+      <option value="3">Dev build</option>
+    </select>
+      </p>
+</form>
+</body>
+<%end block%>

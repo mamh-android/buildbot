@@ -1,0 +1,15 @@
+#this folder contains two files: updateuser.py, users.txt
+#updateuser.py is used to insert the user's information
+#in users.txt into the database 
+#
+#
+#users.txt: users information
+#every user has two item: username and displayname, separated with comma
+#all the users are separated with semicolon. and the whole string must be 
+#end with semicolon.
+#
+#
+#
+#
+#
+# 
