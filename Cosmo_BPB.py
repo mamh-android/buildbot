@@ -55,7 +55,7 @@ def run(last_rev, build_nr=0, branch='master', config_file='..\\test\\example.cf
     c_cherrypick = []
     c_cherrypick.append('..\\build_script\\core\\cherry_pick_open_patch.py')
     c_cherrypick.append('-c %s' % last_rev)
-    c_cherrypick.append('-b %s' % branch)
+    #c_cherrypick.append('-b %s' % branch)
     ret = os.system(' '.join(c_cherrypick))
     if not (ret==0):
         print "[Cosmo-BPB][%s] Failed patch cherry-pick" % (str(datetime.datetime.now()))
@@ -145,7 +145,7 @@ def main(argv):
             branch = arg.split('/')[0]
         elif opt in ("-f"):
             config_file = arg
-    if not last_rev or not build_nr or not branch or not config_file:
+    if not last_rev or not build_nr or not config_file:
         usage()
         sys.exit(2)
 

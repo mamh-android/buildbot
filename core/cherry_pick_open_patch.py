@@ -87,6 +87,13 @@ def gerrit_checkout(revision):
     print arg
     subprocess.check_call(arg, shell=True)
 
+# return branch from the commit
+def return_gerrit_branch(revision):
+    cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON commit:%s" % (m_user, m_remote_server, revision)
+    (status, remote_output) = run_command_status(cmd)
+    jsonstr = json.loads(remote_output.split('\n')[0])
+    return jsonstr['branch']
+
 def run(revision, branch='master'):
    arg = "git fetch origin"
    subprocess.check_call(arg, shell=True)
@@ -100,7 +107,7 @@ def run(revision, branch='master'):
 def usage():
     print "\tcherry-pick all the dependencies patch and gerrit status open patch"
     print "\t      [-c] commitID"
-    print "\t      [-b] working on branch"
+    print "\t      [-b] working on branch {optinol}"
     print "\t      [-h] help"
 
 def main(argv):
@@ -121,9 +128,11 @@ def main(argv):
         elif opt in ("-b"):
             branch = arg
 
-    if not commit_id or not branch:
+    if not commit_id:
         usage()
         sys.exit(2)
+    if not branch:
+        branch = return_gerrit_branch(commit_id)
     run(commit_id, branch)
 
 if __name__ == "__main__":
