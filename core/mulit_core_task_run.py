@@ -120,9 +120,8 @@ def return_idel_log_file(max_task, stdout_log):
 def run(main_exe, cmd_list):
     print "[Cosmo-MCR][%s]=======Start=======" % (str(datetime.datetime.now()))
     print "working dir:%s" % (os.getcwd())
-    if not os.path.isdir('DailyAutoTestResult'):
-        create_dir('DailyAutoTestResult')
-    os.chdir('DailyAutoTestResult')
+    if os.path.isdir('test'):
+        os.chdir('test')
     if not os.path.isdir('DailyAutoTestLog'):
         create_dir('DailyAutoTestLog')
     #create a command list for xml
