@@ -66,7 +66,7 @@ def return_gerrit_patch_status(revision):
 
 #re-setup code by cherry-pick the patches
 def setup_code_by_cherry_pick(revisions, branch='master'):
-    arg = "git reset --hard origin/%s" % (branch)
+    arg = "git reset --hard remotes/origin/%s" % (branch)
     subprocess.check_call(arg, shell=True)
     print "%s patches will be cherry-picked to origin/%s" % (len(revisions), branch)
     for rev in revisions:
@@ -97,7 +97,7 @@ def return_gerrit_branch(revision):
 def run(revision, branch='master'):
    arg = "git fetch origin"
    subprocess.check_call(arg, shell=True)
-   arg = "git reset --hard origin/%s" % branch
+   arg = "git reset --hard remotes/origin/%s" % branch
    subprocess.check_call(arg, shell=True)
    gerrit_checkout(revision)
    rev_list = return_dependencies_list()

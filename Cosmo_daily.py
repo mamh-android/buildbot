@@ -6,6 +6,7 @@
 import os
 import sys
 import getopt
+import subprocess
 import datetime
 from datetime import date
 import glob
@@ -19,6 +20,7 @@ PROJECT = "cosmo"
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_build/builds/"
 COSMO_BUILD_LOG = ".cosmo.build.log"
 COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
+IMAGEDATABASE = "W:"
 
 #Gerrit admin user
 ADM_USER = "buildfarm"
@@ -57,6 +59,14 @@ def return_mail_text(build_type, branch, build_nr, result, changelog, failurelog
     message +="Regards,\nTeam of Cosmo\n"
     return subject, message
 
+# sync the imagedatabase and return last rev
+def sync_imagedatabase():
+    subprocess.check_call('git fetch origin', shell=True, cwd=IMAGEDATABASE)
+    subprocess.check_call('git reset --hard remotes/origin/master', shell=True, cwd=IMAGEDATABASE)
+    p = subprocess.Popen('git log -1 --pretty=format:%H', shell=True, stdout=subprocess.PIPE, cwd=IMAGEDATABASE)
+    (out, nothing) = p.communicate()
+    return (p.returncode, out.strip())
+
 def get_mail_list(mail_list):
     global ADM_USER
     global GERRIT_SERVER
@@ -87,17 +97,6 @@ def send_html_mail(subject, from_who, to_who, text):
     msg['Subject'] = subject
     msg['From'] = from_who
     msg['To'] = ", ".join(to_who)
-    html = """\
-    <html>
-      <head></head>
-      <body>
-        <p>Hi!<br>
-           How are you?<br>
-           Here is the <a href="\\sh-srv06">link</a> you wanted.
-        </p>
-      </body>
-    </html>
-    """
     part1 = MIMEText(text, 'plain')
     msg.attach(part1)
     s = smtplib.SMTP(SMTP_SERVER)
@@ -149,11 +148,11 @@ def check_publish_folder(IMAGE_SERVER, branch):
                 i=i+1
 
 def run(build_nr=0, branch='master', rev='Release'):
-    # git reset --hard branch
+    # git sync (both code and imagedatabase)
     print "[Cosmo-daily][%s] Start git reset --hard %s" % (str(datetime.datetime.now()), branch)
     c_gitfetch = ['git', 'fetch', 'origin']
     ret = os.system(' '.join(c_gitfetch))
-    c_resetbranch = ['git', 'reset', '--hard', 'origin/%s' % branch]
+    c_resetbranch = ['git', 'reset', '--hard', 'remotes/origin/%s' % branch]
     ret = os.system(' '.join(c_resetbranch))
     if not (ret==0):
         print "[Cosmo-daily][%s] Failed git reset --hard" % (str(datetime.datetime.now()))
@@ -161,6 +160,12 @@ def run(build_nr=0, branch='master', rev='Release'):
         send_html_mail(subject,ADM_USER,BF_ADMIN,text)
         exit(1)
     print "[Cosmo-daily][%s] End git reset --hard" % (str(datetime.datetime.now()))
+    ret, imagedatabase_rev = sync_imagedatabase()
+    if not (ret==0):
+        print "[Cosmo-daily][%s] Failed sync imagedatabase" % (str(datetime.datetime.now()))
+        subject, text = return_mail_text('sync imagedatabase', branch, build_nr, 'failed', None, None, None)
+        send_html_mail(subject,ADM_USER,BF_ADMIN,text)
+        exit(1)
     # Generate change log
     print "[Cosmo-daily][%s] Start generate change log" % (str(datetime.datetime.now()))
     last_build = IMAGE_SERVER + "LAST_BUILD."  + branch
@@ -171,7 +176,7 @@ def run(build_nr=0, branch='master', rev='Release'):
         last_rev = f.split()[0]
     else:
         last_rev = "none"
-    current_rev = os.popen("git log -1 origin/" + branch + " --pretty=format:%H").read().split()
+    current_rev = os.popen("git log -1 --pretty=format:%H").read().split()
     if current_rev[0] == last_rev:
         # Nobuild mail
         subject, text = return_mail_text('[Cosmo-daily]', branch, build_nr, 'nobuild', None, None, None)
@@ -243,6 +248,12 @@ def run(build_nr=0, branch='master', rev='Release'):
         subject, text = return_mail_text('[Package-publishing]', branch, build_nr, 'failed', change_log, failure_log, None)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
+    # All Success
+    current_rev = os.popen("git log -1 --pretty=format:%H").read().split()
+    if current_rev:
+            f = open(last_build, 'w')
+            f.write("%s\nPackage: %s\nImageDataBase Rev: %s" % (current_rev[0], publish_folder, imagedatabase_rev))
+            f.close()
     print "[Cosmo-daily][%s] End Autotest" % (str(datetime.datetime.now()))
     print "[Cosmo-daily][%s] All success" % (str(datetime.datetime.now()))
     change_log = return_text(COSMO_CHANGELOG_BUILD)

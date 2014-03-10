@@ -5,6 +5,7 @@
 
 import os
 import sys
+import subprocess
 import getopt
 import datetime
 import ConfigParser
@@ -13,6 +14,7 @@ COSMO_OUT_DIR = "out\\"
 IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build_bpb\\"
 PROJECT = "cosmo"
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
+IMAGEDATABASE = "W:"
 
 ''' Force Python's print function to output to the screen.
 '''
@@ -49,7 +51,20 @@ def send_codereview(project, revision, message=None, verified=0, reviewed=0):
     print command
     os.system(' '.join(command))
 
+# sync the imagedatabase and return last rev
+def sync_imagedatabase():
+    subprocess.check_call('git fetch origin', shell=True, cwd=IMAGEDATABASE)
+    subprocess.check_call('git reset --hard remotes/origin/master', shell=True, cwd=IMAGEDATABASE)
+    p = subprocess.Popen('git log -1 --pretty=format:%H', shell=True, stdout=subprocess.PIPE, cwd=IMAGEDATABASE)
+    (out, nothing) = p.communicate()
+    return (p.returncode, out.strip())
+
 def run(last_rev, build_nr=0, branch='master', config_file='..\\test\\example.cfg'):
+    # sync imagedatabase
+    ret, imagedatabase_rev = sync_imagedatabase()
+    if not (ret==0):
+        print "[Cosmo-BPB][%s] Failed sync imagedatabase" % (str(datetime.datetime.now()))
+        exit(1)
     # cherry pick last rev
     print "[Cosmo-BPB][%s] Start patch cherry-pick" % (str(datetime.datetime.now()))
     c_cherrypick = []
