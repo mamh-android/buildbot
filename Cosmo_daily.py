@@ -21,6 +21,7 @@ BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_build/builds/"
 COSMO_BUILD_LOG = ".cosmo.build.log"
 COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 IMAGEDATABASE = "W:"
+IMAGEDATABASE_F = "out\\imagedatabase.revision"
 
 #Gerrit admin user
 ADM_USER = "buildfarm"
@@ -189,6 +190,10 @@ def run(build_nr=0, branch='master', rev='Release'):
         subject, text = return_mail_text('[Generate-change-log]', branch, build_nr, 'failed', None, None, None)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
+    if imagedatabase_rev:
+            f = open(IMAGEDATABASE_F, 'w')
+            f.write("ImageDataBase Rev: %s" % imagedatabase_rev)
+            f.close()
     print "[Cosmo-daily][%s] End generate change log" % (str(datetime.datetime.now()))
     # MSBuild
     print "[Cosmo-daily][%s] Start MSBuild" % (str(datetime.datetime.now()))
@@ -283,7 +288,7 @@ def main(argv):
             usage()
             sys.exit()
         elif opt in ("-r"):
-            last_rev = arg
+            rev = arg
         elif opt in ("-n"):
             build_nr = arg
         elif opt in ("-b"):
