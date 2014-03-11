@@ -62,8 +62,12 @@ def return_mail_text(build_type, branch, build_nr, result, changelog, failurelog
 
 # sync the imagedatabase and return last rev
 def sync_imagedatabase():
-    subprocess.check_call('git fetch origin', shell=True, cwd=IMAGEDATABASE)
-    subprocess.check_call('git reset --hard remotes/origin/master', shell=True, cwd=IMAGEDATABASE)
+    p = subprocess.Popen('git fetch origin',shell=True, stdout=subprocess.PIPE, cwd=IMAGEDATABASE)
+    (out, nothing) = p.communicate()
+    print out
+    p = subprocess.Popen('git reset --hard remotes/origin/master', shell=True, stdout=subprocess.PIPE, cwd=IMAGEDATABASE)
+    (out, nothing) = p.communicate()
+    print out
     p = subprocess.Popen('git log -1 --pretty=format:%H', shell=True, stdout=subprocess.PIPE, cwd=IMAGEDATABASE)
     (out, nothing) = p.communicate()
     return (p.returncode, out.strip())
