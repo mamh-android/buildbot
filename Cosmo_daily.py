@@ -56,6 +56,7 @@ def return_mail_text(build_type, branch, build_nr, result, changelog, failurelog
         message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
         message += "You can download the package at:\n%s\n\n" % (image_link)
+        message += "You can get the OutputImages at:\n%s\\cosmobuild\\test\\OutputImages\n\n" % (image_link)
         message += "The change since last build is listed below:\n%s\n\n" % changelog
     message +="Regards,\nTeam of Cosmo\n"
     return subject, message

@@ -34,6 +34,7 @@ def return_message(build_type, build_nr, result, rev=None):
     message += "The result is: %s " % result
     if (result == 'success'):
         message += "Package at: http:%s%s/ " % (IMAGE_SERVER.replace('\\','/'), rev)
+        message += "OutputImages at: http:%s%s/cosmobuild/test/OutputImages/ " % (IMAGE_SERVER.replace('\\','/'), rev)
     # message
     message = '"' + message + '"'
     return message
