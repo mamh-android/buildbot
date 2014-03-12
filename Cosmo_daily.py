@@ -94,8 +94,6 @@ def get_mail_list(mail_list):
     return email_list
 
 MAIL_LIST = get_mail_list("cosmo-dev")
-#add Simon Kershaw into MAIL_LIST for specical case
-MAIL_LIST.append('skershaw@marvell.com')
 
 def send_html_mail(subject, from_who, to_who, text):
     msg = MIMEMultipart('alternative')
