@@ -100,7 +100,7 @@ def main(argv):
             dest = arg
         elif opt in ("-r"):
             rev = arg
-    if not source or not dest or not rev:
+    if not source or not rev:
         usage()
         sys.exit(2)
 

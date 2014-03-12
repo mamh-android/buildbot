@@ -247,7 +247,6 @@ def run(build_nr=0, branch='master', rev='Release'):
     publish_folder = check_publish_folder(IMAGE_SERVER, branch)
     c_publishing = ['..\\build_script\\core\\publish_results.py']
     c_publishing.append('-s %s' % COSMO_OUT_DIR)
-    c_publishing.append('-d %s' % IMAGE_SERVER)
     c_publishing.append('-r %s' % publish_folder)
     ret = os.system(' '.join(c_publishing))
     if not (ret==0):
