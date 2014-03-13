@@ -145,7 +145,6 @@ def run(branch='master'):
     subprocess.check_call('repo sync', shell=True, cwd=src_dir_r)
     # Start ipp build
     print "[Ipp-build][%s] Start load core.sh" % (str(datetime.datetime.now()))
-    os.chdir(src_dir_r)
     c_build = ['%s/core.sh' % mrvl_extractor_folder, branch, '%s-%s' % (product, variant)]
     ret = os.system(' '.join(c_build))
     if not (ret==0):
