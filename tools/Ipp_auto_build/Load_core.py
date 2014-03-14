@@ -6,6 +6,7 @@
 import os
 import sys
 import getopt
+import shutil
 import subprocess
 import datetime
 from datetime import date
@@ -17,6 +18,8 @@ BUILD_LOG = ".core.build.log"
 IPP_REPO_URL = "ssh://shgit/git/android/shared/mrvl_extractor.git"
 BUILD_STDIO = "/home/buildfarm/buildbot_script/stdio.log"
 AABS_FOLDER = "/home/buildfarm/aabs"
+PUBLISH_DEST = "/autobuild/mrvl_extractor"
+BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/android_develop_build_gc/builds/"
 
 # Gerrit admin user
 ADM_USER = "buildfarm"
@@ -35,14 +38,15 @@ class flushfile(object):
 
 sys.stdout = flushfile(sys.stdout)
 
-def return_mail_text(build_type, branch, result, failurelog=None):
+def return_mail_text(build_type, branch, build_nr, result, package_link=None, failurelog=None):
     subject = "[ipp-autobuild-%s][%s] %s %s" % (branch, str(date.today()), build_type, result)
     message =  "This is an automated email from auto build system.\n"
     message += "It was generated because %s %s\n\n" % (build_type, result)
+    message += "Buildbot Url:\n%s%s\n\n" % (BUILDBOT_URL, build_nr)
     if (result == 'failed'):
         message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
-        message += "You can download the package at:\n%s\n\n"
+        message += "You can download the package at:\n%s\n\n" % package_link
     message +="Regards,\nBuildfarm\n"
     return subject, message
 
@@ -53,6 +57,7 @@ def sync_build_code(repo_url):
         subprocess.check_call('git clone %s' % repo_url, shell=True)
     else:
         subprocess.check_call('git fetch', shell=True, cwd=repo_folder)
+        subprocess.check_call('git clean -d -f', shell=True, cwd=repo_folder)
         subprocess.check_call('git reset --hard master', shell=True, cwd=repo_folder)
         subprocess.check_call('git checkout master', shell=True, cwd=repo_folder)
     return "%s/%s" % (os.getcwd(), repo_folder)
@@ -128,13 +133,35 @@ def check_publish_folder(IMAGE_SERVER, branch):
             else:
                 i=i+1
 
-def run(branch='master'):
+def copy_file(src, dst):
+    print src
+    if os.path.isdir(src):
+        p = "copy directory: " + src + "-->" + dst
+        print p
+        path = os.path.dirname(dst)
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        shutil.copytree(src, dst)
+    if os.path.isfile(src):
+        p = "copy file: " + src + "-->" + dst
+        print p
+        path = os.path.dirname(dst)
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        shutil.copy(src, dst)
+    else:
+        p = "publishing failed, file " + src + " dose not existed"
+        print p
+        exit(2)
+
+def run(branch='master', build_nr=None):
     # ipp git sync
     print "[Ipp-build][%s] Start sync mrvl_extractor" % str(datetime.datetime.now())
     mrvl_extractor_folder = sync_build_code(IPP_REPO_URL)
     MAIL_LIST = get_mail_list(mrvl_extractor_folder)
     print "[Ipp-build][%s] End sync" % (str(datetime.datetime.now()))
     # Set env
+    print "[Ipp-build][%s] Start set env and repo sync" % str(datetime.datetime.now())
     product = return_last_device(BUILD_STDIO, 'TARGET_PRODUCT')
     variant = return_last_device(BUILD_STDIO, 'TARGET_BUILD_VARIANT')
     if branch.split('_')[0] == 'rls':
@@ -143,6 +170,7 @@ def run(branch='master'):
        src_dir = "src.%s" % branch.replace('_', '-')
     src_dir_r = AABS_FOLDER + '/' + src_dir
     subprocess.check_call('repo sync', shell=True, cwd=src_dir_r)
+    print "[Ipp-build][%s] End set env" % (str(datetime.datetime.now()))
     # Start ipp build
     print "[Ipp-build][%s] Start load core.sh" % (str(datetime.datetime.now()))
     c_build = ['%s/core.sh' % mrvl_extractor_folder, branch, '%s-%s' % (product, variant)]
@@ -150,14 +178,36 @@ def run(branch='master'):
     if not (ret==0):
         print "[Ipp-build][%s] Failed Build" % (str(datetime.datetime.now()))
         failure_log = return_failure_log(BUILD_LOG)
-        subject, text = return_mail_text('[Ipp-build]', branch, 'failed', failure_log)
+        subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
     print "[Ipp-build][%s] End Build" % (str(datetime.datetime.now()))
+    # Start publishing
+    print "[Ipp-build][%s] Start publishing" % (str(datetime.datetime.now()))
+    publish_file = "%s/%s_release_list" % (mrvl_extractor_folder, product)
+    publish_folder = check_publish_folder(PUBLISH_DEST, branch)
+    try:
+        f = open(publish_file, 'r')
+        publish_list = f.read().split('\n')
+        f.close()
+    except IOError:
+        print "failed to open file %s with read mode" % publish_file
+        exit(2)
+    for i in publish_list:
+        try:
+            copy_file(i, "out/libs/")
+        except IOError:
+            print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
+            failure_log = return_failure_log(BUILD_LOG)
+            subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
+            send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+            exit(1)
+    shutil.copytree('out/', publish_folder)
+    print "[Ipp-build][%s] End publishing" % (str(datetime.datetime.now()))
     # All Success
     print "[Ipp-build][%s] All success" % (str(datetime.datetime.now()))
     failure_log = return_failure_log(BUILD_LOG)
-    subject, text = return_mail_text('[Ipp-build]', branch, 'success', failure_log)
+    subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'success', publish_folder, None)
     send_html_mail(subject,ADM_USER,MAIL_LIST,text)
     exit(0)
 
@@ -169,6 +219,7 @@ def usage():
 
 def main(argv):
     branch = ""
+    build_nr = ""
     try:
         opts, args = getopt.getopt(argv,"b:h")
     except getopt.GetoptError:
@@ -180,11 +231,13 @@ def main(argv):
             sys.exit()
         elif opt in ("-b"):
             branch = arg
-    if not branch:
+        elif opt in ("-n"):
+            build_nr = arg
+    if not branch or not build_nr:
         usage()
         sys.exit(2)
 
-    run(branch)
+    run(branch, build_nr)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
