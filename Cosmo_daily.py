@@ -21,6 +21,7 @@ BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_build/builds/"
 COSMO_BUILD_LOG = ".cosmo.build.log"
 COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 IMAGEDATABASE = "W:"
+IMAGEDATABASE_L = "\\\\sh-srv06\\common\\"
 IMAGEDATABASE_F = "out\\imagedatabase.revision"
 
 #Gerrit admin user
@@ -66,6 +67,9 @@ def return_mail_text(build_type, branch, build_nr, result, changelog, failurelog
 
 # sync the imagedatabase and return last rev
 def sync_imagedatabase():
+    os.system("net use")
+    if not os.path.isdir(IMAGEDATABASE):
+        os.system("net use %s %s" % (IMAGEDATABASE, IMAGEDATABASE_L))
     p = subprocess.Popen('git fetch origin',shell=True, stdout=subprocess.PIPE, cwd=IMAGEDATABASE)
     (out, nothing) = p.communicate()
     print out

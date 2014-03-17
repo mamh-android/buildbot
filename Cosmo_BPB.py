@@ -15,6 +15,7 @@ IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build_bpb\\"
 PROJECT = "cosmo"
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
 IMAGEDATABASE = "W:"
+IMAGEDATABASE_L = "\\\\sh-srv06\\common\\"
 
 ''' Force Python's print function to output to the screen.
 '''
@@ -54,6 +55,9 @@ def send_codereview(project, revision, message=None, verified=0, reviewed=0):
 
 # sync the imagedatabase and return last rev
 def sync_imagedatabase():
+    os.system("net use")
+    if not os.path.isdir(IMAGEDATABASE):
+        os.system("net use %s %s" % (IMAGEDATABASE, IMAGEDATABASE_L))
     p = subprocess.Popen('git fetch origin',shell=True, stdout=subprocess.PIPE, cwd=IMAGEDATABASE)
     (out, nothing) = p.communicate()
     print out
