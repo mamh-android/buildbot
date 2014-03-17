@@ -215,13 +215,14 @@ def run(branch='master', build_nr=None):
 def usage():
     print "\tLoad_core.py"
     print "\t      [-b] branch"
+    print "\t      [-n] buildnumber from buildbot"
     print "\t      [-h] help"
 
 def main(argv):
     branch = ""
     build_nr = ""
     try:
-        opts, args = getopt.getopt(argv,"b:h")
+        opts, args = getopt.getopt(argv,"b:n:h")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
