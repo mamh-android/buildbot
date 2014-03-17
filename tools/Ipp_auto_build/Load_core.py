@@ -165,7 +165,7 @@ def run(branch='master', build_nr=None):
     product = return_last_device(BUILD_STDIO, 'TARGET_PRODUCT')
     variant = return_last_device(BUILD_STDIO, 'TARGET_BUILD_VARIANT')
     if branch.split('_')[0] == 'rls':
-       src_dir = "src.%s-%s.%s" % (branch.split('_')[1], branch.split('_')[2], branch.lstrip('%s_%s_%s' % (branch.split('_')[0], branch.split('_')[1], branch.split('_')[2])))
+       src_dir = "src.%s-%s.%s" % (branch.split('_')[1], branch.split('_')[2], '_'.join(branch.split('_')[3:len(branch.split('_'))]))
     else:
        src_dir = "src.%s" % branch.replace('_', '-')
     src_dir_r = AABS_FOLDER + '/' + src_dir
