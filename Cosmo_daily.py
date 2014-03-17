@@ -35,6 +35,9 @@ SMTP_SERVER = "10.68.76.51"
 #Buildfarm Maintainer
 BF_ADMIN = "yfshi@marvell.com"
 
+#MAIL_LIST = get_mail_list("cosmo-dev")
+MAIL_LIST = ['gr-apse-cosmo','yfshi@marvell.com']
+
 ''' Force Python's print function to output to the screen.
 '''
 class flushfile(object):
@@ -93,8 +96,6 @@ def get_mail_list(mail_list):
         args = "ssh -p 29418 " + ADM_USER + "@" + GERRIT_SERVER + " gerrit gsql -c \"select\ preferred_email\ from\ accounts\ WHERE\ account_id=\\\'" + i + "\\\'\""
         email_list.append(os.popen(args).read().split()[2])
     return email_list
-
-MAIL_LIST = get_mail_list("cosmo-dev")
 
 def send_html_mail(subject, from_who, to_who, text):
     msg = MIMEMultipart('alternative')
