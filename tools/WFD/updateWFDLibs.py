@@ -15,9 +15,9 @@ from email.mime.multipart import MIMEMultipart
 #--------
 # (Begin)
 #++++++++++++++++++++++++++++++++++++++++++++++++++++
-platformWFDCodeDefs = [
-{'eden-kk4.4' : {
-                    'wfd_core_src' :   { 
+platformWFDCodeDefs = {
+'eden-kk4.4' : {
+                    'wfd_core_src' :   {
                               'git_name':'vendor/marvell/generic/wfd_core',     # git project name (stripped suffix ".git")
                               'revision':'mrvl-kk4.4',                          # revision
                              'local_dir':'vendor/marvell/generic/wfd_core_src', # local path
@@ -32,17 +32,22 @@ platformWFDCodeDefs = [
                               'revision':'master',
                              'local_dir':'vendor/marvell/generic/wfd_vpu_src'
                     },
-             }
-},
-]# end of platformWFDCodeDefs
+             },
+'rls_eden_kk4.4_dev_z2' : 'eden-kk4.4', # same as 'eden-kk4.4'
+}# end of platformWFDCodeDefs
 
-print "\nplatformWFDCodeDefs:\t", platformWFDCodeDefs
+# resolve reference
+for branchName in platformWFDCodeDefs.keys():
+    if isinstance( platformWFDCodeDefs[branchName], str ) and platformWFDCodeDefs[branchName] in platformWFDCodeDefs.keys():
+        platformWFDCodeDefs[ branchName ] = platformWFDCodeDefs[ platformWFDCodeDefs[ branchName ] ]
 
-#mail
-SMTP_SERVER = "10.68.76.51"
-mailSubject = "Build notification of WFD from autobuild server"
-fromWho = "autobuild@marvell.com"
-toWho = ["lbi@marvell.com", "yfshi@marvell.com"]
+### dictionary variable to save global variables
+gVars = {}
+gVars['smtp_server'] = "10.68.76.51" # default
+gVars['mail_subject']= "Build notification of WFD from autobuild server"
+gVars['mail_from_who'] = "autobuild@marvell.com"
+gVars['mail_to_who'  ] = ["lbi@marvell.com"]
+gVars['mail_to_who_autobuild'] = ["yfshi@marvell.com"]
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++
 # (End)
@@ -53,28 +58,46 @@ toWho = ["lbi@marvell.com", "yfshi@marvell.com"]
 
 optParser = OptionParser()
 usage = "Usage: %prog [options]"
-optParser.add_option("-m", "--mode", dest="mode", help="Autobuild, Developer, Integrator" )
+optParser.add_option("-m", "--mode", dest="mode", help="Autobuild , Developer , Integrator" )
 optParser.add_option("-s", "--smtp", dest="smtp", help="smtp server" )
+optParser.add_option("-l", dest="listConfigurations", action="store_true", help="List all platform/branch configurations." )
 options, args = optParser.parse_args( args=sys.argv[1:] )
-options.mode = "Developer" # hardcoded as developer
+
+count = 0
+if options.listConfigurations == True:
+    print "\n"
+    print "=========================================================="
+    print "| List all platform/branch WFD source code configurations"
+    print "=========================================================="
+    allConfigs = platformWFDCodeDefs
+    for branch in allConfigs.keys():
+        count += 1
+        print " -------------"
+        print "| ({0}) {1} : ".format( count, branch )
+        print " -------------"
+        for pro in allConfigs[branch].keys():
+            print "        " + pro + " : "
+            for so in allConfigs[branch][pro].keys():
+                print "                    " + so + "  :  " + allConfigs[branch][pro][so]
+    print "\n\n"
+    exit(0)
+
+
 if options.mode != "Autobuild" and options.mode != "Developer" and options.mode != "Integrator":
     optParser.print_help()
     exit(1)
 
+# save run mode value
+gVars['run_mode'] = options.mode
+
+# check if user request to specify SMTP server
 if options.smtp is not None and len(options.smtp)>0:
-    SMTP_SERVER = options.smtp
+    gVars['smtp_server'] = options.smtp
 
-def mode():
-    global options
-    if options.mode=="Autobuild":
-        return "A"
-    elif options.mode=="Developer":
-        return "D"
-    elif options.mode=="Integrator":
-        return "I"
-    else:
-        return "U"
+if gVars['run_mode']=="Autobuild":
+    gVars['mail_to_who'].extend( gVars['mail_to_who_autobuild'] )
 
+# function : run shell command to get result
 def runCMD( cmd , workDir=None):
     if workDir is None:
         p = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -87,6 +110,7 @@ def runCMD( cmd , workDir=None):
         printedLines.append( line )
     return (p.returncode, printedLines)
 
+# function : run shell that may invoke shell builtin commmands
 def runCMDNeedShellBuiltin( cmd , workDir=None):
     if workDir is None:
         p = subprocess.Popen( cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -99,6 +123,7 @@ def runCMDNeedShellBuiltin( cmd , workDir=None):
         printedLines.append( line )
     return (p.returncode, printedLines)
 
+# function : probe android codebase root path
 def probeAndroidPath():
     AndroidFoders = ["bionic", "frameworks", "hardware", "libcore", "dalvik"]
     pwdOut = os.path.dirname(os.path.abspath(__file__))
@@ -110,7 +135,7 @@ def probeAndroidPath():
         if len(AndroidFoders) == len(commonItems):
             androidRoot = pwd
             break;
-        #strip tailing sub-drc
+        #strip tailing sub-dir
         lastSlashIdx = pwd.rfind("/")
         if lastSlashIdx <= 0:
             break;
@@ -125,157 +150,210 @@ if androidRoot is None:
     print "You are not running this script under valid Android source code!\n"
     exit(1)
 
-### probe current platform android codebase branch name
-rc,cmdOutput = runCMD( "git branch -a | grep -- '->'", workDir=androidRoot+"/.repo/manifests/")
-if len(cmdOutput)==0:
-    print "Can not identify android codebase branch name under its .repo/manifests folder!"
-    exit(1)
-pos = cmdOutput[0].rfind("/")
-if pos < 0:
-    print "Can not identify android codebase branch name on ", cmdOutput[0]
-    exit(1)
-androidBranchName = cmdOutput[0][pos+1:]
-print "\nandroid branch name:{0}".format(androidBranchName)
+# save android codebase root path
+gVars['android_root_path'] = androidRoot
+gVars['script_path'] = pwd
 
-### get the config instance for androidBranchName in $platformWFDCodeDefs 
+def modeLog( msg ):
+    global gVars
+    print "[mode : {0}] {1}".format( gVars['run_mode'], msg )
+
+def printList( lis ):
+    for line in lis:
+        modeLog( line )
+
+# function : get android platform android codebase branch name
+def getAndroidPlatformBranchName( runMode, androidRootPath ):
+    rc,cmdOutput = runCMD( "git branch -a | grep -- '->'", workDir=androidRootPath+"/.repo/manifests/")
+    if len(cmdOutput)==0:
+        modeLog( "Can not identify android codebase branch name under its .repo/manifests folder!" )
+        exit(1)
+    pos = cmdOutput[0].rfind("/")
+    if pos < 0:
+        modeLog("Can not identify android codebase branch name on %s" %(cmdOutput[0]) )
+        exit(1)
+    return cmdOutput[0][pos+1:]
+
+# Get android release branch name
+gVars['android_release_branch'] = getAndroidPlatformBranchName( gVars['run_mode'], gVars['android_root_path'] )
+
+
+### get the config instance for androidBranchName in $platformWFDCodeDefs
 configInstance = None
-for config in platformWFDCodeDefs:
-    if config[androidBranchName] is not None:
-        configInstance = config[androidBranchName]
-        break;
+if gVars['android_release_branch'] in platformWFDCodeDefs.keys():
+    configInstance = platformWFDCodeDefs[ gVars['android_release_branch'] ]
 if configInstance is None:
-    print "Can not find configuration for branch :", androidBranchName
-print "\nconfiguration for {0} is:\t".format(androidBranchName), configInstance
-
-'''#############################################################
-1. Check if current released binaries MD5 matching its libs
-   If not matched, then warning by email?
-'''
-
-'''#############################################################
-2. Backup old .repo/manifests/default.xml
-   Modify it for fetching wfd source code project (wfd_core_src,wfd_platform_src,wfd_vpu_src)
-'''
-# make sure wfd_platform, wfd_vpu projects are included in it.
-repoXMLLines = []
-foundWfdPlatformBinPro = False
-foundWfdVpuBinPro = False
-wfdSourceCodeProjects = []
-f = open( androidRoot+"/.repo/manifests/default.xml", "r")
-for line in f:
-    repoXMLLines.append( line )
-
-    if line.find( configInstance['wfd_core_src']['local_dir'] ) > -1 or \
-       line.find( configInstance['wfd_platform_src']['local_dir'] ) > -1 or \
-       line.find( configInstance['wfd_vpu_src']['local_dir'] ) > -1:
-        wfdSourceCodeProjects.append( line )
-
-    if line.find("path=\"vendor/marvell/generic/wfd_platform\"") > -1:
-        leadingChars = line.find("<")
-        foundWfdPlatformBinPro = True
-        #add its source code projects
-        repoXMLLines.append( "{0}<project name=\"{1}\" path=\"{2}\" revision=\"{3}\" />\n".format(line[:leadingChars],
-                                                                                                configInstance['wfd_core_src']['git_name'],
-                                                                                                configInstance['wfd_core_src']['local_dir'],
-                                                                                                configInstance['wfd_core_src']['revision']) )
-        repoXMLLines.append( "{0}<project name=\"{1}\" path=\"{2}\" revision=\"{3}\" />\n".format(line[:leadingChars],
-                                                                                                configInstance['wfd_platform_src']['git_name'],
-                                                                                                configInstance['wfd_platform_src']['local_dir'],
-                                                                                                configInstance['wfd_platform_src']['revision']) )
-    if line.find("path=\"vendor/marvell/generic/wfd_vpu\"") > -1:
-        foundWfdVpuBinPro = True
-        repoXMLLines.append( "{0}<project name=\"{1}\" path=\"{2}\" revision=\"{3}\" />\n".format(line[:leadingChars],
-                                                                                                configInstance['wfd_vpu_src']['git_name'],
-                                                                                                configInstance['wfd_vpu_src']['local_dir'],
-                                                                                                configInstance['wfd_vpu_src']['revision']) )
-f.close()
-
-gWFDSourceCodeProjectsFoundInRepo = False
-if len(wfdSourceCodeProjects) > 0:
-    print "\nInfo : already found WFD sourc code projects in codebase! they are:\n"
-    gWFDSourceCodeProjectsFoundInRepo = True
-    for line in wfdSourceCodeProjects:
-        print "\t{0}".format( line )
-    print "\n"
-    if mode()=="A":
-        print "*** In Autobuild mode, we just stopped here!"
-        exit(1)
-
-if foundWfdPlatformBinPro==False or foundWfdVpuBinPro==False:
-    print "\nNo WFD binaries projects in this codebase!\n"
+    modeLog( "Can not find configuration for branch :" + gVars['android_release_branch'] )
     exit(1)
 
-if gWFDSourceCodeProjectsFoundInRepo == False:
-    rc,cmdOutput = runCMD( "mv default.xml default.xml.original", workDir=androidRoot+"/.repo/manifests/")
-    if rc != 0:
-        print "Can not backup .repo/manifests/default.xml before modifying it!"
-        exit(1)
-    
-    f = open(androidRoot+"/.repo/manifests/default.xml", "w")
-    for line in repoXMLLines:
-        f.write( line )
-    f.close()
-    print "\nDone with modifying ", androidRoot+"/.repo/manifests/default.xml", "\n"
-    gWFDSourceCodeProjectsFoundInRepo = True
+#print "\nconfiguration for {0} is:\t".format( gVars['android_release_branch'] ), configInstance
 
+print "\nSetting of current platform/branch : ", gVars['android_release_branch']
+print " -------------"
+print "|", gVars['android_release_branch']
+print " -------------"
+for project in configInstance.keys():
+    print "    "+project+" :"
+    for so in configInstance[project].keys():
+        print "                    %s : %s" % ( so, configInstance[project][so] )
+print "\n"
 
-'''#############################################################
-3. repo sync wfd source code to their folders
-'''
-def pullSourceCode( local_path, root_path ):
+# Get wfd src code projects info
+gVars['wfd_projects_info'] = configInstance
+
+################### Prepare source code #############################
+
+def repoSyncSourceCode( local_path, root_path ):
     rc,cmdOutput = runCMD( "repo sync {0}".format( local_path ), workDir=root_path)
     if rc==0:
-        print "\nInfo : pull wfd source code project success for :{0}".format( local_path )
+        modeLog( "Info : Succeeded pull wfd source code project for :{0}".format( local_path ) )
     else:
-        print "\nInfo : pull wfd source code project fail for :{0}".format( local_path )
+        modeLog( "Info : Failed pull wfd source code project for :{0}".format( local_path ) )
+        modeLog( "[IN] local_path=%s, root_path=%s" %( local_path, root_path ) )
+        for line in cmdOutput:
+            modeLog( line )
 
-for project_name in configInstance.keys():
-    if os.path.isdir( androidRoot+"/"+configInstance[project_name]['local_dir'] )==True:
-        print "For safety reason, on those already existing project do not repo sync : ", configInstance[project_name]['local_dir']
-        continue
-    else:
-        pullSourceCode( configInstance[project_name]['local_dir'], androidRoot )
+def prepareWFDSourceCode_Developer( gV ):
+    ### Backup old .repo/manifests/default.xml
+    ### Modify it for fetching wfd source code project (wfd_core_src,wfd_platform_src,wfd_vpu_src)
+    ###==============================================================
+
+    # make sure wfd_platform, wfd_vpu projects are included in it.
+    repoXMLLines = []
+    foundWfdPlatformBinPro = False
+    foundWfdVpuBinPro = False
+    wfdSourceCodeProjects = []
+    f = open( gV['android_root_path']+"/.repo/manifests/default.xml", "r")
+    for line in f:
+        repoXMLLines.append( line )
+        if line.find(    gV['wfd_projects_info']['wfd_core_src']['local_dir'] ) > -1 \
+           or line.find( gV['wfd_projects_info']['wfd_platform_src']['local_dir'] ) > -1 \
+           or line.find( gV['wfd_projects_info']['wfd_vpu_src']['local_dir'] ) > -1:
+            wfdSourceCodeProjects.append( line )
+        if line.find("path=\"vendor/marvell/generic/wfd_platform\"") > -1:
+            leadingChars = line.find("<")
+            foundWfdPlatformBinPro = True
+            #add its source code projects
+            repoXMLLines.append( "{0}<project name=\"{1}\" path=\"{2}\" revision=\"{3}\" />\n".format(line[:leadingChars],
+                                                                                                      gV['wfd_projects_info']['wfd_core_src']['git_name'],
+                                                                                                      gV['wfd_projects_info']['wfd_core_src']['local_dir'],
+                                                                                                      gV['wfd_projects_info']['wfd_core_src']['revision']) )
+            repoXMLLines.append( "{0}<project name=\"{1}\" path=\"{2}\" revision=\"{3}\" />\n".format(line[:leadingChars],
+                                                                                                      gV['wfd_projects_info']['wfd_platform_src']['git_name'],
+                                                                                                      gV['wfd_projects_info']['wfd_platform_src']['local_dir'],
+                                                                                                      gV['wfd_projects_info']['wfd_platform_src']['revision']) )
+        if line.find("path=\"vendor/marvell/generic/wfd_vpu\"") > -1:
+            foundWfdVpuBinPro = True
+            repoXMLLines.append( "{0}<project name=\"{1}\" path=\"{2}\" revision=\"{3}\" />\n".format(line[:leadingChars],
+                                                                                                      gV['wfd_projects_info']['wfd_vpu_src']['git_name'],
+                                                                                                      gV['wfd_projects_info']['wfd_vpu_src']['local_dir'],
+                                                                                                      gV['wfd_projects_info']['wfd_vpu_src']['revision']) )
+    f.close()
+    foundWFDSourceCodeProjectsInRepo = False
+    if len(wfdSourceCodeProjects) > 0:
+        modeLog( "\nInfo : already found WFD sourc code projects in codebase! they are:\n" )
+        foundWFDSourceCodeProjectsInRepo = True
+        for line in wfdSourceCodeProjects:
+            modeLog( "\t{0}".format( line ) )
+        modeLog( "\n" )
+
+    if foundWfdPlatformBinPro==False or foundWfdVpuBinPro==False:
+        modeLog( "\nNo WFD binaries projects in this codebase!\n" )
+        return False
+
+    if foundWFDSourceCodeProjectsInRepo== False:
+        rc,cmdOutput = runCMD( "mv default.xml default.xml.original", workDir=gV['android_root_path']+"/.repo/manifests/")
+        if rc != 0:
+            modeLog("Can not backup .repo/manifests/default.xml before modifying it!" )
+            return False
+
+        f = open( gV['android_root_path']+"/.repo/manifests/default.xml", "w")
+        for line in repoXMLLines:
+            f.write( line )
+        f.close()
+        modeLog( "\nDone with modifying "+ gV['android_root_path'] +"/.repo/manifests/default.xml\n" )
+
+    for project_name in gV['wfd_projects_info'].keys():
+        if os.path.isdir( gV['android_root_path']+"/"+gV['wfd_projects_info'][project_name]['local_dir'] )==True:
+            modeLog( "For safety reason, on those already existing project do not repo sync : " + gV['wfd_projects_info'][project_name]['local_dir'] )
+            continue
+        else:
+            repoSyncSourceCode( gV['wfd_projects_info'][project_name]['local_dir'], gV['android_root_path'] )
+
+    return True
+
+def prepareWFDSourceCode_Autobuild( gV ):
+    for project_name in gV['wfd_projects_info'].keys():
+        if os.path.isdir( gV['android_root_path']+"/"+gV['wfd_projects_info'][project_name]['local_dir'] )==True:
+            modeLog( "Error! The wfd source code project already exists under : " + gV['wfd_projects_info'][project_name]['local_dir'] )
+            return False
+        rc,cmdOutput = runCMD( "git clone -b {0} ssh://shgit.marvell.com/git/android/{1}.git {2}".format( gV['wfd_projects_info'][project_name]['revision'],
+                                                                                                          gV['wfd_projects_info'][project_name]['git_name'],
+                                                                                                          gV['wfd_projects_info'][project_name]['local_dir']),
+                               workDir=gV['android_root_path'] )
+        if rc==0:
+            modeLog( "Succeeded git clone source code : " + gV['wfd_projects_info'][project_name]['local_dir'] )
+        else:
+            modeLog( "Failed to git clone source code : " + gV['wfd_projects_info'][project_name]['local_dir'] )
+            for line in cmdOutput:
+                modeLog( line )
+            return False
+    return True
+
+
+isOK = False
+if gVars['run_mode']=="Autobuild":
+    isOK = prepareWFDSourceCode_Autobuild( gVars )
+else:
+    isOK = prepareWFDSourceCode_Developer( gVars )
+if isOK==False:
+    modeLog( "Failed to prepare WFD source code projects!\n" )
+    exit(1)
+
+modeLog( "Completed wfd source code preparation! \n" )
+
+''' ****************************************** '''
 
 '''#############################################################
 4. Backup old wfd .so, and rebuild libxml2, wfd_core_src, wfd_platform_src, wfd_vpu_src
 '''
 gNewlyBuiltSo = {}
 
-def extractAndroidBuildEnvVars():
-    myVars = {'TARGET_PRODUCT':''}
+def extractAndroidBuildEnvVars( gV ):
+    gV['TARGET_PRODUCT'] = ''
     sysEnv = os.environ.copy()
-    myVars['TARGET_PRODUCT'] = sysEnv['TARGET_PRODUCT']
-    myVars['TARGET_BUILD_VARIANT'] = sysEnv['TARGET_BUILD_VARIANT']
-    return myVars
+    gV['TARGET_PRODUCT'] = sysEnv['TARGET_PRODUCT']
+    gV['TARGET_BUILD_VARIANT'] = sysEnv['TARGET_BUILD_VARIANT']
+    modeLog( " option of lunch is set as : {0}-{1}".format( gV['TARGET_PRODUCT'], gV['TARGET_BUILD_VARIANT']) )
+    return True
 
-def buildSrcProject( androidRootPath, srcProjectRelativePath ):
+def buildSrcProject( androidRootPath, srcProjectRelativePath, gV ):
     global gNewlyBuiltSo
-    buildVars = extractAndroidBuildEnvVars()
-    if len(buildVars['TARGET_PRODUCT']) == 0:
-        print "Cann't find envrion variables 'TARGET_PRODUCT'!\n\t You may not setup android build environ!"
+    extractAndroidBuildEnvVars( gV )
+    if len(gV['TARGET_PRODUCT']) == 0:
+        modeLog( "Cann't find envrion variables 'TARGET_PRODUCT'!\n\t You may not setup android build environ!" )
         exit(1)
 
     shellName = "{0}/{1}/tmpBuild.sh".format( androidRootPath, srcProjectRelativePath)
     fTmpShell = open( shellName, "w" )
     if fTmpShell is None:
-        print "Cann't create tmpBuild.sh to build under", srcProjectRelativePath
+        modeLog( "Cann't create tmpBuild.sh to build under", srcProjectRelativePath )
         exit(1)
     fTmpShell.write( "cd {0}\n".format(androidRootPath) )
     fTmpShell.write( ". build/envsetup.sh\n" )
-    fTmpShell.write( "lunch {0}-{1}\n".format( buildVars['TARGET_PRODUCT'], buildVars['TARGET_BUILD_VARIANT'] ) )
+    fTmpShell.write( "lunch {0}-{1}\n".format( gV['TARGET_PRODUCT'], gV['TARGET_BUILD_VARIANT'] ) )
     fTmpShell.write( "cd {0}\n".format( srcProjectRelativePath ) )
     fTmpShell.write( "mm -B | grep Install\n" )
     fTmpShell.close()
 
     os.chmod( shellName, 0777 )
 
-    rc,cmdOutput = runCMDNeedShellBuiltin( shellName, workDir=androidRoot + "/" + srcProjectRelativePath)
+    rc,cmdOutput = runCMDNeedShellBuiltin( shellName, workDir=androidRootPath + "/" + srcProjectRelativePath)
     if rc==0:
-        print "\nSuccessfully built wfd src project  :", srcProjectRelativePath
+        modeLog( "Successfully built wfd src project  : " + srcProjectRelativePath )
         for line in cmdOutput:
             if line.startswith("Install:")==True:
                 tokens = line.split()
-                #print "\t\t{0}".format( tokens[1] )
                 soPath = tokens[1]
                 posSlash = soPath.rfind("/")
                 if posSlash < 0:
@@ -283,16 +361,18 @@ def buildSrcProject( androidRootPath, srcProjectRelativePath ):
                 gNewlyBuiltSo[ soPath[posSlash+1:] ] = soPath
 
     else:
-        print "Failed building wfd src project  :", srcProjectRelativePath
+        modeLog( "Failed building wfd src project  : " + srcProjectRelativePath )
+	printList(  cmdOutput )
 
 # build WFD src projects
-buildSrcProject( androidRoot, "external/libxml2" )
-buildSrcProject( androidRoot, configInstance['wfd_core_src']['local_dir'] )
-buildSrcProject( androidRoot, configInstance['wfd_platform_src']['local_dir'] )
-buildSrcProject( androidRoot, configInstance['wfd_vpu_src']['local_dir'] )
+buildSrcProject( gVars['android_root_path'], "external/libxml2", gVars )
+buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_core_src']['local_dir'], gVars )
+buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_platform_src']['local_dir'], gVars )
+buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_vpu_src']['local_dir'], gVars )
 for k in gNewlyBuiltSo.keys():
-    print k, ":", gNewlyBuiltSo[k]
-        
+    modeLog( k + " : " + gNewlyBuiltSo[k] )
+# Save the newly built share libraries info
+gVars['newly_built_libs'] = gNewlyBuiltSo
 
 '''#############################################################
 5. Check if the newly built wfd .so MD5 values are different from
@@ -302,7 +382,7 @@ for k in gNewlyBuiltSo.keys():
 def md5( filePath ):
     rc,cmdOutput = runCMD( "md5sum {0}".format(filePath) )
     if rc != 0 or len(cmdOutput)!=1:
-        print "\nError: cannot calc md5sum for", filePath
+        modeLog( "Error: cannot calc md5sum for" + filePath )
         exit(1)
     mdVal = cmdOutput[0].split()[0]
     return mdVal
@@ -310,7 +390,7 @@ def md5( filePath ):
 def getComparedMD5Sum( wfdBinProjectPath, androidRootPath, newBuiltSo ):
     rc,cmdOutput = runCMD( "find . -iname '*.so'", workDir=androidRoot+"/" + wfdBinProjectPath)
     if rc != 0:
-        print "\nFailed to find .so under", wfdBinProjectPath
+        modeLog( "Failed to find .so under" + wfdBinProjectPath )
         exit(1)
     result = {}
     for line in cmdOutput:
@@ -330,19 +410,25 @@ def getComparedMD5Sum( wfdBinProjectPath, androidRootPath, newBuiltSo ):
 md5Info = {}
 #wfd_platform
 binProjectPath = "vendor/marvell/generic/wfd_platform"
-md5Result = getComparedMD5Sum( binProjectPath, androidRoot, gNewlyBuiltSo )
+md5Result = getComparedMD5Sum( binProjectPath, gVars['android_root_path'], gVars['newly_built_libs'] )
 md5Info[ binProjectPath ] = md5Result
 #wfd_vpu
 binProjectPath = "vendor/marvell/generic/wfd_vpu"
-md5Result = getComparedMD5Sum( binProjectPath, androidRoot, gNewlyBuiltSo )
+md5Result = getComparedMD5Sum( binProjectPath, gVars['android_root_path'], gVars['newly_built_libs'] )
 md5Info[ binProjectPath ] = md5Result
 
-reportString = ""
+# Save the calculated md5 info
+gVars['projects_libs_info'] = md5Info
+
+'''
+****************************************************************
+*********************** To report result ***********************
+****************************************************************
+'''
+
 def report(strVal):
-    global reportString
-#reportString = reportString + strVal + "\r\n"
-    print strVal
-    
+    modeLog( strVal )
+
 report( "MD5 overall:" )
 for p in md5Info.keys():
     report( "\t%s:" %(p) )
@@ -445,16 +531,20 @@ htmlText = '''
         <td>build time</td>
         <td> <font style="font-weight:bold;">{1}</font> </td>
       </tr>
+      <tr>
+        <td>Build Mode</td>
+        <td> <font style="font-weight:bold;">{2}</font> </td>
+      </tr>
     </table>
     </p>
 
-    <p>{2}</p>
+    <p>{3}</p>
   </body>
 
 </html>
-'''.format( getHostName(), getDateTime(), generateHtmlTable( md5Info ) )
+'''.format( getHostName(), getDateTime(), gVars['run_mode'], generateHtmlTable( md5Info ) )
 
-sendMail( SMTP_SERVER, mailSubject, fromWho, toWho, plainText, htmlText)
+sendMail( gVars['smtp_server'], gVars['mail_subject'], gVars['mail_from_who'], gVars['mail_to_who'  ], plainText, htmlText)
 
 
 print "Done"
