@@ -37,7 +37,7 @@ SMTP_SERVER = "10.68.76.51"
 BF_ADMIN = "yfshi@marvell.com"
 
 #MAIL_LIST = get_mail_list("cosmo-dev")
-MAIL_LIST = ['gr-apse-cosmo','yfshi@marvell.com']
+MAIL_LIST = ['gr-apse-cosmo@marvell.com','yfshi@marvell.com']
 
 ''' Force Python's print function to output to the screen.
 '''
