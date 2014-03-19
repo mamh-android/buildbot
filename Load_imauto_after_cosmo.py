@@ -120,6 +120,7 @@ def run(build_nr, cfg_file, image_link, run_type='1', branch='master'):
     # imauto run
     print "[imauto][%s] Start imauto" % (str(datetime.datetime.now()))
     c_imauto = ['perl test.pl %s %s' % (cfg_file, run_type)]
+    print c_imauto
     ret = os.system(' '.join(c_imauto))
     if not (ret==0):
         print "[imauto][%s] Failed imauto" % (str(datetime.datetime.now()))
