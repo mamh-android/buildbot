@@ -203,18 +203,30 @@ def run(build_nr=0, branch='master', rev='Release'):
             f.write("ImageDataBase Rev: %s" % imagedatabase_rev)
             f.close()
     print "[Cosmo-daily][%s] End generate change log" % (str(datetime.datetime.now()))
-    # MSBuild
-    print "[Cosmo-daily][%s] Start MSBuild" % (str(datetime.datetime.now()))
-    c_msbuild = ['MSBuild', 'Cosmo.sln', '/t:Rebuild', '/p:Configuration=Release']
+    # MSbuild debug
+    print "[Cosmo-daily][%s] Start MSBuild debug" % (str(datetime.datetime.now()))
+    c_msbuild = ['MSBuild', 'Cosmo.sln', '/t:Rebuild', '/p:Configuration=Debug']
     ret = os.system(' '.join(c_msbuild))
     if not (ret==0):
-        print "[Cosmo-daily][%s] Failed MSBuild" % (str(datetime.datetime.now()))
+        print "[Cosmo-daily][%s] Failed MSBuild debug" % (str(datetime.datetime.now()))
         failure_log = return_failure_log(COSMO_BUILD_LOG)
         change_log = return_text(COSMO_CHANGELOG_BUILD)
         subject, text = return_mail_text('[MSBuild]', branch, build_nr, 'failed', change_log, failure_log, None)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
-    print "[Cosmo-daily][%s] End MSBuild" % (str(datetime.datetime.now()))
+    print "[Cosmo-daily][%s] End MSBuild debug" % (str(datetime.datetime.now()))
+    # MSBuild release
+    print "[Cosmo-daily][%s] Start MSBuild release" % (str(datetime.datetime.now()))
+    c_msbuild = ['MSBuild', 'Cosmo.sln', '/t:Rebuild', '/p:Configuration=Release']
+    ret = os.system(' '.join(c_msbuild))
+    if not (ret==0):
+        print "[Cosmo-daily][%s] Failed MSBuild release" % (str(datetime.datetime.now()))
+        failure_log = return_failure_log(COSMO_BUILD_LOG)
+        change_log = return_text(COSMO_CHANGELOG_BUILD)
+        subject, text = return_mail_text('[MSBuild]', branch, build_nr, 'failed', change_log, failure_log, None)
+        send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+        exit(1)
+    print "[Cosmo-daily][%s] End MSBuild release" % (str(datetime.datetime.now()))
     # Load all calib and simu from xml and test
     calib_commands = []
     xml_file = glob.glob("xml\\*.xml")
