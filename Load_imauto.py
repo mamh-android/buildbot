@@ -56,7 +56,7 @@ def return_mail_text(build_type, branch, build_nr, result, failurelog, cfg_file,
         message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
         message += "CFG file is followed:\n%s\n\n" % cfg_file
-        message += "You can download the package at:\n%s\n\n" % (image_link)
+        message += "You can download the package at:\n\"%s\"\n\n" % (image_link)
     message +="Regards,\nTeam of CameraQAE\n"
     return subject, message
 
