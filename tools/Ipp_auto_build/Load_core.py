@@ -58,8 +58,8 @@ def sync_build_code(repo_url):
     else:
         subprocess.check_call('git fetch', shell=True, cwd=repo_folder)
         subprocess.check_call('git clean -d -f', shell=True, cwd=repo_folder)
-        subprocess.check_call('git reset --hard master', shell=True, cwd=repo_folder)
-        subprocess.check_call('git checkout master', shell=True, cwd=repo_folder)
+        subprocess.check_call('git reset --hard origin/master', shell=True, cwd=repo_folder)
+        subprocess.check_call('git checkout origin/master', shell=True, cwd=repo_folder)
     return "%s/%s" % (os.getcwd(), repo_folder)
 
 def get_mail_list(maintainer_f):
