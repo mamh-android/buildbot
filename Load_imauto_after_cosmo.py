@@ -104,7 +104,7 @@ def setup_testfile(filename, path, sensor, resolution, focus, testimage=None, is
     with open(filename, 'w') as configfile:
         config.write(configfile)
 
-def run(build_nr, cfg_file, image_link, run_type='2', branch='master'):
+def run(build_nr, cfg_file, image_link, run_type='1', branch='master'):
     # git reset --hard branch
     print "[imauto][%s] Start git reset --hard %s" % (str(datetime.datetime.now()), branch)
     c_gitfetch = ['git', 'fetch', 'origin']
@@ -204,7 +204,7 @@ def main(argv):
         sys.exit(2)
 
     setup_testfile(TEST_CFG, path, sensor, resolution, focus, testimage, isp, fwversion, calversion)
-    run(build_nr, TEST_CFG, path, '1')
+    run(build_nr, TEST_CFG, path, '2')
 
 if __name__ == "__main__":
     main(sys.argv[1:])
