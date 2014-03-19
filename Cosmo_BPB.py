@@ -69,6 +69,10 @@ def sync_imagedatabase():
     return (p.returncode, out.strip())
 
 def run(last_rev, build_nr=0, branch='master', config_file='..\\test\\example.cfg'):
+    # Check if the patch has been build sucessful
+    if os.path.isdir("%s%s" % (IMAGE_SERVER, last_rev)):
+        print "[Cosmo-BPB][%s] Patch has been verified, return 0 exit" % (str(datetime.datetime.now()))
+        exit(0)
     # sync imagedatabase
     ret, imagedatabase_rev = sync_imagedatabase()
     if not (ret==0):

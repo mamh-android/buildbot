@@ -65,8 +65,8 @@ def check_publish_folder(IMAGE_SERVER, rev):
 #Publish all the files to out
 def publish_file(src, dst, rev):
     copy_dict()
-    #build = check_publish_folder(dst, rev)
-    build = dst + str(rev)
+    build = check_publish_folder(dst, rev)
+    #build = dst + str(rev)
     path = os.path.dirname(build)
     if not os.path.isdir(path):
         os.makedirs(path)
