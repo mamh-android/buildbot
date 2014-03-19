@@ -59,9 +59,14 @@ gVars['mail_to_who_autobuild'] = ["yfshi@marvell.com"]
 optParser = OptionParser()
 usage = "Usage: %prog [options]"
 optParser.add_option("-m", "--mode", dest="mode", help="Autobuild , Developer , Integrator" )
+optParser.add_option("-a", "--android", dest="androidRootPath", help="Android codebase root path" )
+optParser.add_option("-p", "--product", dest="product", help="Android build combo value" )
 optParser.add_option("-s", "--smtp", dest="smtp", help="smtp server" )
 optParser.add_option("-l", dest="listConfigurations", action="store_true", help="List all platform/branch configurations." )
 options, args = optParser.parse_args( args=sys.argv[1:] )
+
+gCmdLine = " ".join( sys.argv )
+print "cmd-line:", gCmdLine
 
 count = 0
 if options.listConfigurations == True:
@@ -96,6 +101,10 @@ if options.smtp is not None and len(options.smtp)>0:
 
 if gVars['run_mode']=="Autobuild":
     gVars['mail_to_who'].extend( gVars['mail_to_who_autobuild'] )
+    if options.androidRootPath is None or len(options.androidRootPath)==0 or options.product is None or len(options.product)==0:
+        print "In Autobuild mode, please input -a <android-root-path> and -p <product-variant>\n"
+        optParser.print_help()
+        exit(1)
 
 # function : run shell command to get result
 def runCMD( cmd , workDir=None):
@@ -124,10 +133,9 @@ def runCMDNeedShellBuiltin( cmd , workDir=None):
     return (p.returncode, printedLines)
 
 # function : probe android codebase root path
-def probeAndroidPath():
+def probeAndroidPath( startingPath ):
     AndroidFoders = ["bionic", "frameworks", "hardware", "libcore", "dalvik"]
-    pwdOut = os.path.dirname(os.path.abspath(__file__))
-    pwd = pwdOut
+    pwd = startingPath 
     androidRoot = None
     while len(pwd) > 0:
         rc, lines = runCMD( "ls {0}".format(pwd) )
@@ -140,19 +148,22 @@ def probeAndroidPath():
         if lastSlashIdx <= 0:
             break;
         pwd = pwd[:lastSlashIdx]
-    return (androidRoot, pwdOut)
+    return androidRoot
 
 ### probe android dir
-androidRoot, pwd = probeAndroidPath()
-print "\nandroid:", androidRoot
-print "    pwd:", pwd
+androidRoot = None
+if gVars['run_mode']=="Autobuild":
+    androidRoot = probeAndroidPath( options.androidRootPath )
+else:
+    androidRoot = probeAndroidPath( os.path.dirname(os.path.abspath(__file__)) )
+
 if androidRoot is None:
-    print "You are not running this script under valid Android source code!\n"
+    print "Can not identify where is the android codebase!\n"
     exit(1)
 
 # save android codebase root path
 gVars['android_root_path'] = androidRoot
-gVars['script_path'] = pwd
+gVars['script_path'] = os.path.dirname(os.path.abspath(__file__))
 
 def modeLog( msg ):
     global gVars
@@ -327,9 +338,8 @@ def extractAndroidBuildEnvVars( gV ):
     modeLog( " option of lunch is set as : {0}-{1}".format( gV['TARGET_PRODUCT'], gV['TARGET_BUILD_VARIANT']) )
     return True
 
-def buildSrcProject( androidRootPath, srcProjectRelativePath, gV ):
+def buildSrcProject( androidRootPath, srcProjectRelativePath, gV, ignoredErros=False ):
     global gNewlyBuiltSo
-    extractAndroidBuildEnvVars( gV )
     if len(gV['TARGET_PRODUCT']) == 0:
         modeLog( "Cann't find envrion variables 'TARGET_PRODUCT'!\n\t You may not setup android build environ!" )
         exit(1)
@@ -361,14 +371,24 @@ def buildSrcProject( androidRootPath, srcProjectRelativePath, gV ):
                 gNewlyBuiltSo[ soPath[posSlash+1:] ] = soPath
 
     else:
-        modeLog( "Failed building wfd src project  : " + srcProjectRelativePath )
-	printList(  cmdOutput )
+        if ignoredErros==False:
+            modeLog( "Failed building wfd src project  : " + srcProjectRelativePath )
+            printList(  cmdOutput )
+            exit(1)
 
 # build WFD src projects
-buildSrcProject( gVars['android_root_path'], "external/libxml2", gVars )
-buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_core_src']['local_dir'], gVars )
-buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_platform_src']['local_dir'], gVars )
-buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_vpu_src']['local_dir'], gVars )
+if gVars['run_mode']=="Autobuild":
+    sProductVariant = options.product;
+    posSep = sProductVariant.find("-")
+    gVars['TARGET_PRODUCT'] = sProductVariant[:posSep]
+    gVars['TARGET_BUILD_VARIANT'] = sProductVariant[posSep+1:]
+else:
+    extractAndroidBuildEnvVars( gVars )
+
+buildSrcProject( gVars['android_root_path'], "external/libxml2", gVars, True )
+buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_core_src']['local_dir'], gVars, False )
+buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_platform_src']['local_dir'], gVars, False )
+buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_vpu_src']['local_dir'], gVars, False )
 for k in gNewlyBuiltSo.keys():
     modeLog( k + " : " + gNewlyBuiltSo[k] )
 # Save the newly built share libraries info
@@ -535,14 +555,18 @@ htmlText = '''
         <td>Build Mode</td>
         <td> <font style="font-weight:bold;">{2}</font> </td>
       </tr>
+      <tr>
+        <td>Build Command Line</td>
+        <td> <font style="font-weight:bold;">{3}</font> </td>
+      </tr>
     </table>
     </p>
 
-    <p>{3}</p>
+    <p>{4}</p>
   </body>
 
 </html>
-'''.format( getHostName(), getDateTime(), gVars['run_mode'], generateHtmlTable( md5Info ) )
+'''.format( getHostName(), getDateTime(), gVars['run_mode'], gCmdLine, generateHtmlTable( md5Info ) )
 
 sendMail( gVars['smtp_server'], gVars['mail_subject'], gVars['mail_from_who'], gVars['mail_to_who'  ], plainText, htmlText)
 
