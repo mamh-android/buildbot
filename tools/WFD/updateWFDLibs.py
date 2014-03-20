@@ -10,6 +10,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+#  git push ssh://lbi@shgit.marvell.com:29418/android/shared/Buildbot/buildbot.git HEAD:refs/for/master
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Global configurations for all platforms and branches
 #--------
@@ -135,7 +137,7 @@ def runCMDNeedShellBuiltin( cmd , workDir=None):
 # function : probe android codebase root path
 def probeAndroidPath( startingPath ):
     AndroidFoders = ["bionic", "frameworks", "hardware", "libcore", "dalvik"]
-    pwd = startingPath 
+    pwd = startingPath
     androidRoot = None
     while len(pwd) > 0:
         rc, lines = runCMD( "ls {0}".format(pwd) )
@@ -165,13 +167,110 @@ if androidRoot is None:
 gVars['android_root_path'] = androidRoot
 gVars['script_path'] = os.path.dirname(os.path.abspath(__file__))
 
+gHistoryLog = []
 def modeLog( msg ):
     global gVars
-    print "[mode : {0}] {1}".format( gVars['run_mode'], msg )
+    global gHistoryLog
+    s = "[mode : {0}] {1}".format( gVars['run_mode'], msg )
+    print s
+    gHistoryLog.append( s )
 
 def printList( lis ):
     for line in lis:
         modeLog( line )
+
+def getHostName():
+    rc,cmdOutput = runCMD( "hostname" )
+    if rc==0 and len(cmdOutput)==1:
+        return cmdOutput[0]
+    else:
+        return "unknown"
+
+def getDateTime():
+    rc,cmdOutput = runCMD( "date +%T-%m/%d/%Y" )
+    if rc==0 and len(cmdOutput)==1:
+        return cmdOutput[0]
+    else:
+        return "unknown"
+
+def sendMail( smtpServer, subject, fromWho, toWho, plainText, htmlText ):
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = fromWho
+    msg['To'] = ", ".join(toWho)
+    part1 = MIMEText( plainText, 'plain' )
+    part2 = MIMEText( htmlText, 'html' )
+    msg.attach( part1 )
+    msg.attach( part2 )
+    error = None
+    try:
+        s = smtplib.SMTP( smtpServer )
+        s.sendmail( fromWho, toWho, msg.as_string() )
+        s.quit()
+    except SMTPRecipientsRefused:
+        error = "sendmail raised exception : SMTPRecipientsRefused"
+    except SMTPHeloError:
+        error = "sendmail raised exception : SMTPHeloError"
+    except SMTPSenderRefused:
+        error = "sendmail raised exception : SMTPSenderRefused"
+    except SMTPDataError:
+        error = "sendmail raised exception : SMTPDataError"
+
+    return error
+
+def sendReportMail( htmlContent ):
+    global gVars
+
+    plainText = ""
+    htmlText = '''
+    <html>
+
+    <style type="text/css"
+    </style>
+
+    <head>
+      <title> Checking WFD binaries </title>
+    </head>
+
+    <body>
+    <p>
+    <table>
+      <tr>
+        <td>build machine host name</td>
+        <td> <font style="font-weight:bold;">{0}</font> </td>
+      </tr>
+      <tr>
+        <td>build time</td>
+        <td> <font style="font-weight:bold;">{1}</font> </td>
+      </tr>
+      <tr>
+        <td>Build Mode</td>
+        <td> <font style="font-weight:bold;">{2}</font> </td>
+      </tr>
+      <tr>
+        <td>Build Command Line</td>
+        <td> <font style="font-weight:bold;">{3}</font> </td>
+      </tr>
+    </table>
+    </p>
+
+    <p>{4}</p>
+    </body>
+
+    </html>
+    '''.format( getHostName(), getDateTime(), gVars['run_mode'], gCmdLine, htmlContent )
+    sendMail( gVars['smtp_server'], gVars['mail_subject'], gVars['mail_from_who'], gVars['mail_to_who'  ], plainText, htmlText)
+
+def sendFailMail( lastMsg = None ):
+    global gHistoryLog
+    html="<table border=0>"
+    html += '''<tr><th style="font-weight:bold; background-color:red">Failure logs</th></tr>'''
+    for line in gHistoryLog:
+        html += '''<tr><td>{0}</td></tr>'''.format( line )
+    if lastMsg is not None:
+        html += '''<tr><td style="background-color:red">{0}</td></tr>'''.format( line )
+    html += "</table>"
+    sendReportMail( html )
 
 # function : get android platform android codebase branch name
 def getAndroidPlatformBranchName( runMode, androidRootPath ):
@@ -223,6 +322,8 @@ def repoSyncSourceCode( local_path, root_path ):
         modeLog( "[IN] local_path=%s, root_path=%s" %( local_path, root_path ) )
         for line in cmdOutput:
             modeLog( line )
+        sendFailMail()
+        exit(1)
 
 def prepareWFDSourceCode_Developer( gV ):
     ### Backup old .repo/manifests/default.xml
@@ -319,6 +420,7 @@ else:
     isOK = prepareWFDSourceCode_Developer( gVars )
 if isOK==False:
     modeLog( "Failed to prepare WFD source code projects!\n" )
+    sendFailMail()
     exit(1)
 
 modeLog( "Completed wfd source code preparation! \n" )
@@ -342,13 +444,13 @@ def buildSrcProject( androidRootPath, srcProjectRelativePath, gV, ignoredErros=F
     global gNewlyBuiltSo
     if len(gV['TARGET_PRODUCT']) == 0:
         modeLog( "Cann't find envrion variables 'TARGET_PRODUCT'!\n\t You may not setup android build environ!" )
-        exit(1)
+        return False
 
     shellName = "{0}/{1}/tmpBuild.sh".format( androidRootPath, srcProjectRelativePath)
     fTmpShell = open( shellName, "w" )
     if fTmpShell is None:
         modeLog( "Cann't create tmpBuild.sh to build under", srcProjectRelativePath )
-        exit(1)
+        return False
     fTmpShell.write( "cd {0}\n".format(androidRootPath) )
     fTmpShell.write( ". build/envsetup.sh\n" )
     fTmpShell.write( "lunch {0}-{1}\n".format( gV['TARGET_PRODUCT'], gV['TARGET_BUILD_VARIANT'] ) )
@@ -369,12 +471,16 @@ def buildSrcProject( androidRootPath, srcProjectRelativePath, gV, ignoredErros=F
                 if posSlash < 0:
                     continue
                 gNewlyBuiltSo[ soPath[posSlash+1:] ] = soPath
+        return True
 
     else:
         if ignoredErros==False:
             modeLog( "Failed building wfd src project  : " + srcProjectRelativePath )
             printList(  cmdOutput )
-            exit(1)
+            return False
+        else:
+            return True
+    return True
 
 # build WFD src projects
 if gVars['run_mode']=="Autobuild":
@@ -385,10 +491,27 @@ if gVars['run_mode']=="Autobuild":
 else:
     extractAndroidBuildEnvVars( gVars )
 
-buildSrcProject( gVars['android_root_path'], "external/libxml2", gVars, True )
-buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_core_src']['local_dir'], gVars, False )
-buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_platform_src']['local_dir'], gVars, False )
-buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_vpu_src']['local_dir'], gVars, False )
+
+if buildSrcProject( gVars['android_root_path'], "vendor/marvell/external/live555", gVars, False ) == False:
+    sendFailMail()
+    exit(1)
+
+if buildSrcProject( gVars['android_root_path'], "external/libxml2", gVars, True ) == False:
+    sendFailMail()
+    exit(1)
+
+if buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_core_src']['local_dir'], gVars, False ) == False:
+    sendFailMail()
+    exit(1)
+
+if buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_platform_src']['local_dir'], gVars, False ) == False:
+    sendFailMail()
+    exit(1)
+
+if buildSrcProject( gVars['android_root_path'], gVars['wfd_projects_info']['wfd_vpu_src']['local_dir'], gVars, False ) == False:
+    sendFailMail()
+    exit(1)
+
 for k in gNewlyBuiltSo.keys():
     modeLog( k + " : " + gNewlyBuiltSo[k] )
 # Save the newly built share libraries info
@@ -403,6 +526,7 @@ def md5( filePath ):
     rc,cmdOutput = runCMD( "md5sum {0}".format(filePath) )
     if rc != 0 or len(cmdOutput)!=1:
         modeLog( "Error: cannot calc md5sum for" + filePath )
+        sendFailMail()
         exit(1)
     mdVal = cmdOutput[0].split()[0]
     return mdVal
@@ -411,6 +535,7 @@ def getComparedMD5Sum( wfdBinProjectPath, androidRootPath, newBuiltSo ):
     rc,cmdOutput = runCMD( "find . -iname '*.so'", workDir=androidRoot+"/" + wfdBinProjectPath)
     if rc != 0:
         modeLog( "Failed to find .so under" + wfdBinProjectPath )
+        sendFailMail()
         exit(1)
     result = {}
     for line in cmdOutput:
@@ -489,86 +614,9 @@ def generateHtmlTable( md5Info ):
             html += "</tr>"
     html += "</table>"
     return html
-
-def sendMail( smtpServer, subject, fromWho, toWho, plainText, htmlText ):
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = subject
-    msg['From'] = fromWho
-    msg['To'] = ", ".join(toWho)
-    part1 = MIMEText( plainText, 'plain' )
-    part2 = MIMEText( htmlText, 'html' )
-    msg.attach( part1 )
-    msg.attach( part2 )
-    error = None
-    try:
-        s = smtplib.SMTP( smtpServer )
-        s.sendmail( fromWho, toWho, msg.as_string() )
-        s.quit()
-    except SMTPRecipientsRefused:
-        error = "sendmail raised exception : SMTPRecipientsRefused"
-    except SMTPHeloError:
-        error = "sendmail raised exception : SMTPHeloError"
-    except SMTPSenderRefused:
-        error = "sendmail raised exception : SMTPSenderRefused"
-    except SMTPDataError:
-        error = "sendmail raised exception : SMTPDataError"
-
-    return error
-
-def getHostName():
-    rc,cmdOutput = runCMD( "hostname" )
-    if rc==0 and len(cmdOutput)==1:
-        return cmdOutput[0]
-    else:
-        return "unknown"
-
-def getDateTime():
-    rc,cmdOutput = runCMD( "date +%T-%m/%d/%Y" )
-    if rc==0 and len(cmdOutput)==1:
-        return cmdOutput[0]
-    else:
-        return "unknown"
-
-plainText = ""
-htmlText = '''
-<html>
-
-  <style type="text/css"
-  </style>
-
-  <head>
-    <title> Checking WFD binaries </title>
-  </head>
-
-  <body>
-    <p>
-    <table>
-      <tr>
-        <td>build machine host name</td>
-        <td> <font style="font-weight:bold;">{0}</font> </td>
-      </tr>
-      <tr>
-        <td>build time</td>
-        <td> <font style="font-weight:bold;">{1}</font> </td>
-      </tr>
-      <tr>
-        <td>Build Mode</td>
-        <td> <font style="font-weight:bold;">{2}</font> </td>
-      </tr>
-      <tr>
-        <td>Build Command Line</td>
-        <td> <font style="font-weight:bold;">{3}</font> </td>
-      </tr>
-    </table>
-    </p>
-
-    <p>{4}</p>
-  </body>
-
-</html>
-'''.format( getHostName(), getDateTime(), gVars['run_mode'], gCmdLine, generateHtmlTable( md5Info ) )
-
-sendMail( gVars['smtp_server'], gVars['mail_subject'], gVars['mail_from_who'], gVars['mail_to_who'  ], plainText, htmlText)
+# do send report mail
+sendReportMail( generateHtmlTable( md5Info ) )
 
 
 print "Done"
+exit(0)
