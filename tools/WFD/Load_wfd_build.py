@@ -21,7 +21,7 @@ FILE_SERVER = "\\\\sh-fs04"
 # Gerrit admin user
 ADM_USER = "buildfarm"
 
-SCRIPT_PATH = os.path.abspath(sys.argv[0])
+SCRIPT_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
 
 ''' Force Python's print function to output to the screen.
 '''
