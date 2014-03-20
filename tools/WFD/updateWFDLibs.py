@@ -36,6 +36,23 @@ platformWFDCodeDefs = {
                     },
              },
 'rls_eden_kk4.4_dev_z2' : 'eden-kk4.4', # same as 'eden-kk4.4'
+'rls_pxa988_kk4.4_T7_beta2' : {
+                    'wfd_core_src' :   {
+                              'git_name':'vendor/marvell/generic/wfd_core',
+                              'revision':'mrvl-kk4.4',
+                             'local_dir':'vendor/marvell/generic/wfd_core_src',
+                    },
+                    'wfd_platform_src':{
+                              'git_name':'vendor/marvell/generic/marvell-wifidisplay',
+                              'revision':'mrvl-kk4.4',
+                             'local_dir':'vendor/marvell/generic/wfd_platform_src',
+                    },
+                    'wfd_vpu_src':     {
+                              'git_name':'vendor/marvell/generic/wfdcoda7542',
+                              'revision':'mrvl-kk4.4',
+                             'local_dir':'vendor/marvell/generic/wfd_vpu_src'
+                    },
+             },
 }# end of platformWFDCodeDefs
 
 # resolve reference
@@ -92,7 +109,7 @@ if options.listConfigurations == True:
 
 if options.mode != "Autobuild" and options.mode != "Developer" and options.mode != "Integrator":
     optParser.print_help()
-    exit(1)
+    exit(0)
 
 # save run mode value
 gVars['run_mode'] = options.mode
@@ -106,7 +123,7 @@ if gVars['run_mode']=="Autobuild":
     if options.androidRootPath is None or len(options.androidRootPath)==0 or options.product is None or len(options.product)==0:
         print "In Autobuild mode, please input -a <android-root-path> and -p <product-variant>\n"
         optParser.print_help()
-        exit(1)
+        exit(0)
 
 # function : run shell command to get result
 def runCMD( cmd , workDir=None):
@@ -157,11 +174,12 @@ androidRoot = None
 if gVars['run_mode']=="Autobuild":
     androidRoot = probeAndroidPath( options.androidRootPath )
 else:
-    androidRoot = probeAndroidPath( os.path.dirname(os.path.abspath(__file__)) )
+    androidRoot = probeAndroidPath( os.environ['PWD'] )
+#    androidRoot = probeAndroidPath( os.path.dirname(os.path.abspath(__file__)) )
 
 if androidRoot is None:
     print "Can not identify where is the android codebase!\n"
-    exit(1)
+    exit(0)
 
 # save android codebase root path
 gVars['android_root_path'] = androidRoot
@@ -277,11 +295,11 @@ def getAndroidPlatformBranchName( runMode, androidRootPath ):
     rc,cmdOutput = runCMD( "git branch -a | grep -- '->'", workDir=androidRootPath+"/.repo/manifests/")
     if len(cmdOutput)==0:
         modeLog( "Can not identify android codebase branch name under its .repo/manifests folder!" )
-        exit(1)
+        exit(0)
     pos = cmdOutput[0].rfind("/")
     if pos < 0:
         modeLog("Can not identify android codebase branch name on %s" %(cmdOutput[0]) )
-        exit(1)
+        exit(0)
     return cmdOutput[0][pos+1:]
 
 # Get android release branch name
@@ -294,7 +312,7 @@ if gVars['android_release_branch'] in platformWFDCodeDefs.keys():
     configInstance = platformWFDCodeDefs[ gVars['android_release_branch'] ]
 if configInstance is None:
     modeLog( "Can not find configuration for branch :" + gVars['android_release_branch'] )
-    exit(1)
+    exit(0)
 
 #print "\nconfiguration for {0} is:\t".format( gVars['android_release_branch'] ), configInstance
 
