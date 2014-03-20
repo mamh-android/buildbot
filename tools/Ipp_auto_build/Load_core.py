@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# v1.0
+# v1.1
 #    Load ipp autobuild
 #    Author: yfshi@marvell.com
 
@@ -18,8 +18,9 @@ BUILD_LOG = ".core.build.log"
 IPP_REPO_URL = "ssh://shgit/git/android/shared/mrvl_extractor.git"
 BUILD_STDIO = "/home/buildfarm/buildbot_script/stdio.log"
 AABS_FOLDER = "/home/buildfarm/aabs"
-PUBLISH_DEST = "/autobuild/mrvl_extractor"
+PUBLISH_DEST = "/autobuild/mrvl_extractor/"
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/android_develop_build_gc/builds/"
+FILE_SERVER = "\\\\sh-fs04"
 
 # Gerrit admin user
 ADM_USER = "buildfarm"
@@ -46,7 +47,7 @@ def return_mail_text(build_type, branch, build_nr, result, package_link=None, fa
     if (result == 'failed'):
         message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
-        message += "You can download the package at:\n%s\n\n" % package_link
+        message += "You can download the package at:\n%s%s\n\n" % (FILE_SERVER, package_link.replace('/','\\'))
     message +="Regards,\nBuildfarm\n"
     return subject, message
 
@@ -184,24 +185,29 @@ def run(branch='master', build_nr=None):
     print "[Ipp-build][%s] End Build" % (str(datetime.datetime.now()))
     # Start publishing
     print "[Ipp-build][%s] Start publishing" % (str(datetime.datetime.now()))
-    publish_file = "%s/%s_release_list" % (mrvl_extractor_folder, product)
+    publish_file = "%s/%s_release_list" % (mrvl_extractor_folder, product.split('_')[0])
     publish_folder = check_publish_folder(PUBLISH_DEST, branch)
-    try:
-        f = open(publish_file, 'r')
-        publish_list = f.read().split('\n')
-        f.close()
-    except IOError:
-        print "failed to open file %s with read mode" % publish_file
-        exit(2)
+    publish_list = []
+    with open(publish_file, 'r') as file:
+        for line in file:
+            line = line.rstrip('\n' + '')
+            publish_list.append(line)
     for i in publish_list:
-        try:
-            copy_file(i, "out/libs/")
-        except IOError:
-            print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
-            failure_log = return_failure_log(BUILD_LOG)
-            subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
-            send_html_mail(subject,ADM_USER,MAIL_LIST,text)
-            exit(1)
+        if os.path.isfile(i):
+            try:
+                copy_file(i, "out/libs/")
+            except IOError:
+                print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
+                failure_log = return_failure_log(BUILD_LOG)
+                subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
+                send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+                exit(1)
+        else:
+                print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
+                failure_log = return_failure_log(BUILD_LOG)
+                subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
+                send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+                exit(1)
     shutil.copytree('out/', publish_folder)
     print "[Ipp-build][%s] End publishing" % (str(datetime.datetime.now()))
     # All Success
