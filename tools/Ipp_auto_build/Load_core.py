@@ -156,6 +156,11 @@ def copy_file(src, dst):
         exit(2)
 
 def run(branch='master', build_nr=None):
+    # check if aabs build passed
+    ret = os.system("grep \">PASS<\" %s" % BUILD_STDIO)
+    if not (ret==0):
+        print "No AABS build, exit 0"
+        exit(0)
     # ipp git sync
     print "[Ipp-build][%s] Start sync mrvl_extractor" % str(datetime.datetime.now())
     mrvl_extractor_folder = sync_build_code(IPP_REPO_URL)

@@ -110,6 +110,11 @@ def copy_file(src, dst):
         exit(2)
 
 def run(branch='master', build_nr=None):
+    # check if aabs build passed
+    ret = os.system("grep \">PASS<\" %s" % BUILD_STDIO)
+    if not (ret==0):
+        print "No AABS build, exit 0"
+        exit(0)
     # Set env
     print "[wfd-build][%s] Start set env" % str(datetime.datetime.now())
     product = return_last_device(BUILD_STDIO, 'TARGET_PRODUCT')
