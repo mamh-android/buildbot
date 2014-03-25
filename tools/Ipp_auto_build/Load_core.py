@@ -187,22 +187,19 @@ def run(branch='master', build_nr=None):
     print "[Ipp-build][%s] Start publishing" % (str(datetime.datetime.now()))
     publish_file = "%s/%s_release_list" % (mrvl_extractor_folder, product.split('_')[0])
     publish_folder = check_publish_folder(PUBLISH_DEST, branch)
-    publish_list = []
     with open(publish_file, 'r') as file:
         for line in file:
             line = line.rstrip('\n' + '')
-            publish_list.append(line)
-    for i in publish_list:
-        if os.path.isfile(i):
-            try:
-                copy_file(i, "out/libs/")
-            except IOError:
-                print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
-                failure_log = return_failure_log(BUILD_LOG)
-                subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
-                send_html_mail(subject,ADM_USER,MAIL_LIST,text)
-                exit(1)
-        else:
+            if os.path.isfile(line.split(':')[0].replace(' ', '')):
+                try:
+                    copy_file(line.split(':')[0].replace(' ', ''), "out/%s/" % line.split(':')[1].replace(' ', ''))
+                except IOError:
+                    print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
+                    failure_log = return_failure_log(BUILD_LOG)
+                    subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
+                    send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+                    exit(1)
+            else:
                 print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
                 failure_log = return_failure_log(BUILD_LOG)
                 subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
