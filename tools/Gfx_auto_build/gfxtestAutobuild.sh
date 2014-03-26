@@ -1,6 +1,7 @@
 #!/bin/bash
 maintainer=liling@marvell.com
 
+BRANCH_LIST="pxa988_kk4.4"
 ids_0=$1
 ids_1="""$2"""
 STD_LOG=/home/buildfarm/buildbot_script/stdio.log
@@ -85,6 +86,13 @@ start_gfx_test_autobuild()
 if [ $? -ne 0 ]; then
     send_init_is_not_ready_notification
     exit 0
+fi
+
+if [[ $BRANCH_LIST =~ $2 ]]; then
+    echo $2 start build
+else
+    echo $2 no build
+    exit 255
 fi
 
 if [ $ids_0 == "Ture" ]; then
