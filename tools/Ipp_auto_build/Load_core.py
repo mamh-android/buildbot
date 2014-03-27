@@ -179,8 +179,14 @@ def run(branch='master', build_nr=None):
     print "[Ipp-build][%s] End set env" % (str(datetime.datetime.now()))
     # Start ipp build
     print "[Ipp-build][%s] Start load core.sh" % (str(datetime.datetime.now()))
-    c_build = ['%s/core.sh' % mrvl_extractor_folder, branch, '%s-%s' % (product, variant)]
+    if branch.split('_')[0] == 'rls':
+        c_build = ['%s/core.sh' % mrvl_extractor_folder, branch, '%s-%s' % (product, variant)]
+    else:
+        c_build = ['%s/core.sh' % mrvl_extractor_folder, branch.replace('_', '-'), '%s-%s' % (product, variant)]
     ret = os.system(' '.join(c_build))
+    if (ret==2):
+        print "[Ipp-build] %s do not require build" % branch
+        exit(0)
     if not (ret==0):
         print "[Ipp-build][%s] Failed Build" % (str(datetime.datetime.now()))
         failure_log = return_failure_log(BUILD_LOG)
