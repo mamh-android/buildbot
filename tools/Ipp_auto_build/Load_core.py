@@ -15,7 +15,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 BUILD_LOG = ".core.build.log"
-IPP_REPO_URL = "ssh://shgit/git/android/shared/mrvl_extractor.git"
+IPP_REPO_URL = "ssh://shgit.marvell.com/git/android/shared/mrvl_extractor.git"
 BUILD_STDIO = "/home/buildfarm/buildbot_script/stdio.log"
 AABS_FOLDER = "/home/buildfarm/aabs"
 PUBLISH_DEST = "/autobuild/mrvl_extractor/"
