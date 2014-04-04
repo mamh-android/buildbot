@@ -53,7 +53,7 @@ def return_mail_text(build_type, branch, build_nr, result, package_link=None, fa
 
 # sync the build code
 def sync_build_code(repo_url):
-    repo_folder = repo_url.split('.')[0].split('/')[len(repo_url.split('/'))-1]
+    repo_folder = repo_url.split('.')[len(repo_url.split('.'))-2].split('/')[len(repo_url.split('.')[len(repo_url.split('.'))-2].split('/'))-1]
     if not os.path.isdir(repo_folder):
         subprocess.check_call('git clone %s' % repo_url, shell=True)
     else:
