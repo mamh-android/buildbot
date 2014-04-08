@@ -185,7 +185,7 @@ def run(branch='master', build_nr=None):
     else:
         c_build = ['%s/core.sh' % mrvl_extractor_folder, branch.replace('_', '-'), '%s-%s' % (product, variant)]
     ret = os.system(' '.join(c_build))
-    if (ret==2):
+    if (ret==512):
         print "[Ipp-build] %s do not require build" % branch
         exit(0)
     if not (ret==0):
