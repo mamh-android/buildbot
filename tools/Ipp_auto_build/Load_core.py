@@ -157,8 +157,9 @@ def copy_file(src, dst):
 
 def run(branch='master', build_nr=None):
     # check if aabs build passed
-    ret = os.system("grep \">PASS<\" %s" % BUILD_STDIO)
-    if not (ret==0):
+    ret_p = os.system("grep \">PASS<\" %s" % BUILD_STDIO)
+    ret_n = os.system("grep \">No build<\" %s" % BUILD_STDIO)
+    if not (ret_p==0) or (ret_n==0):
         print "No AABS build, exit 0"
         exit(0)
     # ipp git sync
