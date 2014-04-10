@@ -51,16 +51,14 @@ class flushfile(object):
 
 sys.stdout = flushfile(sys.stdout)
 
-def return_mail_text(build_type, branch, build_nr, result, failurelog, cfg_file, image_link=None):
+def return_mail_text(build_type, branch, build_nr, result, failurelog, image_link=None):
     subject = "[imauto-%s][%s] %s %s" % (branch, str(date.today()), build_type, result)
     message =  "This is an automated email from auto build system.\n"
     message += "It was generated because %s was %s\n\n" % (build_type, result)
     message += "Buildbot Url:\n%s%s\n\n" % (BUILDBOT_URL, build_nr)
     if (result == 'failed'):
-        message += "CFG file is followed:\n%s\n\n" % cfg_file
         message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
-        message += "CFG file is followed:\n%s\n\n" % cfg_file
         message += "You get imauto report at:\n"
         for r in image_link:
             message += "%s\n" % r
@@ -151,7 +149,7 @@ def setup_testfile(filename, path, sensor=None, resolution=None, focus=None, tes
     with open(filename, 'w') as configfile:
         config.write(configfile)
 
-def run(build_nr, cfg_file, image_link, run_type='1', branch='master'):
+def run(build_nr, cfg_file, run_type='1', branch='master'):
     # git reset --hard branch
     print "[%s][%s] Start git reset --hard %s" % (BUILD_TYPE, str(datetime.datetime.now()), branch)
     c_gitfetch = ['git', 'fetch', 'origin']
@@ -171,16 +169,19 @@ def run(build_nr, cfg_file, image_link, run_type='1', branch='master'):
     ret = os.system(' '.join(c_imauto))
     if not (ret==0):
         print "[%s][%s] Failed imauto" % (BUILD_TYPE, str(datetime.datetime.now()))
+    # All success
+    print "[%s][%s] End Autotest" % (BUILD_TYPE, str(datetime.datetime.now()))
+    return ret
+
+def send_mail(ret, image_link):
+    if not (ret==0):
         failure_log = return_failure_log(IMAUTO_LOG)
-        cfg_file = return_failure_log(TEST_CFG)
-        subject, text = return_mail_text('image-auto-test', branch, build_nr, 'failed', failure_log, cfg_file,None)
+        subject, text = return_mail_text('image-auto-test', branch, build_nr, 'failed', failure_log, None)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
     # All success
-    print "[%s][%s] End Autotest" % (BUILD_TYPE, str(datetime.datetime.now()))
     print "[%s][%s] All success" % (BUILD_TYPE, str(datetime.datetime.now()))
-    cfg_file = return_failure_log(TEST_CFG)
-    subject, text = return_mail_text('image-auto-test', branch, build_nr, 'success', None, cfg_file, image_link)
+    subject, text = return_mail_text('image-auto-test', branch, build_nr, 'success', None, image_link)
     send_html_mail(subject,ADM_USER,MAIL_LIST,text)
     exit(0)
 
@@ -219,10 +220,12 @@ def main(argv):
     var_path = check_publish_folder(OUTPUT_IMAUTO_SERVER, branch)
     print var_path
     outputimage_l = return_last_image_imauto(branch)
+    ret = 0
     for i in outputimage_l:
         path = copy_outputimage(i, var_path)
         setup_testfile(TEST_CFG, path)
-        run(build_nr, TEST_CFG, path, '2', branch)
+        ret += run(build_nr, TEST_CFG, '2', branch)
+    send_mail(ret, outputimage_l)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
