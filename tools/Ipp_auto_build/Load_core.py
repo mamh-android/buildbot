@@ -19,7 +19,7 @@ IPP_REPO_URL = "ssh://shgit.marvell.com/git/android/shared/mrvl_extractor.git"
 BUILD_STDIO = "/home/buildfarm/buildbot_script/stdio.log"
 AABS_FOLDER = "/home/buildfarm/aabs"
 PUBLISH_DEST = "/autobuild/mrvl_extractor/"
-BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/android_develop_build_gc/builds/"
+BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/android_develop_build/builds/"
 FILE_SERVER = "\\\\sh-fs04"
 
 # Gerrit admin user
