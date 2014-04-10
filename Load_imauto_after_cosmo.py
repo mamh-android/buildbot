@@ -173,7 +173,7 @@ def run(build_nr, cfg_file, run_type='1', branch='master'):
     print "[%s][%s] End Autotest" % (BUILD_TYPE, str(datetime.datetime.now()))
     return ret
 
-def send_mail(ret, image_link):
+def send_mail(ret, image_link, branch):
     if not (ret==0):
         failure_log = return_failure_log(IMAUTO_LOG)
         subject, text = return_mail_text('image-auto-test', branch, build_nr, 'failed', failure_log, None)
@@ -220,12 +220,14 @@ def main(argv):
     var_path = check_publish_folder(OUTPUT_IMAUTO_SERVER, branch)
     print var_path
     outputimage_l = return_last_image_imauto(branch)
+    result_l = []
     ret = 0
     for i in outputimage_l:
         path = copy_outputimage(i, var_path)
-        setup_testfile(TEST_CFG, path)
+        setup_testfile(TEST_CFG, path, path.split('\\')[len(path.split('\\'))-1].replace('_imauto', ''), '5M')
         ret += run(build_nr, TEST_CFG, '2', branch)
-    send_mail(ret, outputimage_l)
+        result_l.extend(glob.glob('%s\\result*\\Report\\*.xml' % path))
+    send_mail(ret, result_l, branch)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
