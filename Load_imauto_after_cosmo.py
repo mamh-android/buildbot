@@ -149,7 +149,7 @@ def setup_testfile(filename, path, sensor=None, resolution=None, focus=None, tes
     with open(filename, 'w') as configfile:
         config.write(configfile)
 
-def run(build_nr, cfg_file, run_type='1', branch='master'):
+def run(cfg_file, run_type='1', branch='master'):
     # git reset --hard branch
     print "[%s][%s] Start git reset --hard %s" % (BUILD_TYPE, str(datetime.datetime.now()), branch)
     c_gitfetch = ['git', 'fetch', 'origin']
@@ -173,7 +173,7 @@ def run(build_nr, cfg_file, run_type='1', branch='master'):
     print "[%s][%s] End Autotest" % (BUILD_TYPE, str(datetime.datetime.now()))
     return ret
 
-def send_mail(ret, image_link, branch):
+def send_mail(ret, image_link, branch, build_nr):
     if not (ret==0):
         failure_log = return_failure_log(IMAUTO_LOG)
         subject, text = return_mail_text('image-auto-test', branch, build_nr, 'failed', failure_log, None)
@@ -225,9 +225,9 @@ def main(argv):
     for i in outputimage_l:
         path = copy_outputimage(i, var_path)
         setup_testfile(TEST_CFG, path, path.split('\\')[len(path.split('\\'))-1].replace('_imauto', ''), '5M')
-        ret += run(build_nr, TEST_CFG, '2', branch)
+        ret += run(TEST_CFG, '2', branch)
         result_l.extend(glob.glob('%s\\result*\\Report\\*.xml' % path))
-    send_mail(ret, result_l, branch)
+    send_mail(ret, result_l, branch, build_nr)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
