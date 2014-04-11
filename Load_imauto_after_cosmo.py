@@ -225,6 +225,7 @@ def main(argv):
     for i in outputimage_l:
         path = copy_outputimage(i, var_path)
         setup_testfile(TEST_CFG, path, path.split('\\')[len(path.split('\\'))-1].replace('_imauto', ''), '8M', None, i)
+        print "TEST_CFG: =======================\n %s" % return_failure_log(TEST_CFG)
         ret += run(TEST_CFG, '2', branch)
         result_l.extend(glob.glob('%s\\result*\\Report\\*.xml' % path))
     send_mail(ret, result_l, branch, build_nr)
