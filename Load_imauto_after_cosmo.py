@@ -224,7 +224,7 @@ def main(argv):
     ret = 0
     for i in outputimage_l:
         path = copy_outputimage(i, var_path)
-        setup_testfile(TEST_CFG, path, path.split('\\')[len(path.split('\\'))-1].replace('_imauto', ''), '5M', None, None, i)
+        setup_testfile(TEST_CFG, path, path.split('\\')[len(path.split('\\'))-1].replace('_imauto', ''), '8M', None, i)
         ret += run(TEST_CFG, '2', branch)
         result_l.extend(glob.glob('%s\\result*\\Report\\*.xml' % path))
     send_mail(ret, result_l, branch, build_nr)
