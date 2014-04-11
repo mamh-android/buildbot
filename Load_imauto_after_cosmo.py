@@ -59,7 +59,7 @@ def return_mail_text(build_type, branch, build_nr, result, failurelog, image_lin
     if (result == 'failed'):
         message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
-        message += "You get imauto report at:\n"
+        message += "You can get imauto report at:\n"
         for r in image_link:
             message += "%s\n" % r
         message += "\n\n"

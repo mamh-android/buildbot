@@ -17,6 +17,7 @@ from email.mime.text import MIMEText
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/image_auto_test/builds/"
 IMAUTO_LOG = ".imauto.build.log"
 TEST_CFG = "test.txt"
+BUILD_TYPE = "imauto"
 
 #Gerrit admin user
 ADM_USER = "buildfarm"
@@ -49,7 +50,7 @@ sys.stdout = flushfile(sys.stdout)
 def return_mail_text(build_type, branch, build_nr, result, failurelog, cfg_file, image_link=None):
     subject = "[imauto-%s][%s] %s %s" % (branch, str(date.today()), build_type, result)
     message =  "This is an automated email from auto build system.\n"
-    message += "It was generated because %s %s\n\n" % (build_type, result)
+    message += "It was generated because %s was %s\n\n" % (build_type, result)
     message += "Buildbot Url:\n%s%s\n\n" % (BUILDBOT_URL, build_nr)
     if (result == 'failed'):
         message += "CFG file is followed:\n%s\n\n" % cfg_file
@@ -108,31 +109,31 @@ def setup_testfile(filename, path, sensor, resolution, focus, testimage=None, is
 
 def run(build_nr, cfg_file, image_link, run_type='1', branch='master'):
     # git reset --hard branch
-    print "[imauto][%s] Start git reset --hard %s" % (str(datetime.datetime.now()), branch)
+    print "[%s][%s] Start git reset --hard %s" % (BUILD_TYPE, str(datetime.datetime.now()), branch)
     c_gitfetch = ['git', 'fetch', 'origin']
     ret = os.system(' '.join(c_gitfetch))
     c_resetbranch = ['git', 'reset', '--hard', 'origin/%s' % branch]
     ret = os.system(' '.join(c_resetbranch))
     if not (ret==0):
-        print "[imauto][%s] Failed git reset --hard" % (str(datetime.datetime.now()))
+        print "[%s][%s] Failed git reset --hard" % (BUILD_TYPE, str(datetime.datetime.now()))
         subject, text = return_mail_text('git-reset', branch, build_nr, 'failed', None, None, None)
         send_html_mail(subject,ADM_USER,BF_ADMIN.split(),text)
         exit(1)
-    print "[imauto][%s] End git reset --hard" % (str(datetime.datetime.now()))
+    print "[%s][%s] End git reset --hard" % (BUILD_TYPE, str(datetime.datetime.now()))
     # imauto run
-    print "[imauto][%s] Start imauto" % (str(datetime.datetime.now()))
+    print "[%s][%s] Start imauto" % (BUILD_TYPE, str(datetime.datetime.now()))
     c_imauto = ['perl test.pl %s %s' % (cfg_file, run_type)]
     ret = os.system(' '.join(c_imauto))
     if not (ret==0):
-        print "[imauto][%s] Failed imauto" % (str(datetime.datetime.now()))
+        print "[%s][%s] Failed imauto" % (BUILD_TYPE, str(datetime.datetime.now()))
         failure_log = return_failure_log(IMAUTO_LOG)
         cfg_file = return_failure_log(TEST_CFG)
         subject, text = return_mail_text('[imauto]', branch, build_nr, 'failed', failure_log, cfg_file,None)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
     # All success
-    print "[imauto][%s] End Autotest" % (str(datetime.datetime.now()))
-    print "[imauto][%s] All success" % (str(datetime.datetime.now()))
+    print "[%s][%s] End Autotest" % (BUILD_TYPE, str(datetime.datetime.now()))
+    print "[%s][%s] All success" % (BUILD_TYPE, str(datetime.datetime.now()))
     cfg_file = return_failure_log(TEST_CFG)
     subject, text = return_mail_text('[imauto]', branch, build_nr, 'success', None, cfg_file, image_link)
     send_html_mail(subject,ADM_USER,MAIL_LIST,text)
