@@ -36,9 +36,10 @@ SMTP_SERVER = "10.68.76.51"
 #Buildfarm Maintainer
 BF_ADMIN = "yfshi@marvell.com"
 
-#Mail list
-MAIL_LIST = []
-MAIL_LIST.append(BF_ADMIN)
+#MAIL_LIST = get_mail_list("cosmo-dev")
+MAIL_LIST = ['gr-apse-cosmo@marvell.com']
+#extend extra people who not in the gr-apse-cosmo
+MAIL_LIST.extend(['yfshi@marvell.com', 'skershaw@marvell.com', 'seankuo@marvell.com', 'pstsai@marvell.com', 'dongli@marvell.com', 'ejin@marvell.com'])
 
 ''' Force Python's print function to output to the screen.
 '''
