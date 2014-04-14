@@ -36,7 +36,7 @@ sys.stdout = flushfile(sys.stdout)
 
 def return_message(build_nr, result, branch=None):
     message =  "[%s] Buildbot finished compiling your patchset. " % BUILD_TYPE
-    message += "Buildbot Url: [%s%s] " (BUILDBOT_URL, build_nr)
+    message += "Buildbot Url: [%s%s] " % (BUILDBOT_URL, build_nr)
     message += "Manifest Branch: [%s] " % branch
     message += "Android Increment Make: [%s] " % result
     # message
