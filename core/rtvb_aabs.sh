@@ -5,4 +5,4 @@ export ABS_REAL_TIME_VIRTUAL_BUILD=true
 export ABS_SOURCE_DIR=$1
 export ABS_PUBLISH_DIR=$2
 
-~/workspace/aabs/tools/build_platforms.sh $3
+~/aabs/tools/build_platforms.sh $3

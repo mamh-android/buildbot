@@ -11,9 +11,11 @@ import datetime
 import ConfigParser
 
 BUILD_TYPE = "rtvb"
-BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
-SYNC_GIT_WORKING_DIR = "/home/yfshi/aabs/rtvb_work"
-OUT_WORKING_DIR = "/home/yfshi/aabs/rtvb_out"
+BUILD_STDIO = ".stdout.log"
+#BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
+BUILDBOT_URL = "http://10.38.116.72:8010/builders/rtvb_build/builds/"
+SYNC_GIT_WORKING_DIR = "/home/buildfarm/aabs/rtvb_work"
+OUT_WORKING_DIR = "/home/buildfarm/aabs/rtvb_out"
 GERRIT_SERVER = "shgit.marvell.com"
 GERRIT_ADMIN = "buildfarm"
 REFERENCE_URL = "--reference=/mnt/mirror/default"
@@ -32,21 +34,18 @@ class flushfile(object):
 
 sys.stdout = flushfile(sys.stdout)
 
-def return_message(build_type, build_nr, result, rev=None):
-    message =  "Buildbot finished compiling your patchset "
-    message += "on configuration: %s " % build_type
-    message += "Buildbot Url: %s " % build_nr
-    message += "The result is: %s " % result
-    if (result == 'success'):
-        message += "Package at: http:%s%s/ " % (IMAGE_SERVER.replace('\\','/'), rev)
-        message += "OutputImages at: http:%s%s/cosmobuild/test/OutputImages/ " % (IMAGE_SERVER.replace('\\','/'), rev)
+def return_message(build_nr, result, branch=None):
+    message =  "[%s] Buildbot finished compiling your patchset. " % BUILD_TYPE
+    message += "Buildbot Url: [%s%s] " (BUILDBOT_URL, build_nr)
+    message += "Manifest Branch: [%s] " % branch
+    message += "Android Increment Make: [%s] " % result
     # message
     message = '"' + message + '"'
     return message
 
-def send_codereview(project, revision, message=None, verified=0, reviewed=0):
-    command = ["ssh", "buildfarm@privgit.marvell.com", "-p", "29418",
-               "gerrit", "review", "--project %s" % str(project)]
+def send_codereview(revision, message=None, verified=0, reviewed=0):
+    command = ["ssh", "%s@%s" % (GERRIT_ADMIN, GERRIT_SERVER), "-p", "29418",
+               "gerrit", "review"]
     if message:
         command.append("--message '%s'" % message)
     if verified:
@@ -56,6 +55,24 @@ def send_codereview(project, revision, message=None, verified=0, reviewed=0):
     command.append(str(revision))
     print command
     os.system(' '.join(command))
+
+# return last build device from stdout log
+def return_last_device(src_file, search):
+    try:
+        fp_src = open(src_file, 'r')
+        fp_src.close()
+    except IOError:
+        print "failed to open file with read mode"
+        exit(2)
+    try:
+        # return matching re
+        arg = '''awk -F'=' '{if($1=="%s") print $2}' %s''' % (search, src_file)
+        p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
+        (out, nothing) = p.communicate()
+        return out.split()[len(out.split())-1]
+    except IOError:
+        print "failed searching"
+        exit(2)
 
 def run(last_rev, build_nr=0, branch='master'):
     # sync manifest
@@ -71,24 +88,44 @@ def run(last_rev, build_nr=0, branch='master'):
         else:
            build_target = "%s" % branch
         print "[%s][%s] Start virtual aabs" % (BUILD_TYPE, str(datetime.datetime.now()))
-        c_aabs = "%s/rtvb_aabs.sh %s %s %s" % (SCRIPT_PATH, SYNC_GIT_WORKING_DIR, OUT_WORKING_DIR, build_target)
-        ret = os.system(c_aabs)
-        if not (ret==0):
+        c_aabs = "%s/rtvb_aabs.sh %s %s %s | tee %s" % (SCRIPT_PATH, SYNC_GIT_WORKING_DIR, OUT_WORKING_DIR, build_target, BUILD_STDIO)
+        subprocess.check_call(c_aabs, shell=True, cwd=SYNC_GIT_WORKING_DIR)
+        ret_p = os.system("grep \">PASS<\" %s/%s" % (SYNC_GIT_WORKING_DIR, BUILD_STDIO))
+        if not (ret_p==0):
+            os.system('rm -rf %s' % SYNC_GIT_WORKING_DIR)
             print "[%s][%s] Failed virtual aabs" % (BUILD_TYPE, str(datetime.datetime.now()))
             exit(1)
-        print "[%s][%s] End virtual aabs" % (BUILD_TYPE, str(datetime.datetime.now()))
+        else:
+            print "[%s][%s] End virtual aabs" % (BUILD_TYPE, str(datetime.datetime.now()))
     else:
         c_fetch = "repo sync"
         subprocess.check_call(c_fetch, shell=True, cwd=SYNC_GIT_WORKING_DIR)
     print "[%s][%s] End sync code" % (BUILD_TYPE, str(datetime.datetime.now()))
     # check out revision
     print "[%s][%s] Start check-out patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
+    os.chdir(SYNC_GIT_WORKING_DIR)
     c_check_rev = "%s/android_bpb_pick.py -p %s -b %s" % (SCRIPT_PATH, last_rev, SYNC_GIT_WORKING_DIR)
     ret = os.system(c_check_rev)
     if not (ret==0):
         print "[%s][%s] Failed check-out patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
         exit(1)
     print "[%s][%s] End check-out patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
+    # android build
+    print "[%s][%s] Start android build" % (BUILD_TYPE, str(datetime.datetime.now()))
+    product = return_last_device(BUILD_STDIO, 'TARGET_PRODUCT')
+    variant = return_last_device(BUILD_STDIO, 'TARGET_BUILD_VARIANT')
+    print "TARGET_PRODUCT:%s" % product
+    print "TARGET_BUILD_VARIANT:%s" % variant
+    c_rtvb_build = "%s/rtvb_build.sh %s %s" % (SCRIPT_PATH, product, variant)
+    ret = os.system(c_rtvb_build)
+    if not (ret==0):
+        print "[%s][%s] Failed android build" % (BUILD_TYPE, str(datetime.datetime.now()))
+        message = return_message(build_nr, 'failed', branch)
+        send_codereview(last_rev, message, '0', '-1')
+        exit(1)
+    print "[%s][%s] End android build" % (BUILD_TYPE, str(datetime.datetime.now()))
+    message = return_message(build_nr, 'success', branch)
+    send_codereview(last_rev, message, '0', '1')
     exit(0)
 
 #User help
