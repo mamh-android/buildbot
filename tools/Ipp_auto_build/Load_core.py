@@ -199,6 +199,8 @@ def run(branch='master', build_nr=None):
     print "[Ipp-build][%s] Start publishing" % (str(datetime.datetime.now()))
     publish_file = "%s/%s_release_list" % (mrvl_extractor_folder, product)
     publish_folder = check_publish_folder(PUBLISH_DEST, branch)
+    if os.path.isdir('out'):
+        os.system('rm -rf out')
     with open(publish_file, 'r') as file:
         for line in file:
             line = line.rstrip('\n' + '')
