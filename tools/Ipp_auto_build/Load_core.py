@@ -176,6 +176,9 @@ def run(branch='master', build_nr=None):
     else:
        src_dir = "src.%s" % branch.replace('_', '-')
     src_dir_r = AABS_FOLDER + '/' + src_dir
+    if not os.path.isdir(src_dir_r):
+        print "Can not identify where is the android codebase!"
+        exit(0)
     subprocess.check_call('repo sync', shell=True, cwd=src_dir_r)
     print "[Ipp-build][%s] End set env" % (str(datetime.datetime.now()))
     # Start ipp build
