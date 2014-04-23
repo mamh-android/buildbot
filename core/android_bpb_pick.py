@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# v1.1 topic enabled
 # v1.0
 #    Cherry pick patches from git server by gerrit patchsetID
 #    patchsetID should be a list, such as ["001","002","003","004","005"]
@@ -22,6 +23,15 @@ m_user = "buildfarm"
 m_remote_server = "shgit.marvell.com"
 
 BUILD_PATH = "."
+# Project and branch list
+path_list = ".path.pck"
+branch_list = ".branch.pck"
+fp = open(path_list, "r")
+D_PATH = pickle.load(fp)
+fp.close()
+fp = open(branch_list, "r")
+D_BRANCH = pickle.load(fp)
+fp.close()
 
 VERBOSE = False
 
@@ -44,16 +54,36 @@ def run_command(*argv, **env):
     return output
 
 #Return different value from gerrit query
-def return_gerrit_query_jsonstr(revisions):
-    jsonstr = [[]] * len(revisions)
-    for i in range(len(revisions)):
-        cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON commit:%s" % (m_user, m_remote_server, revisions[i])
-        (status, remote_output) = run_command_status(cmd)    
-        jsonstr[i] = json.loads(remote_output.split('\n')[0])
-#sorted by createdOn
-#    jsonstr = sorted(jsonstr, key=lambda patch: patch['patchSets'][0]['createdOn'])
-    print jsonstr
+def return_gerrit_query_jsonstr(revision):
+    jsonstr = []
+    cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON commit:%s" % (m_user, m_remote_server, revision[0])
+    (status, remote_output) = run_command_status(cmd)
+    j_str = json.loads(remote_output.split('\n')[0])
+    if not j_str.has_key('topic'):
+        jsonstr.append(j_str)
+    else:
+        print "Scan topic: ====== %s ======" % j_str['topic']
+        jsonstr.extend(return_jstr_from_topic(j_str['topic']))
     return jsonstr
+
+#Return jstr list from topic
+def return_jstr_from_topic(topic):
+    json_list = []
+    for path_name, c_path in D_PATH.items():
+        branch = D_BRANCH.get(path_name)
+        print path_name
+        print branch
+        cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON project:^.*%s branch:%s status:open topic:%s" % (m_user, m_remote_server, path_name, branch, topic)
+        (status, remote_output) = run_command_status(cmd)
+        for output in remote_output.split('\n'):
+            jsonstr = json.loads(output)
+            if not jsonstr.has_key('runTimeMilliseconds'):
+                json_list.append(jsonstr)
+#sorted by createdOn
+    json_list = sorted(json_list, key=lambda patch: patch['currentPatchSet']['createdOn'])
+    for jsonstr in json_list:
+        print "revision: %s in the same topic: %s" % (jsonstr['currentPatchSet']['revision'], jsonstr['topic'])
+    return json_list
 
 #Generate and return the args[i] from list jsonstr for git cherry pick
 def args_from_jsonstr_list(jsonstr_list):
@@ -78,7 +108,7 @@ def generate_path(r_dest_project_name):
     manifest_xml_path = ""
     manifest_xml_name = ""
     manifest_file = "%s/.repo/manifest.xml" % BUILD_PATH
-    print manifest_file
+    #print manifest_file
     search = ""
     pat = '\spath=\"([a-zA-Z0-9-_/]*)\"\s'
     if r_dest_project_name[:25] == "android/platform/manifest":
@@ -113,26 +143,6 @@ def generate_path(r_dest_project_name):
         else:
             manifest_xml_path = search
     return manifest_xml_path
-
-#Return revision list from topic
-def return_revisions_from_topic(topic, d_path, d_branch):
-    revisions = []
-    json_list = []
-    for path_name, c_path in d_path.items():
-        branch = d_branch.get(path_name)
-        print path_name
-        print branch
-        cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON project:^.*%s branch:%s status:open topic:%s" % (m_user, m_remote_server, path_name, branch, topic)
-        (status, remote_output) = run_command_status(cmd)
-        for output in remote_output.split('\n'):
-            jsonstr = json.loads(output)
-            if not jsonstr.has_key('runTimeMilliseconds'):
-                json_list.append(jsonstr)
-#sorted by createdOn
-    json_list = sorted(json_list, key=lambda patch: patch['currentPatchSet']['createdOn'])
-    for jsonstr in json_list:
-        revisions.append(jsonstr['currentPatchSet']['revision'])
-    return revisions
 
 #Run args[i] by shell
 def run_args(args):
