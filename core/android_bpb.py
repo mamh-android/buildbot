@@ -23,6 +23,10 @@ SRC_URL = "ssh://shgit.marvell.com/git/android/platform/manifest.git"
 REPO_URL = "--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"
 SCRIPT_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
 
+# Internal variable
+BRANCH_DICT = ".branch.pck"
+CPATH_DICT = ".path.pck"
+
 ''' Force Python's print function to output to the screen.
 '''
 class flushfile(object):
@@ -101,9 +105,22 @@ def run(last_rev, build_nr=0, branch='master'):
         c_fetch = "repo sync"
         subprocess.check_call(c_fetch, shell=True, cwd=SYNC_GIT_WORKING_DIR)
     print "[%s][%s] End sync code" % (BUILD_TYPE, str(datetime.datetime.now()))
+    # chdir to source code location
+    os.chdir(SYNC_GIT_WORKING_DIR)
+    # Output project name and branch name into .name.pck
+    c_getname = "%s/getname.py -o %s" % (SCRIPT_PATH, BRANCH_DICT)
+    ret = os.system(c_getname)
+    if not (ret==0):
+        print "[%s][%s] Failed get branchname" % (BUILD_TYPE, str(datetime.datetime.now()))
+        exit(1)
+    # Output project name and client path into .path.pck
+    c_getname = "%s/getname.py -p -o %s" % (SCRIPT_PATH, CPATH_DICT)
+    ret = os.system(c_getname)
+    if not (ret==0):
+        print "[%s][%s] Failed get pathname" % (BUILD_TYPE, str(datetime.datetime.now()))
+        exit(1)
     # check out revision
     print "[%s][%s] Start check-out patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
-    os.chdir(SYNC_GIT_WORKING_DIR)
     c_check_rev = "%s/android_bpb_pick.py -p %s -b %s" % (SCRIPT_PATH, last_rev, SYNC_GIT_WORKING_DIR)
     ret = os.system(c_check_rev)
     if not (ret==0):
