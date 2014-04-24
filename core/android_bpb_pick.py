@@ -68,6 +68,8 @@ def return_gerrit_query_jsonstr(revision):
 
 #Return jstr list from topic
 def return_jstr_from_topic(topic):
+    if ' ' in topic:
+        topic = '^' + topic.replace(' ', '.')
     json_list = []
     for path_name, c_path in D_PATH.items():
         branch = D_BRANCH.get(path_name)
