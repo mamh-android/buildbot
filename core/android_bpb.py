@@ -22,6 +22,7 @@ REFERENCE_URL = "--reference=/mnt/mirror/default"
 SRC_URL = "ssh://shgit.marvell.com/git/android/platform/manifest.git"
 REPO_URL = "--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"
 SCRIPT_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+FAILURE_COUNT = 0
 
 # Internal variable
 BRANCH_DICT = ".branch.pck"
@@ -79,9 +80,11 @@ def return_last_device(src_file, search):
         exit(2)
 
 def run(last_rev, build_nr=0, branch='master'):
+    global FAILURE_COUNT
     # sync manifest
     print "[%s][%s] Start sync code" % (BUILD_TYPE, str(datetime.datetime.now()))
     if not os.path.isdir(SYNC_GIT_WORKING_DIR):
+        FAILURE_COUNT += 1
         os.mkdir(SYNC_GIT_WORKING_DIR)
         c_fetch = "%s/fetchcode.py -u %s -b %s %s %s" % (SCRIPT_PATH, SRC_URL, branch, REFERENCE_URL, REPO_URL)
         print c_fetch
@@ -101,9 +104,9 @@ def run(last_rev, build_nr=0, branch='master'):
             exit(1)
         else:
             print "[%s][%s] End virtual aabs" % (BUILD_TYPE, str(datetime.datetime.now()))
-    else:
-        c_fetch = "repo sync"
-        subprocess.check_call(c_fetch, shell=True, cwd=SYNC_GIT_WORKING_DIR)
+    #else:
+        #c_fetch = "repo sync"
+        #subprocess.check_call(c_fetch, shell=True, cwd=SYNC_GIT_WORKING_DIR)
     print "[%s][%s] End sync code" % (BUILD_TYPE, str(datetime.datetime.now()))
     # chdir to source code location
     os.chdir(SYNC_GIT_WORKING_DIR)
@@ -139,7 +142,9 @@ def run(last_rev, build_nr=0, branch='master'):
         print "[%s][%s] Failed android build" % (BUILD_TYPE, str(datetime.datetime.now()))
         message = return_message(build_nr, 'failed', branch)
         send_codereview(last_rev, message, '0', '-1')
-        exit(1)
+        FAILURE_COUNT += 1
+        os.system("rm -rf %s" % SYNC_GIT_WORKING_DIR)
+        return 1
     print "[%s][%s] End android build" % (BUILD_TYPE, str(datetime.datetime.now()))
     message = return_message(build_nr, 'success', branch)
     send_codereview(last_rev, message, '0', '1')
@@ -172,11 +177,19 @@ def main(argv):
             build_nr = arg
         elif opt in ("-b"):
             branch = arg.split('/')[0]
+            global SYNC_GIT_WORKING_DIR
+            SYNC_GIT_WORKING_DIR = SYNC_GIT_WORKING_DIR + '_' + branch
     if not last_rev or not build_nr:
         usage()
         sys.exit(2)
 
-    run(last_rev, build_nr, branch)
+    while True:
+        run(last_rev, build_nr, branch)
+        print "FAILURE_COUNT %s" % FAILURE_COUNT
+        if (FAILURE_COUNT == 0):
+            exit(0)
+        elif (FAILURE_COUNT > 1):
+            exit(1)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
