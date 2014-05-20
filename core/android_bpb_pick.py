@@ -100,8 +100,9 @@ def args_from_jsonstr_list(jsonstr_list):
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " " + refspec + " && git checkout FETCH_HEAD;cd -;ln -sf manifests/default.xml .repo/manifest.xml;repo sync;"
         else:
             cd_dest_project_name = generate_path(r_dest_project_name)
-            cd_args = "cd " + cd_dest_project_name + ";"
-            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " " + refspec + " && git checkout FETCH_HEAD;"
+            cd_args = "cd " + cd_dest_project_name + "; rm -rf *;"
+#            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " " + refspec + " && git checkout FETCH_HEAD; touch *;"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " " + refspec + " && git reset --hard FETCH_HEAD;"
         args[i] = cd_args + gitcp_args
     return args
 
