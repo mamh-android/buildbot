@@ -19,6 +19,18 @@ class flushfile(object):
 
 sys.stdout = flushfile(sys.stdout)
 
+def terminate_process(processes):
+    for p in processes:
+        print "[Cosmo-MCR][%s][PID:%s] Killing" % (str(datetime.datetime.now()), p.pid)
+        if sys.platform == 'win32':
+            import ctypes
+            PROCESS_TERMINATE = 1
+            handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, p.pid)
+            ctypes.windll.kernel32.TerminateProcess(handle, -1)
+            ctypes.windll.kernel32.CloseHandle(handle)
+        else:
+            os.kill(p.pid, signal.SIGKILL)
+
 def cpu_count():
     ''' Returns the number of CPUs in the system
     '''
@@ -51,11 +63,12 @@ def exec_commands(cmds):
         return p.poll() is not None
     def success(p):
         return p.returncode == 0
-    def fail(p):
+    def fail(p, processes):
         print "[Cosmo-MCR][%s][PID:%s] exit with none Zero, please check the log below:" % (str(datetime.datetime.now()), p.pid)
         f = open(log_file[p.pid], 'r')
         print f.read()
         f.close()
+        terminate_process(processes)
         sys.exit(1)
     
     '''MAX task count 
@@ -91,7 +104,7 @@ def exec_commands(cmds):
                     stdout_log[stdout_pid[p.pid]] = 0
                     processes.remove(p)
                 else:
-                    fail(p)
+                    fail(p, processes)
 
         if not processes and not cmds:
             print "tasklist done"
