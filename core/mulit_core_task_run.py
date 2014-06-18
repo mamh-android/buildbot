@@ -73,7 +73,7 @@ def exec_commands(cmds):
     
     '''MAX task count 
     '''
-    max_task = cpu_count()-1
+    max_task = cpu_count()*2-1
     processes = []
     stdout_pid = {}
     stdout_log = {}
