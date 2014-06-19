@@ -134,15 +134,15 @@ def copy_outputimage(src, out):
 def setup_testfile(filename, path, sensor=None, resolution=None, focus=None, testimage=None, isp=None, FWVersion=None, CalVersion=None):
     config = ConfigParser.RawConfigParser()
     config.add_section('optional')
-    config.set('optional', 'Testimage', testimage)
+    config.set('optional', 'Testimage', ("%s\\") % testimage)
     config.set('optional', 'ISP', isp)
     config.set('optional', 'FWVersion', FWVersion)
     config.set('optional', 'CalVersion', CalVersion)
     config.add_section('mandatory')
     if ' ' in path:
-        config.set('mandatory', 'Path', ("\"%s\"") % path)
+        config.set('mandatory', 'Path', ("\"%s\"\\") % path)
     else:
-        config.set('mandatory', 'Path', ("%s") % path)
+        config.set('mandatory', 'Path', ("%s\\") % path)
     config.set('mandatory', 'Sensor', sensor)
     config.set('mandatory', 'Resolution', resolution)
     config.set('mandatory', 'Focus', focus)
