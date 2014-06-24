@@ -13,7 +13,7 @@ import ConfigParser
 BUILD_TYPE = "rtvb"
 BUILD_STDIO = ".stdout.log"
 #BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
-BUILDBOT_URL = "http://10.38.116.72:8010/builders/rtvb_build/builds/"
+BUILDBOT_URL = "http://10.38.116.72:8010/builders/"
 SYNC_GIT_WORKING_DIR = "/home/buildfarm/aabs/rtvb_work"
 OUT_WORKING_DIR = "/home/buildfarm/aabs/rtvb_out"
 GERRIT_SERVER = "shgit.marvell.com"
@@ -39,9 +39,9 @@ class flushfile(object):
 
 sys.stdout = flushfile(sys.stdout)
 
-def return_message(build_nr, result, branch=None):
+def return_message(build_nr, result, buildername, branch=None):
     message =  "[%s] Buildbot finished compiling your patchset. " % BUILD_TYPE
-    message += "Buildbot Url: [%s%s] " % (BUILDBOT_URL, build_nr)
+    message += "Buildbot Url: [%s%s/builds/%s] " % (BUILDBOT_URL, buildername, build_nr)
     message += "Manifest Branch: [%s] " % branch
     message += "Android Increment Make: [%s] " % result
     # message
@@ -79,7 +79,7 @@ def return_last_device(src_file, search):
         print "failed searching"
         exit(2)
 
-def run(last_rev, build_nr=0, branch='master'):
+def run(last_rev, build_nr=0, buildername='rtvb_build', branch='master'):
     global FAILURE_COUNT
     # sync manifest
     print "[%s][%s] Start sync code" % (BUILD_TYPE, str(datetime.datetime.now()))
@@ -140,13 +140,13 @@ def run(last_rev, build_nr=0, branch='master'):
     ret = os.system(c_rtvb_build)
     if not (ret==0):
         print "[%s][%s] Failed android build" % (BUILD_TYPE, str(datetime.datetime.now()))
-        message = return_message(build_nr, 'failed', branch)
+        message = return_message(build_nr, 'failed', buildername, branch)
         send_codereview(last_rev, message, '0', '-1')
         FAILURE_COUNT += 1
         os.system("rm -rf %s" % SYNC_GIT_WORKING_DIR)
         return 1
     print "[%s][%s] End android build" % (BUILD_TYPE, str(datetime.datetime.now()))
-    message = return_message(build_nr, 'success', branch)
+    message = return_message(build_nr, 'success', buildername, branch)
     send_codereview(last_rev, message, '0', '1')
     exit(0)
 
@@ -162,8 +162,9 @@ def main(argv):
     last_rev = ""
     build_nr = ""
     branch = ""
+    buildername = ""
     try:
-        opts, args = getopt.getopt(argv,"r:n:b:h")
+        opts, args = getopt.getopt(argv,"r:n:b:t:h")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -179,12 +180,14 @@ def main(argv):
             branch = arg.split('/')[0]
             global SYNC_GIT_WORKING_DIR
             SYNC_GIT_WORKING_DIR = SYNC_GIT_WORKING_DIR + '_' + branch
-    if not last_rev or not build_nr:
+        elif opt in ("-t"):
+            buildername = arg
+    if not last_rev or not build_nr or not buildername:
         usage()
         sys.exit(2)
 
     while True:
-        run(last_rev, build_nr, branch)
+        run(last_rev, build_nr, buildername, branch)
         print "FAILURE_COUNT %s" % FAILURE_COUNT
         if (FAILURE_COUNT == 0):
             exit(0)
