@@ -13,6 +13,7 @@ import glob
 import shutil
 import smtplib
 import ConfigParser
+from hashlib import sha1
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -38,7 +39,7 @@ BF_ADMIN = "yfshi@marvell.com"
 
 #MAIL_LIST = get_mail_list("cosmo-dev")
 #MAIL_LIST = ['gr-apse-cosmo@marvell.com']
-MAIL_LIST = ['yfshi@marvell.com']
+MAIL_LIST = ['yfshi@marvell.com','hli16@marvell.com','allenw@marvell.com','penglin@marvell.com','yzhan45@marvell.com']
 #extend extra people who not in the gr-apse-cosmo
 #MAIL_LIST.extend(['yfshi@marvell.com', 'skershaw@marvell.com', 'seankuo@marvell.com', 'pstsai@marvell.com', 'dongli@marvell.com', 'ejin@marvell.com'])
 
@@ -78,6 +79,23 @@ def send_html_mail(subject, from_who, to_who, text):
     s = smtplib.SMTP(SMTP_SERVER)
     s.sendmail(from_who, to_who, msg.as_string())
     s.quit()
+
+def send_mail(ret, image_link, branch, build_nr):
+    if not (ret==-1):
+        failure_log = return_failure_log(IMAUTO_LOG)
+        subject, text = return_mail_text('image-auto-test', branch, build_nr, 'nobuild', None, None)
+        send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+        exit(0)
+    if not (ret==0):
+        failure_log = return_failure_log(IMAUTO_LOG)
+        subject, text = return_mail_text('image-auto-test', branch, build_nr, 'failed', failure_log, None)
+        send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+        exit(1)
+    # All success
+    print "[%s][%s] All success" % (BUILD_TYPE, str(datetime.datetime.now()))
+    subject, text = return_mail_text('image-auto-test', branch, build_nr, 'success', None, image_link)
+    send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+    exit(0)
 
 def return_failure_log(logfile):
     failure_log = ""
@@ -151,6 +169,10 @@ def setup_testfile(filename, path, sensor=None, resolution=None, focus=None, tes
     with open(filename, 'w') as configfile:
         config.write(configfile)
 
+def shafile(filename):
+    with open(filename, "rb") as f:
+        return sha1(f.read()).hexdigest()
+
 def run(cfg_file, run_type='1', branch='master'):
     # git reset --hard branch
     print "[%s][%s] Start git reset --hard %s" % (BUILD_TYPE, str(datetime.datetime.now()), branch)
@@ -174,18 +196,6 @@ def run(cfg_file, run_type='1', branch='master'):
     # All success
     print "[%s][%s] End Autotest" % (BUILD_TYPE, str(datetime.datetime.now()))
     return ret
-
-def send_mail(ret, image_link, branch, build_nr):
-    if not (ret==0):
-        failure_log = return_failure_log(IMAUTO_LOG)
-        subject, text = return_mail_text('image-auto-test', branch, build_nr, 'failed', failure_log, None)
-        send_html_mail(subject,ADM_USER,MAIL_LIST,text)
-        exit(1)
-    # All success
-    print "[%s][%s] All success" % (BUILD_TYPE, str(datetime.datetime.now()))
-    subject, text = return_mail_text('image-auto-test', branch, build_nr, 'success', None, image_link)
-    send_html_mail(subject,ADM_USER,MAIL_LIST,text)
-    exit(0)
 
 #User help
 def usage():
@@ -224,12 +234,16 @@ def main(argv):
     outputimage_l = return_last_image_imauto(branch)
     result_l = []
     ret = 0
+    if not shafile('%sLAST_BUILD.%s' % (IMAGE_SERVER, branch))==shafile('%sLAST_BUILD.%s' % (OUTPUT_IMAUTO_SERVER, branch)):
+        send_mail(-1, None, branch, build_nr)
     for i in outputimage_l:
         path = copy_outputimage(i, var_path)
         setup_testfile(TEST_CFG, path, path.split('\\')[len(path.split('\\'))-1].replace('_imauto', ''), '8M', None, i)
         print "TEST_CFG: =======================\n %s" % return_failure_log(TEST_CFG)
         ret += run(TEST_CFG, '2', branch)
         result_l.extend(glob.glob('%s\\result*\\Report\\*.xml' % path))
+    if (ret==0):
+        shutil.copy('%sLAST_BUILD.%s' % (IMAGE_SERVER, branch), OUTPUT_IMAUTO_SERVER)
     send_mail(ret, result_l, branch, build_nr)
 
 if __name__ == "__main__":
