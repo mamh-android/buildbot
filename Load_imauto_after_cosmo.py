@@ -81,21 +81,24 @@ def send_html_mail(subject, from_who, to_who, text):
     s.quit()
 
 def send_mail(ret, image_link, branch, build_nr):
-    if not (ret==-1):
+    if (ret==0):
+        # All success
+        print "[%s][%s] All success" % (BUILD_TYPE, str(datetime.datetime.now()))
+        subject, text = return_mail_text('image-auto-test', branch, build_nr, 'success', None, image_link)
+        send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+        exit(0)
+    if (ret==-1):
+        #Nobuild
         failure_log = return_failure_log(IMAUTO_LOG)
         subject, text = return_mail_text('image-auto-test', branch, build_nr, 'nobuild', None, None)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
-        exit(0)
-    if not (ret==0):
+        exit(-1)
+    else:
+        #Build failed
         failure_log = return_failure_log(IMAUTO_LOG)
         subject, text = return_mail_text('image-auto-test', branch, build_nr, 'failed', failure_log, None)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
-    # All success
-    print "[%s][%s] All success" % (BUILD_TYPE, str(datetime.datetime.now()))
-    subject, text = return_mail_text('image-auto-test', branch, build_nr, 'success', None, image_link)
-    send_html_mail(subject,ADM_USER,MAIL_LIST,text)
-    exit(0)
 
 def return_failure_log(logfile):
     failure_log = ""
