@@ -39,7 +39,7 @@ BF_ADMIN = "yfshi@marvell.com"
 
 #MAIL_LIST = get_mail_list("cosmo-dev")
 #MAIL_LIST = ['gr-apse-cosmo@marvell.com']
-MAIL_LIST = ['yfshi@marvell.com','hli16@marvell.com','allenw@marvell.com','penglin@marvell.com','yzhan45@marvell.com']
+MAIL_LIST = ['hli16@marvell.com','allenw@marvell.com','penglin@marvell.com','yzhan45@marvell.com','beibeiq@marvell.com','bxia1@marvell.com']
 #extend extra people who not in the gr-apse-cosmo
 #MAIL_LIST.extend(['yfshi@marvell.com', 'skershaw@marvell.com', 'seankuo@marvell.com', 'pstsai@marvell.com', 'dongli@marvell.com', 'ejin@marvell.com'])
 
