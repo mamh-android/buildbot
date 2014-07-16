@@ -234,8 +234,10 @@ def main(argv):
     outputimage_l = return_last_image_imauto(branch)
     result_l = []
     ret = 0
-    if not shafile('%sLAST_BUILD.%s' % (IMAGE_SERVER, branch))==shafile('%sLAST_BUILD.%s' % (OUTPUT_IMAUTO_SERVER, branch)):
-        send_mail(-1, None, branch, build_nr)
+    if os.path.isfile('%sLAST_BUILD.%s' % (OUTPUT_IMAUTO_SERVER, branch)):
+        if shafile('%sLAST_BUILD.%s' % (IMAGE_SERVER, branch))==shafile('%sLAST_BUILD.%s' % (OUTPUT_IMAUTO_SERVER, branch)):
+            print "[%s][%s] LAST_BUILD.%s not updated, nobuild exit -1" % (BUILD_TYPE, str(datetime.datetime.now()), branch)
+            send_mail(-1, None, branch, build_nr)
     for i in outputimage_l:
         path = copy_outputimage(i, var_path)
         setup_testfile(TEST_CFG, path, path.split('\\')[len(path.split('\\'))-1].replace('_imauto', ''), '8M', None, i)
