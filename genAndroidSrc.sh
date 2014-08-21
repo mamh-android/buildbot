@@ -15,7 +15,7 @@ export SRC_URL=${SRC_URL:-ssh://shgit.marvell.com/git/android/platform/manifest.
 export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"}
 
 #script path
-SCRIPT_PATH=`pwd`/core
+SCRIPT_PATH=$(dirname `readlink -f $0`)/core
 
 case "$1" in
     "-b") MANIFEST_BRANCH=$2
