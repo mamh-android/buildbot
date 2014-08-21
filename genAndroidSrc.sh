@@ -38,8 +38,8 @@ case "$3" in
 esac
 
 #if src exit
-if [ -d "$BUILD_DIR/src" ]; then
-    echo $BUILD_DIR/src exists already
+if [ -f "$BUILD_DIR/src/android_src.tgz" ]; then
+    echo $BUILD_DIR/src/android_src.tgz exists already
     exit 0
 fi
 
