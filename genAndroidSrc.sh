@@ -95,6 +95,10 @@ if [ -w "$BUILD_DIR" ]; then
     mkdir $BUILD_DIR/src
     cp android_src.tgz $BUILD_DIR/src
     if [ $RET -ne 0 ]; then
+        echo "Src publishing failed"
+        echo "exit value:" $RET
+        exit 1
+    else
         echo "Src publishing completed"
         echo "exit value:" $RET
         exit 0
