@@ -1,0 +1,214 @@
+#!/bin/bash
+#
+# ver1.0: 2014-09-09 yfshi@marvell.com bacis function ready select function is still under developing
+#
+#
+
+# 1. To enable this hook, copy it to ".git/hooks/prepare-commit-msg".
+# 2. Please add your own CATEGORY here
+export MANY_CATEGORY="Power Performance Stability"
+
+unset GREP_OPTIONS
+
+MSG="$1"
+
+export FUNCTIONCATEGORY=
+
+# Check for, and add if missing, a FunctionCategory
+#
+add_FunctionCategory() {
+	clean_message=`sed -e '
+		/^diff --git a\/.*/{
+			s///
+			q
+		}
+		/^Signed-off-by:/d
+		/^#/d
+	' "$MSG" | git stripspace`
+	if test -z "$clean_message"
+	then
+		return
+	fi
+
+	# Does FunctionCategory: already exist? if so, exit (no change).
+	if grep -i '^Function-Category:' "$MSG" >/dev/null
+	then
+		return
+	fi
+        for var in $MANY_CATEGORY; do 
+            cat=$cat[$var]
+        done;
+
+	T="$MSG.tmp.$$"
+	AWK=awk
+	if [ -x /usr/xpg4/bin/awk ]; then
+		# Solaris AWK is just too broken
+		AWK=/usr/xpg4/bin/awk
+	fi
+
+	$AWK '
+	BEGIN {
+		# while we start with the assumption that textLine+
+		# is a footer, the first block is not.
+		isFooter = 0
+		footerComment = 0
+		blankLines = 0
+	}
+
+	# Skip lines starting with "#" without any spaces before it.
+	/^#/ { next }
+
+	# Skip the line starting with the diff command and everything after it,
+	# up to the end of the file, assuming it is only patch data.
+	# If more than one line before the diff was empty, strip all but one.
+	/^diff --git a/ {
+		blankLines = 0
+		while (getline) { }
+		next
+	}
+
+	# Count blank lines outside footer comments
+	/^$/ && (footerComment == 0) {
+		blankLines++
+		next
+	}
+
+	# Catch footer comment
+	/^\[[a-zA-Z0-9-]+:/ && (isFooter == 1) {
+		footerComment = 1
+	}
+
+	/]$/ && (footerComment == 1) {
+		footerComment = 2
+	}
+
+	# We have a non-blank line after blank lines. Handle this.
+	(blankLines > 0) {
+		print lines
+		for (i = 0; i < blankLines; i++) {
+			print ""
+		}
+
+		lines = ""
+		blankLines = 0
+		isFooter = 1
+		footerComment = 0
+	}
+
+	(footerComment == 0) && (!/^\[?[a-zA-Z0-9-]+:/ || /^[a-zA-Z0-9-]+:\/\//) {
+		isFooter = 0
+	}
+
+	{
+		# We need this information about the current last comment line
+		if (footerComment == 2) {
+			footerComment = 0
+		}
+		if (lines != "") {
+			lines = lines "\n";
+		}
+		lines = lines $0
+	}
+
+	END {
+		unprinted = 1
+		if (isFooter == 0) {
+			#print lines "\n"
+			#lines = ""
+			print "Function-Category: '"$cat"'"
+		}
+		if (unprinted) {
+			print "Function-Category: '"$cat"'"
+		}
+	}' "$MSG" > "$T" && mv "$T" "$MSG" || rm -f "$T"
+    # Does FunctionCategory: already exist? if so, exit (no change).
+    if grep -i '^Function-Category:' "$MSG" >/dev/null; then
+        return
+    fi
+    COMMIT_EDITMSG=Function-Category:\ $cat
+    echo "$COMMIT_EDITMSG"$'\n'"$(cat $MSG)" > $MSG
+
+}
+_if_Category() {
+    DEFAULT_NUM=2
+    echo "Do you want to add FunctionCategory:"
+    echo "     1. Yes"
+    echo "     2. No"
+    echo
+
+    export CLR=
+    local ANSWER
+    while [ -z $CLR ]; do
+        echo -n "Which would you like? ["$DEFAULT_NUM"] "
+        if [ -z "$1" ] ; then
+            read ANSWER
+        else
+            echo $1
+            ANSWER=$1
+        fi
+        case $ANSWER in
+        "")
+            export CLR=1
+            return
+            ;;
+        [1yY])
+            export CLR=0
+            ;;
+        [2oN])
+            export CLR=1
+            return
+            ;;
+        *)
+            echo
+            echo "I didn't understand your response.  Please try again."
+            echo
+            ;;
+        esac
+        if [ -n "$1" ] ; then
+            break
+        fi
+    done
+}
+_select_Category() {
+    declare -a category_list
+    echo "Choose FunctionCategory are:"
+    DEFAULT_NUM=1
+    i=1
+    for var in $MANY_CATEGORY; do
+        echo "     $i. [$var]"
+        category_list[$i]=$var
+        i=`expr $i + 1`
+    done
+
+    while [ -z $FUNCTIONCATEGORY ]; do
+        echo -n "Select your FUNCTIONCATEGORY? ["$DEFAULT_NUM"] "
+        if [ -z "$1" ] ; then
+            read ANSWER
+        else
+            echo $1
+            ANSWER=$1
+        fi
+        if echo $ANSWER | egrep -q '^[0-9]+$'; then
+            if [ $ANSWER -lt $i ]; then
+                export FUNCTIONCATEGORY=${category_list[$ANSWER]}
+                echo $FUNCTIONCATEGORY
+            else
+                echo
+                echo "I didn't understand your response.  Please try again."
+                echo
+            fi
+        elif [ -z $ANSWER ]; then
+            export FUNCTIONCATEGORY=${category_list[$DEFAULT_NUM]}
+            echo $FUNCTIONCATEGORY
+        else
+            echo
+            echo "I didn't understand your response.  Please try again."
+            echo
+        fi
+        if [ -n "$1" ] ; then
+            break
+        fi
+    done
+}
+
+add_FunctionCategory

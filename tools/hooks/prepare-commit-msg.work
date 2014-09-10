@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+# ver1.0: 2014-09-09 yfshi@marvell.com bacis function ready select function is still under developing
+#
+#
+
+# 1. To enable this hook, copy it to ".git/hooks/prepare-commit-msg".
+# 2. Please add your own CATEGORY here
+export MANY_CATEGORY="Power Performance Stability"
+
+COMMIT_EDITMSG=$1
+
+export FUNCTIONCATEGORY=
+
+add_FunctionCategory() {
+    # Does FunctionCategory: already exist? if so, exit (no change).
+    if grep -i '^Function-Category:' "$COMMIT_EDITMSG" >/dev/null; then
+        return
+    fi
+    for var in $MANY_CATEGORY; do
+        cate=$cate[$var]
+    done;
+    MSG=Function-Category:\ $cate
+    echo "$MSG"$'\n'"$(cat $COMMIT_EDITMSG)" > $COMMIT_EDITMSG
+    echo $'\n'"$(cat $COMMIT_EDITMSG)" > $COMMIT_EDITMSG
+    echo "<Your Subject>"$'\n'"$(cat $COMMIT_EDITMSG)" > $COMMIT_EDITMSG
+}
+
+MERGE=$(cat $COMMIT_EDITMSG|grep -i 'merge'|wc -l)
+
+if [ $MERGE -eq 0 ] ; then
+    add_FunctionCategory
+fi
