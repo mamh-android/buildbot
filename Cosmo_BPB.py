@@ -6,6 +6,7 @@
 import os
 import sys
 import subprocess
+import glob
 import getopt
 import datetime
 import ConfigParser
@@ -102,10 +103,22 @@ def run(last_rev, build_nr=0, branch='master', config_file='..\\test\\example.cf
         exit(1)
     print "[Cosmo-BPB][%s] End MSBuild" % (str(datetime.datetime.now()))
     # Load ConfigParser from config_file
+    # disable since -sanity is enabled
+    '''
     config = ConfigParser.RawConfigParser()
     config.read(config_file)
     calib_commands = filter(lambda x: len(x) > 0, config.get('Calib', 'calib_commands').replace('\\\\','\\').split('\n'))
     simu_commands = filter(lambda x: len(x) > 0, config.get('Simu', 'simu_commands').replace('\\\\','\\').split('\n'))
+    '''
+    # Load all calib and simu from xml and test
+    calib_commands = []
+    xml_file = glob.glob("xml\\*.xml")
+    for i in xml_file:
+        calib_commands.append("-c ..\\%s" % (i))
+    simu_commands = []
+    sim_file = glob.glob("test\\*.sim")
+    for i in sim_file:
+        simu_commands.append("-sanity ..\\%s" % (i))
     # auto test calib
     print "[Cosmo-BPB][%s] Start calib" % (str(datetime.datetime.now()))
     c_calib = ['..\\build_script\\core\\mulit_core_task_run.py -c "..\\bin\\cosmo.exe" -l "%s"' % (','.join(calib_commands))]
