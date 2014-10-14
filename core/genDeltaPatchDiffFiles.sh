@@ -57,7 +57,7 @@ echo_out Changes in each project:
 echo_out ========================
 echo_out
 
-repo forall -p -c git log --left-right --cherry-pick --date=short --pretty='%m || %h ||  %s (%an) (%cd)' tag1...tag2| \
+repo forall -p -c git log --left-right --cherry-pick --date=short --pretty='%m || %h ||  %s (%an %ae) (%cd)' tag1...tag2| \
     sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g" |  # ansi2txt \
     perl -ple 's/^>/+/; s/^</-/' >> ${OUTPUT_FILE}    # Convert > to + and < to -
 
