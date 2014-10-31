@@ -8,7 +8,11 @@ import sys
 import subprocess
 import getopt
 import datetime
+from datetime import date
 import ConfigParser
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 BUILD_TYPE = "rtvb"
 BUILD_STDIO = ".stdout.log"
@@ -23,6 +27,11 @@ SRC_URL = "ssh://shgit.marvell.com/git/android/platform/manifest.git"
 REPO_URL = "--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"
 SCRIPT_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
 FAILURE_COUNT = 0
+#Mavell SMTP server and config
+SMTP_SERVER = "10.68.76.51"
+ADM_USER = "buildfarm"
+MAIL_LIST = ['yfshi@marvell.com']
+MAIL_LIST.extend(['fuqzhai@marvell.com', 'wchyan@marvell.com'])
 
 # Internal variable
 BRANCH_DICT = ".branch.pck"
@@ -60,6 +69,43 @@ def send_codereview(revision, message=None, verified=0, reviewed=0):
     command.append(str(revision))
     print command
     os.system(' '.join(command))
+
+def return_mail_text(build_type, branch, build_nr, result, failurelog=None):
+    subject = "[rtvb-%s][%s] %s %s" % (branch, str(date.today()), build_type, result)
+    message =  "This is an automated email from real time virtual build system.\n"
+    message += "It was generated because rtvb detected current codebase of branch: %s build failed\n\n" % branch
+    message += "Buildbot Url: [%s%s/builds/%s] " % (BUILDBOT_URL, build_type, build_nr)
+    if (result == 'failed'):
+        message += "Last part of the build log is followed:\n%s\n\n" % failurelog
+    message +="Regards,\nTeam of Apse\n"
+    return subject, message
+
+def send_html_mail(subject, from_who, to_who, text):
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = from_who
+    msg['To'] = ", ".join(to_who)
+    part1 = MIMEText(text, 'plain')
+    msg.attach(part1)
+    s = smtplib.SMTP(SMTP_SERVER)
+    s.sendmail(from_who, to_who, msg.as_string())
+    s.quit()
+
+def return_failure_log(logfile):
+    failure_log = ""
+    if os.path.isfile(logfile):
+        infile = open(logfile, 'r')
+        f = infile.readlines()
+        infile.close()
+        if len(f) > 200:
+            i = len(f)-100
+            while i < len(f):
+                failure_log = failure_log + f[i]
+                i = i + 1
+        else:
+            for log in f:
+                failure_log = failure_log + log
+    return failure_log
 
 # return last build device from stdout log
 def return_last_device(src_file, search):
@@ -99,8 +145,12 @@ def run(last_rev, build_nr=0, buildername='rtvb_build', branch='master'):
         subprocess.check_call(c_aabs, shell=True, cwd=SYNC_GIT_WORKING_DIR)
         ret_p = os.system("grep \">PASS<\" %s/%s" % (SYNC_GIT_WORKING_DIR, BUILD_STDIO))
         if not (ret_p==0):
-            os.system('rm -rf %s' % SYNC_GIT_WORKING_DIR)
             print "[%s][%s] Failed virtual aabs" % (BUILD_TYPE, str(datetime.datetime.now()))
+            print "[%s][%s] Sending failure mail" % (BUILD_TYPE, str(datetime.datetime.now()))
+            failure_log = return_failure_log(BUILD_STDIO)
+            subject, text = return_mail_text(buildername, branch, build_nr, 'failed', failure_log)
+            send_html_mail(subject,ADM_USER,MAIL_LIST,text)
+            os.system('rm -rf %s' % SYNC_GIT_WORKING_DIR)
             exit(1)
         else:
             print "[%s][%s] End virtual aabs" % (BUILD_TYPE, str(datetime.datetime.now()))
