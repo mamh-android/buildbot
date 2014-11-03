@@ -36,6 +36,12 @@ case "$3" in
     ;;
     *) echo "wrong parameter $3"; exit 1 ;;
 esac
+case "$5" in
+    "-a") RUN_TYPE=$6
+          echo "$6"
+          ;;
+    *) echo "wrong parameter $5"; exit 1 ;;
+esac
 
 # Clean the working directory
 rm -fr $SYNC_GIT_WORKING_DIR
@@ -79,4 +85,4 @@ if [ $RET -ne 0 ]; then
 fi
 
 #Usage: rls_branch.sh <create|delete> <release-branch-name> <unique|multiple> [<actual-run>] [<project> ...]
-$SCRIPT_PATH/rls_branch.sh create $MANIFEST_BRANCH multiple actual-run
+$SCRIPT_PATH/rls_branch.sh create $MANIFEST_BRANCH multiple $RUN_TYPE
