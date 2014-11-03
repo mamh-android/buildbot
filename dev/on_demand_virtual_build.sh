@@ -30,6 +30,7 @@ case "$3" in
         "-m") MANIFEST_XML=$4
                 if [ -f $MANIFEST_XML ]; then
                         echo "$MANIFEST_XML exists"
+                        MANIFEST_DIR=$(dirname $4)
                         MANIFEST_XML=${MANIFEST_XML##*/}
                 else
                         echo "$4 doesn't exist"
@@ -108,7 +109,13 @@ if [ $RET -ne 0 ]; then
         exit 1
 fi
 
+# Reset hard aabs
+cd ~/aabs
+git fetch origin
+git reset --hard $(cat $MANIFEST_DIR/abs.commit)
+
 # Cherry-pick the listed patched from gerrit to $SYNC_GIT_WORKING_DIR
+cd $SYNC_GIT_WORKING_DIR
 if [ "$GERRIT_PATCH" != "" -a "$GERRIT_PATCH" != "None" ]; then
   $SCRIPT_PATH/gerrit_pick_patch.py -p $GERRIT_PATCH
   RET=$?
@@ -153,7 +160,7 @@ fi
 export ABS_SOURCE_DIR=$SYNC_GIT_WORKING_DIR
 export ABS_PUBLISH_DIR=$DEST_DIR
 
-tools/build_platforms.sh ${target} | tee -a log.txt
+tools/build_platforms.sh ${target} no-checkout | tee -a log.txt
 result=`grep ">PASS<" log.txt`
 if [ -n "$result" ]; then
   echo "success"

@@ -107,6 +107,8 @@ def generate_path(r_dest_project_name):
     pat = '\spath=\"([a-zA-Z0-9-_/]*)\"\s'
     if r_dest_project_name[:25] == "android/platform/manifest":
         manifest_xml_path = ".repo/manifests"
+    elif r_dest_project_name[:19] == "android/shared/aabs":
+        manifest_xml_path = "/home/buildfarm/aabs"
     elif r_dest_project_name[:17] == "android/platform/":
         search = r_dest_project_name[17:]
     elif r_dest_project_name[:8] == "android/":
