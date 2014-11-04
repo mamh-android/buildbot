@@ -215,14 +215,12 @@ def run(build_nr, branch, datafolder, email):
     print "[Cosmo-odt][%s] Start Publishing" % (str(datetime.datetime.now()))
     output_path = check_publish_folder(ODT_SERVER, email)
     #publish xml and sim
-    xml_file = glob.glob("%s\\*.xml" % datafolder)
     for i in xml_file:
         shutil.copy2(i, "%s\\." % output_path)
-    sim_file = glob.glob("%s\\*.sim" % datafolder)
     for i in sim_file:
         shutil.copy2(i, "%s\\." % output_path)
     #publish outputimages
-        shutil.copytree("test\\OutputImages", "%s\\OutputImages" % output_path)
+        shutil.copytree("test\\OutputImages", "%s" % output_path)
     print "[Cosmo-odt][%s] End Publishing" % (str(datetime.datetime.now()))
     # All Success
     print "[Cosmo-odt][%s] All success" % (str(datetime.datetime.now()))
