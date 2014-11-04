@@ -88,7 +88,7 @@ def return_failure_log(logfile):
                 failure_log = failure_log + log
     return failure_log
 
-def setup_testfile(filename, path, sensor, resolution, focus, testimage=None, isp=None, FWVersion=None, CalVersion=None):
+def setup_testfile(filename, path, sensor, resolution, focus, platform, reason, test_times, testimage=None, isp=None, FWVersion=None, CalVersion=None):
     config = ConfigParser.RawConfigParser()
     config.add_section('optional')
     config.set('optional', 'Testimage', testimage)
@@ -103,6 +103,9 @@ def setup_testfile(filename, path, sensor, resolution, focus, testimage=None, is
     config.set('mandatory', 'Sensor', sensor)
     config.set('mandatory', 'Resolution', resolution)
     config.set('mandatory', 'Focus', focus)
+    config.set('mandatory', 'Reason', reason)
+    config.set('mandatory', 'Platform', platform)
+    config.set('mandatory', 'Test_Times', test_times)
     # Writing our configuration file to 'example.cfg'
     with open(filename, 'w') as configfile:
         config.write(configfile)
@@ -148,6 +151,9 @@ def usage():
     print "\t      [-r] Resolution {8M|2M|5M|8M|13M}"
     print "\t      [-f] Focus {AF|FF}"
     print "\t      [-n] build_nr"
+    print "\t      [-a] Platform"
+    print "\t      [-o] Reason"
+    print "\t      [-e] Test Times"
     print "\t      [optional] section"
     print "\t      [-b] imauto branch defult=master"
     print "\t      [-t] TestImage sample: 2014-02-18_pxa988-kk4.4"
@@ -169,8 +175,11 @@ def main(argv):
     fwversion = ""
     calversion = ""
     email = ""
+    platform = ""
+    reason = ""
+    test_times = ""
     try:
-        opts, args = getopt.getopt(argv,"p:s:r:f:n:b:t:i:w:c:m:h")
+        opts, args = getopt.getopt(argv,"p:s:r:f:n:b:t:i:w:c:m:h:a:o:e")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -198,6 +207,12 @@ def main(argv):
             fwversion = arg
         elif opt in ("-c"):
             calversion = arg
+        elif opt in ("-a"):
+            platform = arg
+        elif opt in ("-o"):
+            reason = arg
+        elif opt in ("-e"):
+            test_times = arg
         elif opt in ("-m"):
             email = arg
             MAIL_LIST.append(email)
@@ -206,7 +221,7 @@ def main(argv):
         usage()
         sys.exit(2)
 
-    setup_testfile(TEST_CFG, path, sensor, resolution, focus, testimage, isp, fwversion, calversion)
+    setup_testfile(TEST_CFG, path, sensor, resolution, focus, platform, reason, test_times, testimage, isp, fwversion, calversion)
     run(build_nr, TEST_CFG, path, '1')
 
 if __name__ == "__main__":
