@@ -24,6 +24,7 @@ BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_odt/builds/"
 COSMO_BUILD_LOG = ".cosmo.build.log"
 IMAGEDATABASE = "W:"
 IMAGEDATABASE_L = "\\\\sh-srv06\\common\\"
+BUILD_INFO = "base.info"
 
 #Gerrit admin user
 ADM_USER = "buildfarm"
@@ -155,16 +156,19 @@ def run(build_nr, branch, datafolder, email):
     ret = os.system(' '.join(c_resetbranch))
     if not (ret==0):
         print "[Cosmo-odt][%s] Failed git reset --hard" % (str(datetime.datetime.now()))
-        subject, text = return_mail_text('git-reset', branch, build_nr, 'failed', None, None)
-        send_html_mail(subject,ADM_USER,BF_ADMIN,text)
         exit(1)
     print "[Cosmo-odt][%s] End git reset --hard" % (str(datetime.datetime.now()))
+    p = subprocess.Popen('git log -1 --pretty=format:%H', shell=True, stdout=subprocess.PIPE)
+    (out, nothing) = p.communicate()
+    base_rev = out.strip()
     ret, imagedatabase_rev = sync_imagedatabase()
     if not (ret==0):
         print "[Cosmo-odt][%s] Failed sync imagedatabase" % (str(datetime.datetime.now()))
-        subject, text = return_mail_text('sync imagedatabase', branch, build_nr, 'failed', None, None)
-        send_html_mail(subject,ADM_USER,BF_ADMIN,text)
         exit(1)
+    #Create BUILD_INFO file
+    f = open(BUILD_INFO, 'w')
+    f.write("Branch: %s\nCurrent Rev: %s\nImageDataBase Rev: %s" % (branch, base_rev, imagedatabase_rev))
+    f.close()
     # MSBuild release
     print "[Cosmo-odt][%s] Start MSBuild release" % (str(datetime.datetime.now()))
     c_msbuild = ['MSBuild', 'Cosmo.sln', '/t:Rebuild', '/p:Configuration=Release']
@@ -220,7 +224,9 @@ def run(build_nr, branch, datafolder, email):
     for i in sim_file:
         shutil.copy2(i, "%s\\." % output_path)
     #publish outputimages
-        shutil.copytree("test\\OutputImages", "%s" % output_path)
+    shutil.copytree("test\\OutputImages", "%s\\OutputImages" % output_path)
+    #publish BUILD_INFO file
+    shutil.copy2(BUILD_INFO, "%s\\." % output_path)
     print "[Cosmo-odt][%s] End Publishing" % (str(datetime.datetime.now()))
     # All Success
     print "[Cosmo-odt][%s] All success" % (str(datetime.datetime.now()))
