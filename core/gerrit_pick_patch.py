@@ -122,22 +122,23 @@ def generate_path(r_dest_project_name):
     else:
         print "dest_project_name have not been definted yet, please contact buildbot admin"
         sys.exit(2)
-    try:
-        fp_src = open(manifest_file, 'r')
-    except IOError:
-        print "failed to open manifest file with read mode"
-        sys.exit(2)
-    for line in fp_src.readlines():
-        m = re.search(search,line)
-        if m:
-            a = re.search(pat,line)
-            if a:
-                manifest_xml_path = a.group(1)
-                break
+    if manifest_xml_path is None:
+        try:
+            fp_src = open(manifest_file, 'r')
+        except IOError:
+            print "failed to open manifest file with read mode"
+            sys.exit(2)
+        for line in fp_src.readlines():
+            m = re.search(search,line)
+            if m:
+                a = re.search(pat,line)
+                if a:
+                    manifest_xml_path = a.group(1)
+                    break
+                else:
+                    manifest_xml_path = search
             else:
                 manifest_xml_path = search
-        else:
-            manifest_xml_path = search
     return manifest_xml_path
 
 #Generate and return the args[i] from gerrit_patch_object for git cherry pick
