@@ -10,6 +10,8 @@
 #$4: actual-run
 #$5: project list ...
 
+RETRY=5
+
 print_usage() {
 	echo "    Usage: rls_branch.sh <create|delete> <release-branch-name> <unique|multiple> [<actual-run>] [<project> ...]"
 	echo "    action: create or delete the release branch"
@@ -140,12 +142,19 @@ for prj in $projects; do
 		echo "unreconized remote:$rmt"
 		exit -1
 	fi
-	branch_to_remote $action
-	if [ $? -ne 0 ]; then
-		echo "git push error."
-		exit -1
-	fi
-	echo 
+        i=0;while true;do
+                branch_to_remote $action
+                if [ $? -ne 0 ]; then
+                        echo "git push error."
+                        i=`expr $i + 1`
+                else
+                        break
+                fi
+                if [ $i -gt $RETRY ];then
+                        exit -1
+                fi
+                echo
+        done;
 done
 
 echo "Update manifest branch..."
