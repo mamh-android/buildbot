@@ -100,8 +100,8 @@ def sort_gerrit_patch_object_by_created_on(gerrit_patch_object):
 
 #generate cd path from project name of manifest.xml
 def generate_path(r_dest_project_name):
-    manifest_xml_path = ""
-    manifest_xml_name = ""
+    manifest_xml_path = None
+    manifest_xml_name = None
     manifest_file = "/home/buildfarm/aabs/odvb_work/manifest.xml"
     search = ""
     pat = '\spath=\"([a-zA-Z0-9-_/]*)\"\s'
@@ -171,8 +171,8 @@ def args_from_gerrit_patch_object(gerrit_patch_object):
 
 #generate cd path from project name of manifest.xml for rtvb
 def generate_path_rtvb(r_dest_project_name):
-    manifest_xml_path = ""
-    manifest_xml_name = ""
+    manifest_xml_path = None
+    manifest_xml_name = None
     #manifest_file = "/home/buildfarm/aabs/odvb_work/manifest.xml"
     manifest_file = "/home/buildfarm/aabs/rtvb_work/.repo/manifest.xml"
     search = ""
