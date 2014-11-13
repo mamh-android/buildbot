@@ -26,13 +26,13 @@ OUTPUT_IMAUTO_SERVER = "\\\\sh-srv06\\cosmo_imauto\\"
 BUILD_TYPE = "cosmo-imauto"
 
 #Gerrit admin user
-ADM_USER = "buildfarm"
+ADM_USER = "srv-buildfarm@marvell.com"
 
 #Gerrit server
 GERRIT_SERVER = "privgit.marvell.com"
 
 #Mavell SMTP server
-SMTP_SERVER = "10.68.76.51"
+SMTP_SERVER = "10.93.76.20"
 
 #Buildfarm Maintainer
 BF_ADMIN = "yfshi@marvell.com"

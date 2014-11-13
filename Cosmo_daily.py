@@ -26,13 +26,13 @@ IMAGEDATABASE_L = "\\\\sh-srv06\\common\\"
 IMAGEDATABASE_F = "out\\imagedatabase.revision"
 
 #Gerrit admin user
-ADM_USER = "buildfarm"
+ADM_USER = "srv-buildfarm@marvell.com"
 
 #Gerrit server
 GERRIT_SERVER = "privgit.marvell.com"
 
 #Mavell SMTP server
-SMTP_SERVER = "10.68.76.51"
+SMTP_SERVER = "10.93.76.20"
 
 #Buildfarm Maintainer
 BF_ADMIN = "yfshi@marvell.com"

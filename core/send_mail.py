@@ -11,7 +11,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 #Gerrit admin user
-ADM_USER = "buildfarm"
+ADM_USER = "srv-buildfarm@marvell.com"
 
 #Gerrit server
 GERRIT_SERVER = "privgit.marvell.com"
@@ -20,7 +20,7 @@ GERRIT_SERVER = "privgit.marvell.com"
 PROJECT_GROUP = "cosmo-admin"
 
 #Mavell SMTP server
-SMTP_SERVER="10.68.76.51"
+SMTP_SERVER="10.93.76.20"
 
 def get_mail_list(mail_list):
     global ADM_USER
