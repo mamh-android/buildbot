@@ -22,11 +22,11 @@ PUBLISH_DEST = "/autobuild/mrvl_extractor/"
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/android_develop_build/builds/"
 FILE_SERVER = "\\\\sh-fs04"
 
-# Gerrit admin user
-ADM_USER = "buildfarm"
+# admin user
+ADM_USER = "srv-buildfarm@marvell.com"
 
 # Mavell SMTP server
-SMTP_SERVER = "10.68.76.51"
+SMTP_SERVER = "10.93.76.20"
 
 ''' Force Python's print function to output to the screen.
 '''

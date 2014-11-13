@@ -28,8 +28,8 @@ REPO_URL = "--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"
 SCRIPT_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
 FAILURE_COUNT = 0
 #Mavell SMTP server and config
-SMTP_SERVER = "10.68.76.51"
-ADM_USER = "buildfarm"
+SMTP_SERVER = "10.93.76.20"
+ADM_USER = "srv-buildfarm@marvell.com"
 MAIL_LIST = ['yfshi@marvell.com']
 MAIL_LIST.extend(['fuqzhai@marvell.com', 'wchyan@marvell.com','guojia@marvell.com'])
 
