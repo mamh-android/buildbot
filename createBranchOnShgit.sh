@@ -58,7 +58,7 @@ EOF
 
 send_success_notification() {
   echo "generating success notification email"
-  generate_uprb_success_notification_email | /usr/sbin/sendmail -t $build_maintainer
+  generate_success_notification_email | /usr/sbin/sendmail -t $build_maintainer
 }
 
 case "$1" in
@@ -137,7 +137,11 @@ if [ $RET -ne 0 ]; then
 fi
 
 #Clean the shallow
-find .repo/ -name "shallow" | xargs rm -
+echo "clean shallow of git tree"
+FILES=$(find .repo/ -name "shallow")
+for i in $FILES;do
+    rm $i
+done
 
 #Usage: rls_branch.sh <create|delete> <release-branch-name> <unique|multiple> [<actual-run>] [<project> ...]
 $SCRIPT_PATH/rls_branch.sh create $MANIFEST_BRANCH multiple $RUN_TYPE
