@@ -100,6 +100,12 @@ fi
 
 #Usage: rls_branch.sh <create|delete> <release-branch-name> <unique|multiple> [<actual-run>] [<project> ...]
 $SCRIPT_PATH/rls_branch.sh create $MANIFEST_BRANCH multiple $RUN_TYPE
+RET=$?
+if [ $RET -ne 0 ]; then
+    echo "create branch failed"
+    echo "exit value:" $RET
+    exit 1
+fi
 
 #create_aabs_branch
 if [ $RUN_TYPE == "actual-run" ]; then
