@@ -14,6 +14,9 @@ export REFERENCE_URL=${REFERENCE_URL:-"--reference=/mnt/mirror/default"}
 export SRC_URL=${SRC_URL:-ssh://shgit.marvell.com/git/android/platform/manifest.git}
 export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"}
 
+build_maintainer="yfshi@marvell.com"
+DEV_TEAM="APSE"
+
 #script path
 SCRIPT_PATH=$(dirname `readlink -f $0`)/core
 
@@ -27,6 +30,35 @@ dir_to_branch() {
         output=rls_pxa${id_1//-/_}
     fi
     echo $output
+}
+
+generate_success_notification_email() {
+cat <<-EOF
+From: $build_maintainer
+To: $USEREMAIL,
+Subject: [Create a release branch] is done.
+
+This is an automated email from the autobuild script. It was
+generated because createRlsBranch is success.
+
+=====================
+How to fetch the code
+=====================
+repo init -u $SRC_URL -b $MANIFEST_BRANCH $REPO_URL
+repo sync
+
+
+Complete Time: $(date)
+Build Host: $(hostname)
+
+---
+Team of $DEV_TEAM
+EOF
+}
+
+send_success_notification() {
+  echo "generating success notification email"
+  generate_uprb_success_notification_email | /usr/sbin/sendmail -t $build_maintainer
 }
 
 case "$1" in
@@ -55,6 +87,12 @@ case "$5" in
           echo "$6"
           ;;
     *) echo "wrong parameter $5"; exit 1 ;;
+esac
+case "$7" in
+    "-e") USEREMAIL=$8
+          echo "$8"
+          ;;
+    *) echo "wrong parameter $7"; exit 1 ;;
 esac
 
 # Clean the working directory
@@ -120,6 +158,7 @@ if [ $RUN_TYPE == "actual-run" ]; then
         exit 1
     else
         echo ">PASS< ALL success"
+        send_success_notification
         exit 0
     fi
 fi
