@@ -17,6 +17,18 @@ export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tool
 #script path
 SCRIPT_PATH=$(dirname `readlink -f $0`)/core
 
+dir_to_branch() {
+    filename=$(basename $1)
+    id_1=${filename#*_pxa}
+    id_2=${id_1#*_}
+    if [ $id_1 == $id_2 ]; then
+        output=pxa$id_1
+    else
+        output=rls_pxa${id_1//-/_}
+    fi
+    echo $output
+}
+
 case "$1" in
     "-b") MANIFEST_BRANCH=$2
           echo "MANIFEST_BRANCH= $2"
@@ -28,7 +40,9 @@ case "$3" in
     if [ -f $MANIFEST_XML ]; then
         echo "$MANIFEST_XML exists"
         MANIFEST_NAME=$(basename $4)
-        BUILD_DIR=$(dirname $4)
+        MANIFEST_DIR=$(dirname $4)
+        #inherit branch
+        INHERIT_BRANCH=$(dir_to_branch $MANIFEST_DIR)
     else
         echo "$4 doesn't exist"
         exit 1
@@ -60,14 +74,14 @@ if [ $? -ne 0 ]; then
 fi
 
 # Copy manifest xml into current directory
-echo Copy: $4
-cp $4 $MANIFEST_NAME
+echo Copy: $MANIFEST_XML
+cp $MANIFEST_XML $MANIFEST_NAME
 
 echo $SCRIPT_PATH
 
 # Fetch code from Developer Server with mrvl-ics branch
 #$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
-$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b master $REFERENCE_URL $REPO_URL
+$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $INHERIT_BRANCH $REFERENCE_URL $REPO_URL
 RET=$?
 if [ $RET -ne 0 ]; then
     echo "failed on fetching code from master branch"
@@ -86,3 +100,17 @@ fi
 
 #Usage: rls_branch.sh <create|delete> <release-branch-name> <unique|multiple> [<actual-run>] [<project> ...]
 $SCRIPT_PATH/rls_branch.sh create $MANIFEST_BRANCH multiple $RUN_TYPE
+
+#create_aabs_branch
+if [ $RUN_TYPE == "actual-run" ]; then
+    git push origin $(cat $MANIFEST_DIR/abs.commit):refs/heads/$MANIFEST_BRANCH
+    RET=$?
+    if [ $RET -ne 0 ]; then
+        echo "failed to create aabs branch"
+        echo "exit value:" $RET
+        exit 1
+    else
+        echo ">PASS< ALL success"
+        exit 0
+    fi
+fi
