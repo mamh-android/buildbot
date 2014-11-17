@@ -98,6 +98,9 @@ if [ $RET -ne 0 ]; then
     exit 1
 fi
 
+#Clean the shallow
+find .repo/ -name "shallow" | xargs rm -
+
 #Usage: rls_branch.sh <create|delete> <release-branch-name> <unique|multiple> [<actual-run>] [<project> ...]
 $SCRIPT_PATH/rls_branch.sh create $MANIFEST_BRANCH multiple $RUN_TYPE
 RET=$?
