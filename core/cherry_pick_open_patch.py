@@ -87,6 +87,15 @@ def gerrit_checkout(revision):
     print arg
     subprocess.check_call(arg, shell=True)
 
+#merge the commit
+def gerrit_merge(revision):
+    cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON commit:%s" % (m_user, m_remote_server, revision)
+    (status, remote_output) = run_command_status(cmd)
+    jsonstr = json.loads(remote_output.split('\n')[0])
+    arg = "git fetch ssh://%s@%s:29418/cosmo %s && git merge FETCH_HEAD" % (m_user, m_remote_server, jsonstr['currentPatchSet']['ref'])
+    print arg
+    subprocess.check_call(arg, shell=True)
+
 # return branch from the commit
 def return_gerrit_branch(revision):
     cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON commit:%s" % (m_user, m_remote_server, revision)
