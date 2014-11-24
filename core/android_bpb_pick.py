@@ -151,7 +151,11 @@ def generate_path(r_dest_project_name):
 def run_args(args):
     for i in range(len(args)):
         print args[i]
-        subprocess.check_call(args[i], shell=True)
+        (status, remote_output) = run_command_status(args[i])
+        print remote_output
+        if not (status==0):
+            print "Merge patch failed"
+            exit 1
 
 #User help
 def usage():
