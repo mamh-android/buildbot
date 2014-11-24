@@ -155,7 +155,7 @@ def run_args(args):
         print remote_output
         if not (status==0):
             print "Merge patch failed"
-            exit 1
+            exit(1)
 
 #User help
 def usage():
