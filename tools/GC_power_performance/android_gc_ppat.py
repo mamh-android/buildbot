@@ -9,6 +9,7 @@ import json
 import shlex
 import datetime
 import ConfigParser
+import getopt
 
 #Gerrit admin user
 m_user = "buildfarm"
@@ -69,8 +70,9 @@ def return_revision_via_cfg(cfg_file):
 
 #return board info from cfg
 def return_board_via_cfg(cfg_file):
+    config = ConfigParser.RawConfigParser()
     config.read(cfg_file)
-    return config.get('board.mk', 'device'), config.get('board.mk', 'product'), config.get('board.mk', 'reason')
+    return config.get('board.mk', 'product'), config.get('board.mk', 'device'), config.get('board.mk', 'reason')
 
 # return device via branch
 def return_device(branch):
@@ -89,11 +91,11 @@ def return_last_device(last_file):
     except IOError:
         print "failed to open file with read mode"
         exit(2)
-    return l[2].split(':')[1]
+    return l[2].split(':')[1].strip()
 
 # return last manifest.xml
 def return_last_manifest(branch):
-    last_file = "%s/%s/LAST_BUILD.%s"(AUTOBUILD, return_device(branch), branch)
+    last_file = "%s/%s/LAST_BUILD.%s" % (AUTOBUILD, return_device(branch), branch)
     return return_last_device(last_file)
 
 # sync the build code
@@ -109,7 +111,7 @@ def sync_build_code(repo_url):
     return "%s/%s" % (os.getcwd(), repo_folder)
 
 # return last build from stdout log
-def return_build_device(src_file, search):
+def return_build_device(src_file):
     try:
         fp_src = open(src_file, 'r')
         fp_src.close()
@@ -143,21 +145,21 @@ def run(branch):
     cmd += " -m %s" % Manifest_Xml
     cmd += " -b %s" % branch
     cmd += " -d %s" % OUTPUT_DIR
-    cmd += " -d %s -de %s" % (Product_Type, Build_Device)
+    cmd += " -v %s -de %s" % (Product_Type, Build_Device)
     print cmd
     ret_p = os.system(cmd)
     if not (ret_p==0):
-        print "[Self-build] Failed ODVB")
+        print "[Self-build] Failed ODVB"
         exit(1)
     print "[Self-build] start PPAT"
-    cmd = sync_build_code(PPAT_GIT)
-    cmd += "--imagepath %s --device %s --purpose %s --mode gc" % (return_build_device(), Build_Device, Purpose)
+    cmd = "%s/trigger.py" % sync_build_code(PPAT_GIT)
+    cmd += " --imagepath %s --device %s --purpose %s --mode gc" % (return_build_device(STD_LOG), Build_Device, Purpose)
     print cmd
     ret_p = os.system(cmd)
     if not (ret_p==0):
-        print "[Self-build] Failed startPPAT")
+        print "[Self-build] Failed startPPAT"
         exit(1)
-    print "[Self-build] All Success")
+    print "[Self-build] All Success"
     exit(0)
 
 #User help
@@ -177,9 +179,9 @@ def main(argv):
         if opt in ("-h"):
             usage()
             sys.exit()
-        elif opt in ("-c"):
-            cfg_file = arg
-    if not cfg_file:
+        elif opt in ("-b"):
+            branch = arg
+    if not branch:
         usage()
         sys.exit(2)
 
