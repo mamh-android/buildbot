@@ -15,4 +15,6 @@ branch = pxa1908-kk4.4
 
 [board.mk]
 device = pxa1908dkb_tz:pxa1908dkb
-blf = PXA1908_Trusted_Toshiba_lpddr3_1g_discrete_TYD0GH221644RC_533Mhz.blf
+product = userdebug
+owner = chenyu@marvell.com
+reason = ULC daily power

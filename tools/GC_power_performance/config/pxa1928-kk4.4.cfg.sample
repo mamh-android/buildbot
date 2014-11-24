@@ -15,4 +15,6 @@ branch = eden-kk4.4
 
 [board.mk]
 device = pxa1928dkb_tz:pxa1928dkb
-blf = 
+product = userdebug
+owner = chenyu@marvell.com
+reason = ULC daily power
