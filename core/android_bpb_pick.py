@@ -82,7 +82,7 @@ def return_jstr_from_topic(topic):
             if not jsonstr.has_key('runTimeMilliseconds'):
                 json_list.append(jsonstr)
 #sorted by createdOn
-    json_list = sorted(json_list, key=lambda patch: patch['currentPatchSet']['createdOn'])
+    json_list = sorted(json_list, key=lambda patch: patch['sortKey'])
     for jsonstr in json_list:
         print "revision: %s in the same topic: %s" % (jsonstr['currentPatchSet']['revision'], jsonstr['topic'])
     return json_list
