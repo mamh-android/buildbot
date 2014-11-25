@@ -111,10 +111,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Copy manifest xml into current directory
-echo Copy: $MANIFEST_XML
-cp $MANIFEST_XML $MANIFEST_NAME
-
 echo $SCRIPT_PATH
 
 # Fetch code from Developer Server with mrvl-ics branch
@@ -126,6 +122,10 @@ if [ $RET -ne 0 ]; then
     echo "exit value:" $RET
     exit 1
 fi
+
+# Copy manifest xml into current directory
+echo Copy: $MANIFEST_XML
+cp $MANIFEST_XML $MANIFEST_NAME
 
 # Fetch code from Developer Server with manifest xml
 $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_NAME $REFERENCE_URL $REPO_URL
