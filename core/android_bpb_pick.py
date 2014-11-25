@@ -100,9 +100,9 @@ def args_from_jsonstr_list(jsonstr_list):
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " " + refspec + " && git checkout FETCH_HEAD;cd -;ln -sf manifests/default.xml .repo/manifest.xml;repo sync;"
         else:
             cd_dest_project_name = generate_path(r_dest_project_name)
-            cd_args = "cd " + cd_dest_project_name + "; rm -rf *; git reset --hard $(git rev-parse HEAD);"
+            cd_args = "cd " + cd_dest_project_name + "; rm -rf *;"
 #            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " " + refspec + " && git checkout FETCH_HEAD; touch *;"
-            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " " + refspec + " && git merge FETCH_HEAD;"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " " + refspec + " && git merge FETCH_HEAD; git reset --hard $(git rev-parse HEAD);"
         args[i] = cd_args + gitcp_args
     return args
 
@@ -151,11 +151,7 @@ def generate_path(r_dest_project_name):
 def run_args(args):
     for i in range(len(args)):
         print args[i]
-        (status, remote_output) = run_command_status(args[i])
-        print remote_output
-        if not (status==0):
-            print "Merge patch failed"
-            exit(1)
+        subprocess.check_call(args[i], shell=True)
 
 #User help
 def usage():

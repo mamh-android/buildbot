@@ -173,15 +173,13 @@ def run(last_rev, build_nr=0, buildername='rtvb_build', branch='master'):
         print "[%s][%s] Failed get pathname" % (BUILD_TYPE, str(datetime.datetime.now()))
         exit(1)
     # check out revision
-    print "[%s][%s] Start Merge patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
+    print "[%s][%s] Start check-out patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
     c_check_rev = "%s/android_bpb_pick.py -p %s -b %s" % (SCRIPT_PATH, last_rev, SYNC_GIT_WORKING_DIR)
     ret = os.system(c_check_rev)
     if not (ret==0):
-        print "[%s][%s] Failed merge patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
-        message = return_message(build_nr, 'merge-failed', buildername, branch)
-        send_codereview(last_rev, message, '0', '-1')
+        print "[%s][%s] Failed check-out patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
         exit(1)
-    print "[%s][%s] End merge patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
+    print "[%s][%s] End check-out patch %s" % (BUILD_TYPE, str(datetime.datetime.now()), last_rev)
     # android build
     print "[%s][%s] Start android build" % (BUILD_TYPE, str(datetime.datetime.now()))
     product = return_last_device(BUILD_STDIO, 'TARGET_PRODUCT')
