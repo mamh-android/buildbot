@@ -23,6 +23,7 @@ ODVB_BASH = "/home/%s/buildbot_script/buildbot/od_virtual_build.sh" % m_user
 PPAT_GIT = "ssh://%s@%s/git/android/shared/Buildbot/ppat.git" % (m_user, m_remote_server)
 AUTOBUILD = "/autobuild/android/"
 CFG_FILE = "/home/%s/buildbot_script/buildbot/tools/GC_power_performance/config" % m_user
+GERRIT_REVIEW = "/home/%s/buildbot_script/buildbot/core/gerrit_review_update.py" % m_user
 STD_LOG = "/home/%s/buildbot_script/stdio.log" % m_user
 
 def run_command_status(*argv, **env):
@@ -150,10 +151,20 @@ def run(branch):
     ret_p = os.system(cmd)
     if not (ret_p==0):
         print "[Self-build] Failed ODVB"
+        print "[Self-build] Gerrit review update"
+        cmd = GERRIT_REVIEW
+        cmd += " -p %s -m \"GCVB base:%s\" -r failure" % (Gerrit_Patch, Manifest_Xml)
+        print cmd
+        ret_p = os.system(cmd)
         exit(1)
+    print "[Self-build] Gerrit review update"
+    cmd = GERRIT_REVIEW
+    cmd += " -p %s -m \"GCVB base:%s\" -r success -d %s" % (Gerrit_Patch, Manifest_Xml, return_build_device(STD_LOG))
+    print cmd
+    ret_p = os.system(cmd)
     print "[Self-build] start PPAT"
     cmd = "%s/trigger.py" % sync_build_code(PPAT_GIT)
-    cmd += " --imagepath %s --device %s --purpose %s --mode gc" % (return_build_device(STD_LOG), Build_Device, Purpose)
+    cmd += " --imagepath %s --device %s --purpose \"%s\" --mode gc" % (return_build_device(STD_LOG), Build_Device, Purpose)
     print cmd
     ret_p = os.system(cmd)
     if not (ret_p==0):
