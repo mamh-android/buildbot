@@ -8,14 +8,24 @@ import os
 import json
 import shlex
 import datetime
+from datetime import date
 import ConfigParser
 import getopt
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 #Gerrit admin user
 m_user = "buildfarm"
 
 #Code remote server
 m_remote_server = "shgit.marvell.com"
+
+#Gerrit admin user
+ADM_USER = "srv-buildfarm@marvell.com"
+
+#Mavell SMTP server
+SMTP_SERVER = "10.93.76.20"
 
 VERBOSE = False
 
@@ -75,6 +85,12 @@ def return_board_via_cfg(cfg_file):
     config.read(cfg_file)
     return config.get('board.mk', 'product'), config.get('board.mk', 'device'), config.get('board.mk', 'reason')
 
+#return maillist from cfg
+def return_mail_via_cfg(cfg_file):
+    config = ConfigParser.RawConfigParser()
+    config.read(cfg_file)
+    return config.get('board.mk', 'owner').split(',')
+
 # return device via branch
 def return_device(branch):
     if branch.split('_')[0] == 'rls':
@@ -129,6 +145,26 @@ def return_build_device(src_file):
         print "failed searching"
         exit(2)
 
+def return_mail_text(branch, result, image_link=None):
+    subject = "[gcvb][%s-%s] %s" % (branch, str(date.today()), result)
+    message =  "This is an automated email from auto build system.\n"
+    message += "It was generated because gcvb was %s\n\n" % (result)
+    if (result == 'success'):
+        message += "You can get the package at:\n%s\n\n" % (image_link)
+    message +="Regards,\nTeam of APSE\n"
+    return subject, message
+
+def send_html_mail(subject, from_who, to_who, text):
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = from_who
+    msg['To'] = ", ".join(to_who)
+    part1 = MIMEText(text, 'plain')
+    msg.attach(part1)
+    s = smtplib.SMTP(SMTP_SERVER)
+    s.sendmail(from_who, to_who, msg.as_string())
+    s.quit()
+
 ''' # Sample from master.cfg
 odvb_and_ppat_factory.addStep(ShellCommand(command=["bash","/home/buildfarm/buildbot_script/buildbot/od_virtual_build.sh","-p",Property('Gerrit_Patch'),"-m",Property('Manifest_Xml'),"-b",Property('BRANCH_NAME'),"-d","ODVB_PPAT_AUTO","-v",Property('Product_Type'),"-de",Property('Build_Device')],haltOnFailure="True",flunkOnFailure="True"))
 odvb_and_ppat_factory.addStep(Git_marvell(repourl='ssh://buildfarm@shgit/git/android/shared/Buildbot/ppat.git', mode='full', method='fresh', workdir="build_script", haltOnFailure="True"))
@@ -161,12 +197,18 @@ def run(branch):
         cmd += " -p %s -m \"GCVB base:%s\" -r failure" % (Gerrit_Patch, Manifest_Xml)
         print cmd
         ret_p = os.system(cmd)
+        print "[Self-build] Send failure mail"
+        subject, text = return_mail_text(branch, 'failed')
+        send_html_mail(subject,ADM_USER,return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, branch)),text)
         exit(1)
     print "[Self-build] Gerrit review update"
     cmd = GERRIT_REVIEW
     cmd += " -p %s -m \"GCVB base:%s\" -r success -d %s" % (Gerrit_Patch, Manifest_Xml, return_build_device(STD_LOG))
     print cmd
     ret_p = os.system(cmd)
+    print "[Self-build] Send success mail"
+    subject, text = return_mail_text(branch, 'success', return_build_device(STD_LOG))
+    send_html_mail(subject,ADM_USER,return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, branch)),text)
     print "[Self-build] start PPAT"
     cmd = "%s/trigger.py" % sync_build_code(PPAT_GIT)
     cmd += " --imagepath %s --device %s --purpose \"%s\" --mode gc" % (return_build_device(STD_LOG), Build_Device, Purpose)
