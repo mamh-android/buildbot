@@ -137,6 +137,11 @@ odvb_and_ppat_factory.addStep(ShellCommand(command=["bash","/home/buildfarm/buil
 def run(branch):
     print "[Self-build] get values"
     Gerrit_Patch = return_revision_via_cfg("%s/%s.cfg" % (CFG_FILE, branch))
+    if not Gerrit_Patch:
+        print "Gerrit patch is empty"
+        print "~~<result>PASS</result>"
+        print "~~<result-details>No build</result-details>"
+        exit(-1)
     Manifest_Xml= "%s/manifest.xml" % return_last_manifest(branch)
     OUTPUT_DIR = "ODVB_PPAT_AUTO"
     (Product_Type, Build_Device, Purpose) = return_board_via_cfg("%s/%s.cfg" % (CFG_FILE, branch))
