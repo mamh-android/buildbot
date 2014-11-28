@@ -163,6 +163,13 @@ if [ $RET -ne 0 ]; then
 	exit 1
 fi
 
+#Clean the shallow
+echo "clean shallow of git tree"
+FILES=$(find .repo/ -name "shallow")
+for i in $FILES;do
+    rm $i
+done
+
 # Upload repository to dest server
 $SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_SERVER -r $DEST_ROOT -b $MANIFEST_BRANCH
 RET=$?
