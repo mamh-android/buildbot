@@ -29,6 +29,16 @@ SMTP_SERVER = "10.93.76.20"
 
 VERBOSE = False
 
+''' Force Python's print function to output to the screen.
+'''
+class flushfile(object):
+    def __init__(self, f):
+        self.f = f
+    def write(self, x):
+        self.f.write(x)
+        self.f.flush()
+sys.stdout = flushfile(sys.stdout)
+
 ODVB_BASH = "/home/%s/buildbot_script/buildbot/od_virtual_build.sh" % m_user
 PPAT_GIT = "ssh://%s@%s/git/android/shared/Buildbot/ppat.git" % (m_user, m_remote_server)
 AUTOBUILD = "/autobuild/android/"
