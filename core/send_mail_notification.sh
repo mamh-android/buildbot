@@ -76,6 +76,8 @@ validate_parameters() {
           help "Please give a valid manifest.xml."
         fi
         MANIFEST_XML=$2
+        MANIFEST_NAME=$(basename $MANIFEST_XML)
+        BUILD_DIR=$(dirname $MANIFEST_XML)
         ;;
     esac
     shift 1
@@ -172,6 +174,7 @@ send_uprb_success_notification() {
   echo "generating uprb success notification email"
   GITACCESS_FILE=$(./core/create_gitaccess.py -b $BRANCH_NAME -t $TAG_NAME)
   echo "gitaccess file "$GITACCESS_FILE
+  cp $GITACCESS_FILE $BUILD_DIR
   generate_uprb_success_notification_email | /usr/sbin/sendmail -t $build_maintainer
 }
 
