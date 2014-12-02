@@ -222,6 +222,7 @@ def run(branch):
     print "[Self-build] start PPAT"
     cmd = "%s/trigger.py" % sync_build_code(PPAT_GIT)
     cmd += " --imagepath %s --device %s --purpose \"%s\" --mode gc" % (return_build_device(STD_LOG), Build_Device, Purpose)
+    cmd += " --assigner %s" % ','.join(return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, branch))
     print cmd
     ret_p = os.system(cmd)
     if not (ret_p==0):
