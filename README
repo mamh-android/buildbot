@@ -1,1 +1,2 @@
-/home/buildfarm
+#/home/buildfarm
+git push ssh://buildfarm@shgit/git/android/shared/Buildbot/github.git HEAD:refs/heads/backup
