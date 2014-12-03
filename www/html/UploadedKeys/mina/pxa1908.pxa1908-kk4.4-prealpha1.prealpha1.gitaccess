@@ -1,0 +1,3 @@
+repo init -u ssh://apteam@github.marvell.com:29418/platform/manifest.git -b pxa1908_kk4.4.prealpha1 --repo-url ssh://apteam@github.marvell.com:29418/tools/repo.git
+
+repo sync

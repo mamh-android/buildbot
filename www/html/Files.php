@@ -37,7 +37,6 @@ and open the template in the editor.
         var openproject="";
         
         $(function() {
-		 
 		$( "#dialog:ui-dialog" ).dialog( "destroy" );
 	
 		$( "#dialog-modal" ).dialog({
@@ -59,7 +58,6 @@ and open the template in the editor.
 			close: function() {
 				$("#btn_agree").button("enable");
 			}
-			
 		});
                 
                 $( "#dialog-down" ).dialog({
@@ -69,13 +67,26 @@ and open the template in the editor.
 			modal: true,
                         buttons: {
                         	"OK": function() {
-                                        
                                         $( this ).dialog( "close" );
 					
 				} 
 				
 			}
 		});
+
+                //yfshi add to disable agree
+		$( "#dialog-noslc" ).dialog({
+			height: 300,
+                        width:750,
+                        autoOpen: false,
+			modal: true,
+                        buttons:{
+                        	"OK": function() {
+                                        $( this ).dialog( "close" );
+					}
+				}
+		});
+
 	});
         
         
@@ -99,13 +110,15 @@ and open the template in the editor.
         
         function requestEULA(docid,account,url,project)
         {
-		 	 
             opendocid=docid;
             openaccount=account;
             openurl=url;
             openproject=project;
-            $("#eulatext").attr("src","eula.php?docid="+docid);
-            $( "#dialog-modal" ).dialog("option","title","EULA - " +$("#docname"+docid).text()).dialog("open");
+
+            $ret=$("#eulatext").attr("src","eula.php?docid="+docid);
+            //if (ret=="0") {
+                $( "#dialog-modal" ).dialog("option","title","EULA - " +$("#docname"+docid).text()).dialog("open");
+            //}
         }
         
         function showDownload(account,url,project,docid)
@@ -137,7 +150,8 @@ and open the template in the editor.
                                     
                                     ?>
                                    
-				    &nbsp; <a href='Doc/publicgit_user_manual.pdf' >User Manual</a>
+				    &nbsp; <a href='Doc/publicgit_user_manual.pdf' alt="User Manual">User Manual</a>
+				    <!-- &nbsp; <a href='Doc/publicgit_user_manual.pdf' > <img src ="images/help_browser.png" width="24px" height="24px" alt="User Manual" /></a> -->
  
                                     &nbsp; <a href='key.php' > <img src="images/settings.png" width="24px" height="24px" alt="Manage Keys"  /></a>
                                     
@@ -425,17 +439,18 @@ $gitfiles[0]=null;
             
             </iframe>
         </div>
-        
+
         <div id="dialog-down" title="Download" style="font-weight: bold; font-size: 120%;">
             <br />
             Please download via following URL: <br />
             <p style="color:blue;" id="dddurl">
 		<!-- repo ssh://<label class="url_username" /> -->
             </p>
-            
-            
-           
         </div>
 
+        <div id="dialog-noslc" title="No License" style="font-weight: bold; font-size: 120%;">
+            <br />
+            &nbsp;<strong>There is something wrong with the EULA of the project you requested. Please contact your Marvell customer engineer</strong>.<br />
+        </div>
     </body>
 </html>
