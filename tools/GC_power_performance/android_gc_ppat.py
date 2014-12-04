@@ -39,6 +39,7 @@ class flushfile(object):
         self.f.flush()
 sys.stdout = flushfile(sys.stdout)
 
+SCRIPT_PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
 ODVB_BASH = "/home/%s/buildbot_script/buildbot/od_virtual_build.sh" % m_user
 PPAT_GIT = "ssh://%s@%s/git/android/shared/Buildbot/ppat.git" % (m_user, m_remote_server)
 AUTOBUILD = "/autobuild/android/"
@@ -210,6 +211,7 @@ def run(branch):
         print "[Self-build] Send failure mail"
         subject, text = return_mail_text(branch, 'failed')
         send_html_mail(subject,ADM_USER,return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, branch)),text)
+        os.system("%s/fail.py" % SCRIPT_PATH)
         exit(1)
     print "[Self-build] Gerrit review update"
     cmd = GERRIT_REVIEW
@@ -219,6 +221,7 @@ def run(branch):
     print "[Self-build] Send success mail"
     subject, text = return_mail_text(branch, 'success', return_build_device(STD_LOG))
     send_html_mail(subject,ADM_USER,return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, branch)),text)
+    os.system("%s/pass.py" % SCRIPT_PATH)
     print "[Self-build] start PPAT"
     cmd = "%s/trigger.py" % sync_build_code(PPAT_GIT)
     cmd += " --imagepath %s --device %s --purpose \"%s\" --mode gc" % (return_build_device(STD_LOG), Build_Device, Purpose)
