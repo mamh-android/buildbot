@@ -35,12 +35,18 @@ case "$3" in
 esac
 
 LAST_RLS=LAST_RLS.${ABS_RLS}
+#Code comparing if LAST_RLS exist
+if [ -f "${PUBLISH_SERVER}/${LAST_RLS}" ] && [ ! -d "${BUILD_DIR}/code-compare" ]; then
+    mkdir ${BUILD_DIR}/code-compare
+    sour=$(cat ${PUBLISH_SERVER}/${LAST_RLS} | tail -1 | awk -F"Based-On:" '{ print $2 }')
+    dest=$MANIFEST_XML
+    export OUTPUT_FOLDER=${BUILD_DIR}/code-compare
+    $SCRIPT_PATH/genDeltaPatchDiffFiles.sh ${sour} ${dest}
+fi
 
 #Publishing the Release to Release_Server
 #if device exist
-if [ -d "${PUBLISH_SERVER}/${ABS_DEVICE}" ]; then
-    echo ${PUBLISH_SERVER}/${ABS_DEVICE} exists already
-else
+if [ ! -d "${PUBLISH_SERVER}/${ABS_DEVICE}" ]; then
     echo create prebuildbin folder
     mkdir ${PUBLISH_SERVER}/${ABS_DEVICE}
 fi
