@@ -16,7 +16,8 @@ case "$1" in
           echo "TAG_NAME= $2"
           ABS_DEVICE=${TAG_NAME%%_*}
           ABS_RLS=${TAG_NAME%.*}
-          ABS_TAG=${TAG_NAME##*.}
+          tmp=${TAG_NAME##*.}
+          ABS_TAG=${tmp#*-}
           ;;
     *) echo "wrong parameter $1"; exit 1 ;;
 esac
