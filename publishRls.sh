@@ -41,7 +41,7 @@ if [ -f "${PUBLISH_SERVER}/${LAST_RLS}" ] && [ ! -d "${BUILD_DIR}/code-compare" 
     sour=$(cat ${PUBLISH_SERVER}/${LAST_RLS} | tail -1 | awk -F"Based-On:" '{ print $2 }')
     dest=$MANIFEST_XML
     export OUTPUT_FOLDER=${BUILD_DIR}/code-compare
-    $SCRIPT_PATH/genDeltaPatchDiffFiles.sh ${sour} ${dest}
+    . $SCRIPT_PATH/genDeltaPatchDiffFiles.sh ${sour} ${dest}
 fi
 
 #Publishing the Release to Release_Server
