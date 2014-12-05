@@ -113,6 +113,10 @@ fi
 
 echo $SCRIPT_PATH
 
+if [ -f $MANIFEST_DIR/manifest.commit ]; then
+    INHERIT_BRANCH=$(cat $MANIFEST_DIR/manifest.commit)
+fi
+
 # Fetch code from Developer Server with mrvl-ics branch
 #$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
 $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $INHERIT_BRANCH $REFERENCE_URL $REPO_URL
