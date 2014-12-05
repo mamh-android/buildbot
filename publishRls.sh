@@ -37,11 +37,11 @@ esac
 
 LAST_RLS=LAST_RLS.${ABS_RLS}
 #Code comparing if LAST_RLS exist
-if [ -f "${PUBLISH_SERVER}/${LAST_RLS}" ] && [ ! -d "${BUILD_DIR}/code-compare" ]; then
-    mkdir ${BUILD_DIR}/code-compare
+if [ -f "${PUBLISH_SERVER}/${LAST_RLS}" ] && [ ! -d "${BUILD_DIR}/patch_list" ]; then
+    mkdir ${BUILD_DIR}/patch_list
     sour=$(cat ${PUBLISH_SERVER}/${LAST_RLS} | tail -1 | awk -F"Based-On:" '{ print $2 }')
     dest=$MANIFEST_XML
-    export OUTPUT_FOLDER=${BUILD_DIR}/code-compare
+    export OUTPUT_FOLDER=${BUILD_DIR}/patch_list
     . $SCRIPT_PATH/genDeltaPatchDiffFiles.sh ${sour} ${dest}
 fi
 
