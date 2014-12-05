@@ -16,6 +16,7 @@ buildbot_url="http://10.38.34.92:8010/builders/"
 STD_LOG=/home/buildfarm/buildbot_script/stdio.log
 PACKAGE_LINK=$( awk -F"<result-dir>|</result-dir>" ' /<result-dir>/ { print $2 } ' $STD_LOG )
 DEV_TEAM="APSE-SE2"
+PUBLISH_SERVER=/APSE_Release
 
 help() {
   if [ -n "$1" ]; then
@@ -58,6 +59,10 @@ validate_parameters() {
           help "Please give a valid tag name."
         fi
         TAG_NAME=$2
+        ABS_DEVICE=${TAG_NAME%%_*}
+        ABS_RLS=${TAG_NAME%.*}
+        tmp=${TAG_NAME##*.}
+        ABS_TAG=${tmp#*-}
         ;;
       "-n")
         if [ -z "$2" ]; then
@@ -175,6 +180,9 @@ send_uprb_success_notification() {
   GITACCESS_FILE=$(./core/create_gitaccess.py -b $BRANCH_NAME -t $TAG_NAME)
   echo "gitaccess file "$GITACCESS_FILE
   cp $GITACCESS_FILE $BUILD_DIR
+  if [ ! -f ${PUBLISH_SERVER}/${ABS_DEVICE}/$(basename $BUILD_DIR)-${ABS_TAG}/$(basename $GITACCESS_FILE) ] && [ -d ${PUBLISH_SERVER}/${ABS_DEVICE}/$(basename $BUILD_DIR)-${ABS_TAG} ]; then
+    cp $GITACCESS_FILE ${PUBLISH_SERVER}/${ABS_DEVICE}/$(basename $BUILD_DIR)-${ABS_TAG}
+  fi
   generate_uprb_success_notification_email | /usr/sbin/sendmail -t $build_maintainer
 }
 

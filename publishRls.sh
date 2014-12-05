@@ -6,7 +6,7 @@
 # Command usage:
 #publishRls.sh -t <Tag_Name> -m <manifest xml>
 
-export PUBLISH_SERVER=${PUBLISH_FILE:-/APSE_Release}
+export PUBLISH_SERVER=${PUBLISH_SERVER:-/APSE_Release}
 
 #script path
 SCRIPT_PATH=$(dirname `readlink -f $0`)/core
