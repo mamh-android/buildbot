@@ -16,7 +16,8 @@ if [ ! "${var_0}" == "rls" ]; then
   platform=`echo ${ids%%_*}`
   product=`echo ${ids#*_}`
   last_build="/autobuild/android/${platform}/LAST_BUILD.${platform}_${product}"
-  target=${platform}-${product}
+  #target=${platform}-${product}
+  target=$ids
   echo "platform $platform" | tee -a $STD_LOG
   echo "product $product" | tee -a $STD_LOG
   echo "last_build $last_build" | tee -a $STD_LOG
