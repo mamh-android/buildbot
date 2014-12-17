@@ -38,10 +38,6 @@ fi
 cd $LOCAL_REPO_FULLDIR 
 
 for branch in $BRANCHES; do
-  var_0=`echo ${branch%%_*}`
-  if [ ! "${var_0}" == "rls" ]; then
-    branch=$(echo $branch | sed -e "s/_/-/g")
-  fi
 
   echo "" | tee -a $LOGFILE &&
   echo "[$(date)] start sync branch:$branch" | tee -a $LOGFILE &&
