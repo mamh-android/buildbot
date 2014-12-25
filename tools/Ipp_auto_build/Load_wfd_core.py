@@ -14,10 +14,10 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-BUILD_LOG = ".core.build.log"
-BSCRIPT = "core.sh"
-BMAINTAINERS = "maintainer"
-BBRANCH = "release_branch_list"
+BUILD_LOG = ".wfd_core.build.log"
+BSCRIPT = "wfd_core.sh"
+BMAINTAINERS = "wfd_maintainer"
+BBRANCH = "wfd_release_branch_list"
 IPP_REPO_URL = "ssh://shgit.marvell.com/git/android/shared/mrvl_extractor.git"
 BUILD_STDIO = "/home/buildfarm/buildbot_script/stdio.log"
 AABS_FOLDER = "/home/buildfarm/aabs"
