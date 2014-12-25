@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # v1.0 Base function is ready
 # v1.1 Push to remote function enabled
+# v1.2 Added Summary function
 #    merge patch_list.diff
 
 import os
@@ -74,9 +75,40 @@ def gitPush(project, remote, branch):
 
 def clrEnv(project):
     cmd = "cd %s;" % project
+    cmd += "git am --abort;"
     cmd += "git clean -f;"
     cmd += "git reset --hard HEAD;"
     status = os.system(cmd)
+
+#summary results
+def sumRet(patchList):
+    sumret = a = dict()
+    for i in patchList:
+        if not sumret.has_key(i.project):
+            if i.status == "P":
+                sumret[i.project] = "1/1"
+            elif i.status == "F":
+                sumret[i.project] = "0/1"
+        else:
+            if i.status == "P":
+                sumret[i.project] ="%s/%s" % (int(a[i.project].split('/')[0]) + 1, int(a[i.project].split('/')[1]) + 1)
+            elif i.status == "F":
+                sumret[i.project] ="%s/%s" % (int(a[i.project].split('/')[0]) + 0, int(a[i.project].split('/')[1]) + 1)
+        if not sumret.has_key("SUM"):
+            if i.status == "P":
+                sumret["SUM"] = "1/1"
+            elif i.status == "F":
+                sumret["SUM"] = "0/1"
+        else:
+            if i.status == "P":
+                sumret["SUM"] ="%s/%s" % (int(a["SUM"].split('/')[0]) + 1, int(a["SUM"].split('/')[1]) + 1)
+            elif i.status == "F":
+                sumret["SUM"] ="%s/%s" % (int(a["SUM"].split('/')[0]) + 0, int(a["SUM"].split('/')[1]) + 1)
+    print "==== Merged & Pushed Status Summary ===="
+    print "Total: %s" % sumret["SUM"]
+    sumret.pop("SUM")
+    for j in sumret.keys():
+        print "Project: %s %s" % (j, sumret[j])
 
 #write to csv
 def patchToCsv(patchList, outputfile):
@@ -95,7 +127,9 @@ def run(input_file, output_file):
     print "[%s][%s] Start" % (SCRIPT_TYPE, str(datetime.datetime.now()))
     patchList = t.createTree(input_file, op=None)
     patchList = sorted(patchList, key=lambda self: self.patch)
+    patchList.append(patchinfo('END', 'END', 'N/A'))
     #Apply patch
+    l_project = patchList[0].project
     for i in patchList:
         cmd = "cd %s;" % i.project
         cmd += "git am %s;" % i.patch
@@ -103,6 +137,7 @@ def run(input_file, output_file):
         status = os.system(cmd)
         if (status==0):
             i.status = 'P'
+            l_project = i.project
             m = i.patch + '.merged'
             if RENAME == True:
                 os.rename(i.patch, m)
@@ -111,18 +146,21 @@ def run(input_file, output_file):
                 gitPush(i.project, DREMOTE, DBRANCH)
         else:
             i.status = 'F'
-            clrEnv(i.project)
+            if not l_project == i.project:
+                clrEnv(l_project)
     #write to csv
+    patchList.pop()
     patchToCsv(patchList, output_file)
     print "[%s][%s] Completed" % (SCRIPT_TYPE, str(datetime.datetime.now()))
     #print patchList
+    sumRet(patchList)
     exit(0)
 
 #User help
 def usage():
     print "\tmerge.py"
     print "\t       ===[mandatory section]==="
-    print "\t      [-i] input patch.diff"
+    print "\t      [-i] input patches from {Ref delta patch}"
     print "\t       ===[optional section]==="
     print "\t      [-o] output results file by default <out.csv>"
     print "\t       Only both remote and branch is available, the patch will be push out"
