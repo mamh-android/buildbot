@@ -131,7 +131,7 @@ def run(input_file, output_file):
     projectList = []
     #Apply patch
     for i in patchList:
-        if not projectList.count(i.project) == 0:
+        if projectList.count(i.project) == 0:
             projectList.append(i.project)
         cmd = "cd %s && " % i.project
         cmd += "git am %s;" % i.patch
