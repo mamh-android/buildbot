@@ -2,6 +2,7 @@
 # v1.0 Base function is ready
 # v1.1 Push to remote function enabled
 # v1.2 Added Summary function
+# v1.21 Polish the clrENV function
 #    merge patch_list.diff
 
 import os
@@ -74,10 +75,10 @@ def gitPush(project, remote, branch):
             print "Retry: %s" %cmd
 
 def clrEnv(project):
-    cmd = "cd %s;" % project
+    cmd = "cd %s && " % project
+    cmd += "git clean -f && "
+    cmd += "git reset --hard HEAD && "
     cmd += "git am --abort;"
-    cmd += "git clean -f;"
-    cmd += "git reset --hard HEAD;"
     status = os.system(cmd)
 
 #summary results
@@ -127,11 +128,12 @@ def run(input_file, output_file):
     print "[%s][%s] Start" % (SCRIPT_TYPE, str(datetime.datetime.now()))
     patchList = t.createTree(input_file, op=None)
     patchList = sorted(patchList, key=lambda self: self.patch)
-    patchList.append(patchinfo('END', 'END', 'N/A'))
+    projectList = []
     #Apply patch
-    l_project = patchList[0].project
     for i in patchList:
-        cmd = "cd %s;" % i.project
+        if not projectList.count(i.project) == 0:
+            projectList.append(i.project)
+        cmd = "cd %s && " % i.project
         cmd += "git am %s;" % i.patch
         print cmd
         status = os.system(cmd)
@@ -146,10 +148,11 @@ def run(input_file, output_file):
                 gitPush(i.project, DREMOTE, DBRANCH)
         else:
             i.status = 'F'
-            if not l_project == i.project:
-                clrEnv(l_project)
+    #clean ENV
+    for i in projectList:
+        print "clrENV: %s" % i
+        clrEnv(i)
     #write to csv
-    patchList.pop()
     patchToCsv(patchList, output_file)
     print "[%s][%s] Completed" % (SCRIPT_TYPE, str(datetime.datetime.now()))
     #print patchList
