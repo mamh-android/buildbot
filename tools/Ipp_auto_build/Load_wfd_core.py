@@ -166,12 +166,12 @@ def run(branch='master', build_nr=None):
         print "No AABS build, exit 0"
         exit(0)
     # ipp git sync
-    print "[Ipp-build][%s] Start sync mrvl_extractor" % str(datetime.datetime.now())
+    print "[Ipp-wfd-build][%s] Start sync mrvl_extractor" % str(datetime.datetime.now())
     mrvl_extractor_folder = sync_build_code(IPP_REPO_URL)
     MAIL_LIST = get_mail_list(mrvl_extractor_folder)
-    print "[Ipp-build][%s] End sync" % (str(datetime.datetime.now()))
+    print "[Ipp-wfd-build][%s] End sync" % (str(datetime.datetime.now()))
     # Set env
-    print "[Ipp-build][%s] Start set env and repo sync" % str(datetime.datetime.now())
+    print "[Ipp-wfd-build][%s] Start set env and repo sync" % str(datetime.datetime.now())
     product = return_last_device(BUILD_STDIO, 'TARGET_PRODUCT')
     variant = return_last_device(BUILD_STDIO, 'TARGET_BUILD_VARIANT')
     if branch.split('_')[0] == 'rls':
@@ -183,26 +183,26 @@ def run(branch='master', build_nr=None):
         print "Can not identify where is the android codebase!"
         exit(0)
     subprocess.check_call('repo sync', shell=True, cwd=src_dir_r)
-    print "[Ipp-build][%s] End set env" % (str(datetime.datetime.now()))
+    print "[Ipp-wfd-build][%s] End set env" % (str(datetime.datetime.now()))
     # Start ipp build
-    print "[Ipp-build][%s] Start load %s" % (str(datetime.datetime.now()), BSCRIPT)
+    print "[Ipp-wfd-build][%s] Start load %s" % (str(datetime.datetime.now()), BSCRIPT)
     if branch.split('_')[0] == 'rls':
         c_build = ['%s/%s' % (mrvl_extractor_folder, BSCRIPT), branch, '%s-%s' % (product, variant)]
     else:
         c_build = ['%s/%s' % (mrvl_extractor_folder, BSCRIPT), branch.replace('_', '-'), '%s-%s' % (product, variant)]
     ret = os.system(' '.join(c_build))
     if (ret==512):
-        print "[Ipp-build] %s do not require build" % branch
+        print "[Ipp-wfd-build] %s do not require build" % branch
         exit(0)
     if not (ret==0):
-        print "[Ipp-build][%s] Failed Build" % (str(datetime.datetime.now()))
+        print "[Ipp-wfd-build][%s] Failed Build" % (str(datetime.datetime.now()))
         failure_log = return_failure_log(BUILD_LOG)
-        subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
+        subject, text = return_mail_text('[Ipp-wfd-build]', branch, build_nr, 'failed', None, failure_log)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
-    print "[Ipp-build][%s] End Build" % (str(datetime.datetime.now()))
+    print "[Ipp-wfd-build][%s] End Build" % (str(datetime.datetime.now()))
     # Start publishing
-    print "[Ipp-build][%s] Start publishing" % (str(datetime.datetime.now()))
+    print "[Ipp-wfd-build][%s] Start publishing" % (str(datetime.datetime.now()))
     publish_file = "%s/%s_release_list" % (mrvl_extractor_folder, product)
     publish_folder = check_publish_folder(PUBLISH_DEST, branch)
     if os.path.isdir('out'):
@@ -214,23 +214,23 @@ def run(branch='master', build_nr=None):
                 try:
                     copy_file(line.split(':')[0].replace(' ', ''), "out/%s/" % line.split(':')[1].replace(' ', ''))
                 except IOError:
-                    print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
+                    print "[Ipp-wfd-build][%s] Failed Publising" % (str(datetime.datetime.now()))
                     failure_log = return_failure_log(BUILD_LOG)
-                    subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
+                    subject, text = return_mail_text('[Ipp-wfd-build]', branch, build_nr, 'failed', None, failure_log)
                     send_html_mail(subject,ADM_USER,MAIL_LIST,text)
                     exit(1)
             else:
-                print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
+                print "[Ipp-wfd-build][%s] Failed Publising" % (str(datetime.datetime.now()))
                 failure_log = return_failure_log(BUILD_LOG)
-                subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'failed', None, failure_log)
+                subject, text = return_mail_text('[Ipp-wfd-build]', branch, build_nr, 'failed', None, failure_log)
                 send_html_mail(subject,ADM_USER,MAIL_LIST,text)
                 exit(1)
     shutil.copytree('out/', publish_folder)
-    print "[Ipp-build][%s] End publishing" % (str(datetime.datetime.now()))
+    print "[Ipp-wfd-build][%s] End publishing" % (str(datetime.datetime.now()))
     # All Success
-    print "[Ipp-build][%s] All success" % (str(datetime.datetime.now()))
+    print "[Ipp-wfd-build][%s] All success" % (str(datetime.datetime.now()))
     failure_log = return_failure_log(BUILD_LOG)
-    subject, text = return_mail_text('[Ipp-build]', branch, build_nr, 'success', publish_folder, None)
+    subject, text = return_mail_text('[Ipp-wfd-build]', branch, build_nr, 'success', publish_folder, None)
     send_html_mail(subject,ADM_USER,MAIL_LIST,text)
     exit(0)
 
