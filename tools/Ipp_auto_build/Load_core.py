@@ -24,6 +24,7 @@ AABS_FOLDER = "/home/buildfarm/aabs"
 PUBLISH_DEST = "/autobuild/mrvl_extractor/"
 BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/android_develop_build/builds/"
 FILE_SERVER = "\\\\sh-fs04"
+KEYWORD = "_demuxer"
 
 # admin user
 ADM_USER = "srv-buildfarm@marvell.com"
@@ -120,7 +121,7 @@ def return_last_device(src_file, search):
 #create a folder according to git branch name and time.today
 def check_publish_folder(IMAGE_SERVER, branch):
     today = date.today()
-    folder = str(today) + '_' + branch
+    folder = str(today) + '_' + branch + KEYWORD
     folder_server = IMAGE_SERVER + folder
     f = folder_server
     if not os.path.isdir(f):
