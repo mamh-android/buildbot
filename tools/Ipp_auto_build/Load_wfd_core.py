@@ -121,7 +121,7 @@ def return_last_device(src_file, search):
 #create a folder according to git branch name and time.today
 def check_publish_folder(IMAGE_SERVER, branch):
     today = date.today()
-    folder = str(today) + '_' + branch + KEYWORD
+    folder = str(today) + '_' + branch
     folder_server = IMAGE_SERVER + folder
     f = folder_server
     if not os.path.isdir(f):
@@ -130,7 +130,7 @@ def check_publish_folder(IMAGE_SERVER, branch):
     else:
         i=1
         while os.path.isdir(folder_server):
-            f = folder_server + '_' + str(i)
+            f = folder_server + '_' + str(i) + KEYWORD
             if not os.path.isdir(f):
                 #os.mkdir(f)
                 return f
