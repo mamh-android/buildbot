@@ -134,7 +134,7 @@ def run(input_file, output_file):
         if projectList.count(i.project) == 0:
             projectList.append(i.project)
         cmd = "cd %s && " % i.project
-        cmd += "git am %s;" % i.patch
+        cmd += "git am -3 %s;" % i.patch
         print cmd
         status = os.system(cmd)
         if (status==0):
