@@ -123,7 +123,7 @@ def check_publish_folder(IMAGE_SERVER, branch):
     today = date.today()
     folder = str(today) + '_' + branch
     folder_server = IMAGE_SERVER + folder
-    f = folder_server
+    f = folder_server + KEYWORD
     if not os.path.isdir(f):
         #os.mkdir(f)
         return f
