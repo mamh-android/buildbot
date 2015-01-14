@@ -11,7 +11,7 @@ import datetime
 from datetime import date
 
 GFX_GIT = "ssh://shgit.marvell.com/git/qae/graphics/gfx_test_autobuild.git"
-BRANCH_LIST =["pxa988-kk4.4", "pxa1928-kk4.4", "pxa1936-lp5.0"]
+BRANCH_LIST =["rls_pxa1908_kk4.4_beta1", "pxa1936-lp5.0"]
 BUILD_STDIO = "/home/buildfarm/buildbot_script/stdio.log"
 
 # return last build device from stdout log
