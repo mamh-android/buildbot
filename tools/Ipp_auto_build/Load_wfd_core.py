@@ -129,7 +129,7 @@ def check_publish_folder(IMAGE_SERVER, branch):
         return f
     else:
         i=1
-        while os.path.isdir(folder_server):
+        while os.path.isdir(f):
             f = folder_server + '_' + str(i) + KEYWORD
             if not os.path.isdir(f):
                 #os.mkdir(f)
