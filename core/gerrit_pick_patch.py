@@ -105,20 +105,20 @@ def generate_path(r_dest_project_name):
     manifest_file = "/home/buildfarm/aabs/odvb_work/manifest.xml"
     search = ""
     pat = '\spath=\"([a-zA-Z0-9-_/]*)\"\s'
-    if r_dest_project_name[:25] == "android/platform/manifest":
+    if r_dest_project_name[:29] == "git/android/platform/manifest":
         manifest_xml_path = ".repo/manifests"
-    elif r_dest_project_name[:19] == "android/shared/aabs":
+    elif r_dest_project_name[:23] == "git/android/shared/aabs":
         manifest_xml_path = "/home/buildfarm/aabs"
-    elif r_dest_project_name[:17] == "android/platform/":
-        search = r_dest_project_name[17:]
-    elif r_dest_project_name[:8] == "android/":
+    elif r_dest_project_name[:21] == "git/android/platform/":
+        search = r_dest_project_name[21:]
+    elif r_dest_project_name[:12] == "git/android/":
+        search = r_dest_project_name[12:]
+    elif r_dest_project_name[:14] == "git/ose/linux/":
+        search = r_dest_project_name[14:]
+    elif r_dest_project_name[:9] == "git/test/":
+        search = r_dest_project_name[9:]
+    elif r_dest_project_name[:8] == "git/pie/":
         search = r_dest_project_name[8:]
-    elif r_dest_project_name[:10] == "ose/linux/":
-        search = r_dest_project_name[10:]
-    elif r_dest_project_name[:5] == "test/":
-        search = r_dest_project_name[5:]
-    elif r_dest_project_name[:4] == "pie/":
-        search = r_dest_project_name[4:]
     else:
         print "dest_project_name have not been definted yet, please contact buildbot admin"
         sys.exit(2)
@@ -158,7 +158,7 @@ def args_from_gerrit_patch_object(gerrit_patch_object):
         else:
             print "change_id = " + r_change_id + " is invalid"
             sys.exit(2)
-        if r_dest_project_name[:25] == "android/platform/manifest":
+        if r_dest_project_name[:29] == "git/android/platform/manifest":
             cd_dest_project_name = ".repo/manifests"
             cd_args = "cd " + cd_dest_project_name + ";"
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;cd -;ln -sf manifests/default.xml .repo/manifest.xml;repo sync;"
@@ -177,18 +177,18 @@ def generate_path_rtvb(r_dest_project_name):
     manifest_file = "/home/buildfarm/aabs/rtvb_work/.repo/manifest.xml"
     search = ""
     pat = '\spath=\"([a-zA-Z0-9-_/]*)\"\s'
-    if r_dest_project_name[:25] == "android/platform/manifest":
+    if r_dest_project_name[:29] == "git/android/platform/manifest":
         manifest_xml_path = ".repo/manifests"
-    elif r_dest_project_name[:17] == "android/platform/":
-        search = r_dest_project_name[17:]
-    elif r_dest_project_name[:8] == "android/":
+    elif r_dest_project_name[:21] == "git/android/platform/":
+        search = r_dest_project_name[21:]
+    elif r_dest_project_name[:12] == "git/android/":
+        search = r_dest_project_name[12:]
+    elif r_dest_project_name[:14] == "git/ose/linux/":
+        search = r_dest_project_name[14:]
+    elif r_dest_project_name[:9] == "git/test/":
+        search = r_dest_project_name[9:]
+    elif r_dest_project_name[:8] == "git/pie/":
         search = r_dest_project_name[8:]
-    elif r_dest_project_name[:10] == "ose/linux/":
-        search = r_dest_project_name[10:]
-    elif r_dest_project_name[:5] == "test/":
-        search = r_dest_project_name[5:]
-    elif r_dest_project_name[:4] == "pie/":
-        search = r_dest_project_name[4:]
     else:
         print "dest_project_name have not been definted yet, please contact buildbot admin"
         sys.exit(2)
