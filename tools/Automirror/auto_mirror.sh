@@ -18,7 +18,7 @@ VERSION=5.1
   MANIFEST_REPO=${GIT_SERVER}/platform/manifest.git
   REPO_TOOL_REPO=${GIT_SERVER}/tools/repo.git
   BUILDMASTER=10.38.34.92
-  BRANCHES=$(ssh $BUILDMASTER cat ~/buildbot/sandbox/master/master.cfg | awk -F'=|\"|\,' ' /timed.Nightly\(name=/ { print $4 } ')
+  BRANCHES=$(ssh $BUILDMASTER cat ~/buildbot/sandbox/master/master.cfg | awk -F'=|\"|\,' ' /timed.Nightly\(name=/ { print $8 } ')
 
 PWD=$(pwd)
 LOGFILE=$PWD/"mirror-$LOCAL_REPO.log"
