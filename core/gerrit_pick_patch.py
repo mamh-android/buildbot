@@ -160,11 +160,11 @@ def args_from_gerrit_patch_object(gerrit_patch_object):
             sys.exit(2)
         if r_dest_project_name[:29] == "git/android/platform/manifest":
             cd_dest_project_name = ".repo/manifests"
-            cd_args = "cd " + cd_dest_project_name + ";"
-            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;cd -;ln -sf manifests/default.xml .repo/manifest.xml;repo sync;"
+            cd_args = "cd " + cd_dest_project_name + "&&"
+            gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD && cd - && ln -sf manifests/default.xml .repo/manifest.xml && repo sync;"
         else:
             cd_dest_project_name = generate_path(r_dest_project_name)
-            cd_args = "cd " + cd_dest_project_name + ";"
+            cd_args = "cd " + cd_dest_project_name + "&&"
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD;"
         args[i] = cd_args + gitcp_args
     return args
