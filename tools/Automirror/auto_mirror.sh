@@ -19,6 +19,7 @@ VERSION=5.1
   REPO_TOOL_REPO=${GIT_SERVER}/tools/repo.git
   BUILDMASTER=10.38.34.92
   BRANCHES=$(ssh $BUILDMASTER cat ~/buildbot/sandbox/master/master.cfg | awk -F'=|\"|\,' ' /timed.Nightly\(name=/ { print $8 } ')
+  REPO=/home/buildfarm/bin/repo
 
 PWD=$(pwd)
 LOGFILE=$PWD/"mirror-$LOCAL_REPO.log"
@@ -28,7 +29,7 @@ if [ ! -e $LOCAL_REPO_FULLDIR ] || [ ! -e $LOCAL_REPO_FULLDIR/.repo/manifests.gi
   echo "Creating repository:$LOCAL_REPO_FULLDIR and sync the master branch" | tee -a $LOGFILE &&
   mkdir -p $LOCAL_REPO_FULLDIR | tee -a $LOGFILE &&
   cd $LOCAL_REPO_FULLDIR &&
-  repo init -u $MANIFEST_REPO --mirror --repo-url ${REPO_TOOL_REPO} | tee -a $LOGFILE
+  $REPO init -u $MANIFEST_REPO --mirror --repo-url ${REPO_TOOL_REPO} | tee -a $LOGFILE
 fi 
 
 if [ ! $? -eq 0 ]; then
@@ -43,7 +44,7 @@ for branch in $BRANCHES; do
   echo "[$(date)] start sync branch:$branch" | tee -a $LOGFILE &&
 
   while [ 1 ]; do
-    repo init -b $branch 2>&1 | tee -a $LOGFILE
+    $REPO init -b $branch 2>&1 | tee -a $LOGFILE
     if [ $? -eq 0 ]; then
       break
     else
@@ -53,7 +54,7 @@ for branch in $BRANCHES; do
     done
 
   while [ 1 ]; do
-    repo sync 2>&1 | tee -a $LOGFILE
+    $REPO sync 2>&1 | tee -a $LOGFILE
     if [ $? -eq 0 ]; then
       echo "[$(date)] sync branch:$branch successfully." | tee -a $LOGFILE
       break
