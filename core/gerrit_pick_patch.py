@@ -163,9 +163,10 @@ def args_from_gerrit_patch_object(gerrit_patch_object):
             cd_args = "cd " + cd_dest_project_name + "&&"
             gitcp_args = "git fetch ssh://" + m_user + "@" + m_remote_server + ":29418/" + r_dest_project_name + " refs/changes/" + r_patch_folder + "/" + r_change_id + "/" + r_patch_set_id + " && git cherry-pick FETCH_HEAD && cd - && ln -sf manifests/default.xml .repo/manifest.xml;"
             m_args = cd_args + gitcp_args
-            run_args(m_args)
+            print "[sync manifest] %s" % m_args
+            subprocess.check_call(m_args, shell=True)
             cd_args = "repo sync;"
-            gitcp_args = ";"
+            gitcp_args = ""
         else:
             cd_dest_project_name = generate_path(r_dest_project_name)
             cd_args = "cd " + cd_dest_project_name + "&&"
