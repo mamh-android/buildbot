@@ -38,6 +38,7 @@ case "$1" in
 esac
 case "$3" in
 	"-m") MANIFEST_XML=$4
+              MANIFEST_DIR=$(dirname $4)
 		if [ -f $MANIFEST_XML ]; then
 			echo "$MANIFEST_XML exists"
 			MANIFEST_XML=${MANIFEST_XML##*/}
@@ -79,8 +80,14 @@ echo $MANIFEST_XML
 cp $4 $MANIFEST_XML
 
 echo $SCRIPT_PATH
+
 # Fetch code from Developer Server with mrvl-ics branch
-$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
+if [ -f $MANIFEST_DIR/manifest.commit ]; then
+    MANIFEST_C=$(cat $MANIFEST_DIR/manifest.commit)
+    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_C $REFERENCE_URL $REPO_URL
+else
+    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
+fi
 RET=$?
 if [ $RET -ne 0 ]; then
 	echo "failed on fetching code from manifest branch"
