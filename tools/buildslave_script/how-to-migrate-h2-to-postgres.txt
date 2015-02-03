@@ -1,0 +1,117 @@
+1. Switch to H2 and Export all tables into CSV files from H2.
+
+   CALL CSVWRITE('account_diff_preferences',             'SELECT * FROM account_diff_preferences');
+   CALL CSVWRITE('account_external_ids',                 'SELECT * FROM account_external_ids');
+   CALL CSVWRITE('account_groups',                       'SELECT * FROM account_groups');
+   CALL CSVWRITE('account_group_includes_by_uuid',       'SELECT * FROM account_group_includes_by_uuid');
+   CALL CSVWRITE('account_group_includes_by_uuid_audit', 'SELECT * FROM account_group_includes_by_uuid_audit');
+   CALL CSVWRITE('account_group_members',                'SELECT * FROM account_group_members');
+   CALL CSVWRITE('account_group_members_audit',          'SELECT * FROM account_group_members_audit');
+   CALL CSVWRITE('account_group_names',                  'SELECT * FROM account_group_names');
+   CALL CSVWRITE('account_patch_reviews',                'SELECT * FROM account_patch_reviews');
+   CALL CSVWRITE('account_project_watches',              'SELECT * FROM account_project_watches');
+   CALL CSVWRITE('account_ssh_keys',                     'SELECT * FROM account_ssh_keys');
+   CALL CSVWRITE('changes',                              'SELECT * FROM changes');
+   CALL CSVWRITE('change_messages',                      'SELECT * FROM change_messages');
+   CALL CSVWRITE('patch_comments',                       'SELECT * FROM patch_comments');
+   CALL CSVWRITE('patch_sets',                           'SELECT * FROM patch_sets');
+   CALL CSVWRITE('patch_set_ancestors',                  'SELECT * FROM patch_set_ancestors');
+   CALL CSVWRITE('patch_set_approvals',                  'SELECT * FROM patch_set_approvals');
+   CALL CSVWRITE('schema_version',                       'SELECT * FROM schema_version');
+   CALL CSVWRITE('starred_changes',                      'SELECT * FROM starred_changes');
+   CALL CSVWRITE('submodule_subscriptions',              'SELECT * FROM submodule_subscriptions');
+   CALL CSVWRITE('system_config',                        'SELECT * FROM system_config');
+   CALL CSVWRITE('tracking_ids',                         'SELECT * FROM tracking_ids');
+
+   Note that accounts table export is different, columns are selected
+   to follow the order of postgres accounts table:
+
+   CALL CSVWRITE('accounts',                             'SELECT CONTACT_FILED_ON,FULL_NAME,
+   COMMENT_VISIBILITY_STRATEGY,COPY_SELF_ON_EMAIL,DATE_FORMAT,DOWNLOAD_COMMAND,DOWNLOAD_URL,
+   MAXIMUM_PAGE_SIZE,RELATIVE_DATE_IN_CHANGE_TABLE,REVERSE_PATCH_SET_ORDER,SHOW_SITE_HEADER,
+   SHOW_USERNAME_IN_REVIEW_CATEGORY,TIME_FORMAT,USE_FLASH_CLIPBOARD,INACTIVE,PREFERRED_EMAIL,
+   REGISTERED_ON,ACCOUNT_ID FROM accounts');
+
+2. Start gerrit and Dump the contents of each table for check later in
+   directory db_h2.
+
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_diff_preferences;"             >account_diff_preferences
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_external_ids;"                 >account_external_ids
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_group_includes_by_uuid;"       >account_group_includes_by_uuid
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_group_includes_by_uuid_audit;" >account_group_includes_by_uuid_audit
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_group_members;"                >account_group_members
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_group_members_audit;"          >account_group_members_audit
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_group_names;"                  >account_group_names
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_groups;"                       >account_groups
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_patch_reviews;"                >account_patch_reviews
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_project_watches;"              >account_project_watches
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ account_ssh_keys;"                     >account_ssh_keys
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ accounts;"                             >accounts
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ change_messages;"                      >change_messages
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ changes;"                              >changes
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ patch_comments;"                       >patch_comments
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ patch_set_ancestors;"                  >patch_set_ancestors
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ patch_set_approvals;"                  >patch_set_approvals
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ patch_sets;"                           >patch_sets
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ schema_version;"                       >schema_version
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ starred_changes;"                      >starred_changes
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ submodule_subscriptions;"              >submodule_subscriptions
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ system_config;"                        >system_config
+   ssh -p 29418 10.38.36.107 gerrit gsql -c "SELECT\ *\ from\ tracking_ids;"                         >tracking_ids
+
+3. Stop gerrit, Switch to Postgres and Delete all the contents in Postgres.
+
+   DELETE FROM account_diff_preferences;
+   DELETE FROM account_external_ids;
+   DELETE FROM account_group_includes_by_uuid;
+   DELETE FROM account_group_includes_by_uuid_audit;
+   DELETE FROM account_group_members;
+   DELETE FROM account_group_members_audit;
+   DELETE FROM account_group_names;
+   DELETE FROM account_groups;
+   DELETE FROM account_patch_reviews;
+   DELETE FROM account_project_watches;
+   DELETE FROM account_ssh_keys;
+   DELETE FROM accounts;
+   DELETE FROM change_messages;
+   DELETE FROM changes;
+   DELETE FROM patch_comments;
+   DELETE FROM patch_set_ancestors;
+   DELETE FROM patch_set_approvals;
+   DELETE FROM patch_sets;
+   DELETE FROM schema_version;
+   DELETE FROM starred_changes;
+   DELETE FROM submodule_subscriptions;
+   DELETE FROM system_config;
+   DELETE FROM tracking_ids;
+
+4. Stay in the Postgres and continue to Import the CSV files to
+   Postgres tables.
+
+   COPY account_diff_preferences             FROM '/home/gerrit2/review_site/account_diff_preferences' DELIMITER ',' CSV HEADER;
+   COPY account_external_ids                 FROM '/home/gerrit2/review_site/account_external_ids' DELIMITER ',' CSV HEADER;
+   COPY account_group_includes_by_uuid       FROM '/home/gerrit2/review_site/account_group_includes_by_uuid' DELIMITER ',' CSV HEADER;
+   COPY account_group_includes_by_uuid_audit FROM '/home/gerrit2/review_site/account_group_includes_by_uuid_audit' DELIMITER ',' CSV HEADER;
+   COPY account_group_members                FROM '/home/gerrit2/review_site/account_group_members' DELIMITER ',' CSV HEADER;
+   COPY account_group_members_audit          FROM '/home/gerrit2/review_site/account_group_members_audit' DELIMITER ',' CSV HEADER;
+   COPY account_group_names                  FROM '/home/gerrit2/review_site/account_group_names' DELIMITER ',' CSV HEADER;
+   COPY account_groups                       FROM '/home/gerrit2/review_site/account_groups' DELIMITER ',' CSV HEADER;
+   COPY account_patch_reviews                FROM '/home/gerrit2/review_site/account_patch_reviews' DELIMITER ',' CSV HEADER;
+   COPY account_project_watches              FROM '/home/gerrit2/review_site/account_project_watches' DELIMITER ',' CSV HEADER;
+   COPY account_ssh_keys                     FROM '/home/gerrit2/review_site/account_ssh_keys' DELIMITER ',' CSV HEADER;
+   COPY accounts                             FROM '/home/gerrit2/review_site/accounts' DELIMITER ',' CSV HEADER;
+   COPY change_messages                      FROM '/home/gerrit2/review_site/change_messages' DELIMITER ',' CSV HEADER;
+   COPY changes                              FROM '/home/gerrit2/review_site/changes' DELIMITER ',' CSV HEADER;
+   COPY patch_comments                       FROM '/home/gerrit2/review_site/patch_comments' DELIMITER ',' CSV HEADER;
+   COPY patch_set_ancestors                  FROM '/home/gerrit2/review_site/patch_set_ancestors' DELIMITER ',' CSV HEADER;
+   COPY patch_set_approvals                  FROM '/home/gerrit2/review_site/patch_set_approvals' DELIMITER ',' CSV HEADER;
+   COPY patch_sets                           FROM '/home/gerrit2/review_site/patch_sets' DELIMITER ',' CSV HEADER;
+   COPY schema_version                       FROM '/home/gerrit2/review_site/schema_version' DELIMITER ',' CSV HEADER;
+   COPY starred_changes                      FROM '/home/gerrit2/review_site/starred_changes' DELIMITER ',' CSV HEADER;
+   COPY submodule_subscriptions              FROM '/home/gerrit2/review_site/submodule_subscriptions' DELIMITER ',' CSV HEADER;
+   COPY system_config                        FROM '/home/gerrit2/review_site/system_config' DELIMITER ',' CSV HEADER;
+   COPY tracking_ids                         FROM '/home/gerrit2/review_site/tracking_ids' DELIMITER ',' CSV HEADER;
+
+5. Start gerrit and execute commands in step 2 in directory db_postgres.
+   Compare the table contents in db_h2 and db_postgres to make sure the
+   migration is complete.

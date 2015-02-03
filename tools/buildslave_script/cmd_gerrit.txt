@@ -1,0 +1,1 @@
+ssh -p 29418 shgit.marvell.com gerrit flush-caches --all
