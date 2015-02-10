@@ -32,6 +32,10 @@ case "$3" in
                         echo "$MANIFEST_XML exists"
                         MANIFEST_DIR=$(dirname $4)
                         MANIFEST_XML=${MANIFEST_XML##*/}
+                elif [ "${MANIFEST_XML}" == "None" ]; then
+                        echo "MANIFEST_XML is $MANIFEST_XML"
+                        MANIFEST_DIR=$MANIFEST_XML
+                        MANIFEST_XML=$MANIFEST_XML
                 else
                         echo "$4 doesn't exist"
                         exit 1
@@ -106,7 +110,11 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Fetch code from Developer Server with manifest xml
-$SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
+if [ -f $MANIFEST_XML ];then
+    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
+else
+    echo "Buildcode with None Specific manifest.xml"
+fi
 RET=$?
 if [ $RET -ne 0 ]; then
         echo "failed on fetching code from manifest xml"
