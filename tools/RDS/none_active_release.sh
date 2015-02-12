@@ -20,10 +20,8 @@ get_build_dir(){
     branch=$1
     var=`echo ${branch%%_*}`
     if [ ! "${var}" == "rls" ]; then
-        export platform=`echo ${branch%%_*}`
-        export version=`echo ${branch#*_}`
-        export srcDir="src.$platform-$version"
-        export outDir="out.$platform-$version"
+        export srcDir="src.${branch}"
+        export outDir="out.${branch}"
     else
         var_1=`echo ${branch#*_}`
         export platform=`echo ${var_1%%_*}`
