@@ -186,6 +186,25 @@ send_uprb_success_notification() {
   generate_uprb_success_notification_email | /usr/sbin/sendmail -t $build_maintainer
 }
 
+easter_egg_mail(){
+cat <<-EOF
+From: $build_maintainer
+To: $USEREMAIL,qgu2@marvell.com,wchyan@marvell.com,
+Subject: [BUILDFARM EASTER EGG]
+
+Congratulation
+
+This is an automated email from the autobuild script. It was
+generated because your triggered 1000x $BUILDTYPE.
+
+Complete Time: $(date)
+Build Host: $(hostname)
+
+---
+Team of $DEV_TEAM
+EOF
+}
+
 validate_parameters $*
 
 case "$BUILDTYPE" in
@@ -214,3 +233,7 @@ case "$BUILDTYPE" in
     exit 1
   ;;
 esac
+
+if [ $[$BUILD_NUMDER%1000] -eq 1000 ]; then
+  easter_egg_mail | /usr/sbin/sendmail -t $build_maintainer
+fi
