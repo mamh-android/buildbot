@@ -6,7 +6,7 @@ echo PLATFORM_ANDROID_VARIANT: $2
 STD_LOG=/home/buildfarm/buildbot_script/stdio.log
 rm -f $STD_LOG
 . ~/buildbot_script/buildbot/core/check_update.sh
-cd ~/aabs
+cd ~/aabs && git reset --hard origin/master
 if [ "$ids_2" != "" -a "$ids_2" != "None" ]; then
   export PLATFORM_ANDROID_VARIANT=$ids_2
   export ABS_FORCE_BUILD="ture"
