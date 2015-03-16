@@ -74,9 +74,10 @@ cd manifest_backup
 
 for i in $Devices; do
     echo "#!/bin/bash" > run.sh
+    echo "SCRIPT_PATH=\$(dirname \`readlink -f \$0\`)/core" >> run.sh
     echo export MANIFEST_BRANCH=${MANIFEST_BRANCH} >> run.sh
     echo export ABS_BUILD_DEVICES=${i} >> run.sh
-    echo export ABS_BUILD_MANIFEST=manifst.xml >> run.sh
+    echo export ABS_BUILD_MANIFEST=\$\{SCRIPT_PATH\}manifst.xml >> run.sh
     echo export ABS_DEVICE_LIST=${Devices// /,} >> run.sh
     chmod +x run.sh
     git add run.sh manifest.xml
