@@ -1,6 +1,22 @@
 #!/bin/bash
-ids=$1  
-echo Build Branch: $1
+
+cbranch=$1
+
+if [ ${cbranch%%/*} == "master" ]; then
+    changid=${cbranch#*/}
+    obj=$(echo $changid|rev|cut -c-2|rev)
+    git clone ssh://privgit.marvell.com:29418/buildbot/manifest_backup
+    cd manifest_backup && git fetch ssh://privgit.marvell.com:29418/buildbot/manifest_backup refs/changes/$obj/$changid/1 && git reset --hard FETCH_HEAD && cd -
+    . manifest_backup/run.sh
+else
+    MANIFEST_BRANCH=$1
+fi
+
+echo Build Branch: $MANIFEST_BRANCH
+echo ABS_BUILD_DEVICES: $ABS_BUILD_DEVICES
+echo ABS_BUILD_MANIFEST: $ABS_BUILD_MANIFEST
+echo ABS_DEVICE_LIST: $ABS_DEVICE_LIST
+
 ids_2=$2
 echo PLATFORM_ANDROID_VARIANT: $2
 STD_LOG=/home/buildfarm/buildbot_script/stdio.log
@@ -11,14 +27,15 @@ if [ "$ids_2" != "" -a "$ids_2" != "None" ]; then
   export PLATFORM_ANDROID_VARIANT=$ids_2
   export ABS_FORCE_BUILD="ture"
 fi
-var_0=`echo ${ids%%_*}`
+
+var_0=`echo ${MANIFEST_BRANCH%%_*}`
 if [ ! "${var_0}" == "rls" ]; then
-  target=$ids
+  target=$MANIFEST_BRANCH
   last_build="/autobuild/android/${platform}/LAST_BUILD.${target}"
   echo "platform-product $target" | tee -a $STD_LOG
   echo "last_build $last_build" | tee -a $STD_LOG
 else
-  var_1=`echo ${ids#*_}`
+  var_1=`echo ${MANIFEST_BRANCH#*_}`
   platform=`echo ${var_1%%_*}`
   echo "platform $platform" | tee -a $STD_LOG
   last=`echo ${var_1#*_}`
