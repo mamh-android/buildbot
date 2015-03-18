@@ -112,8 +112,22 @@ fi
 # Fetch code from Developer Server with manifest xml
 if [ -f $MANIFEST_XML ];then
     $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
+    # Reset hard aabs
+    cd ~/aabs
+    git fetch origin
+    git reset --hard $(cat $MANIFEST_DIR/abs.commit)
 else
     echo "Buildcode with None Specific manifest.xml"
+    # Reset aabs
+    if [ ! ${MANIFEST_BRANCH%%_*} == "rls" ]; then
+        cd ~/aabs
+        git fetch origin
+        git reset --hard origin/master
+    else
+        cd ~/aabs
+        git fetch origin
+        git reset --hard origin/$MANIFEST_BRANCH
+    fi
 fi
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -121,11 +135,6 @@ if [ $RET -ne 0 ]; then
         echo "exit value:" $RET
         exit 1
 fi
-
-# Reset hard aabs
-cd ~/aabs
-git fetch origin
-git reset --hard $(cat $MANIFEST_DIR/abs.commit)
 
 # Cherry-pick the listed patched from gerrit to $SYNC_GIT_WORKING_DIR
 cd $SYNC_GIT_WORKING_DIR
