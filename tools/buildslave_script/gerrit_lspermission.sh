@@ -8,7 +8,7 @@ echo ====== $i ====== >> /tmp/me;
 ssh -p 29418 shgit.marvell.com gerrit ls-members $i | tee -a /tmp/me;
 done
 
-gerrit_permission(){
+gerrit_permissioni_b(){
 for i in $(cat l); do
     git fetch ssh://shgit.marvell.com/$i refs/meta/config && git reset --hard FETCH_HEAD;
     if grep -q Permission_parent/All-android *;then
@@ -20,6 +20,18 @@ for i in $(cat l); do
       echo no
       echo $i
       cat config
+      echo ===
+    fi
+done
+}
+
+gerrit_permission(){
+for i in $(cat l); do
+    git fetch ssh://shgit.marvell.com/$i refs/meta/config && git reset --hard FETCH_HEAD;
+    if grep -q All-Projects *;then
+      echo ===
+      echo $i
+      cat project.config
       echo ===
     fi
 done
