@@ -9,6 +9,7 @@ export SRC_URL=${SRC_URL:-ssh://shgit.marvell.com/git/android/platform/manifest.
 export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"}
 export MANIFEST_URL=${MANIFEST_URL:-ssh://privgit.marvell.com:29418/buildbot/manifest_backup.git}
 export DEVICES_TAB=${DEVICES_TAB:-~/aabs/tools/branchDevicesList}
+export SLAVE_PATH=${SLAVE_PATH:-/home/buildfarm/buildbot/slave/android_distraction_build/build/manifest_backup}
 
 #script path
 SCRIPT_PATH=$(dirname `readlink -f $0`)/core
@@ -77,7 +78,7 @@ for i in $Devices; do
     echo "SCRIPT_PATH=\$(dirname \`readlink -f \$0\`)/core" >> run.sh
     echo export MANIFEST_BRANCH=${MANIFEST_BRANCH} >> run.sh
     echo export ABS_BUILD_DEVICES=${i} >> run.sh
-    echo export ABS_BUILD_MANIFEST=\$\{SCRIPT_PATH\}manifst.xml >> run.sh
+    echo export ABS_BUILD_MANIFEST=${SLAVE_PATH}/manifest.xml >> run.sh
     echo export ABS_DEVICE_LIST=${Devices// /,} >> run.sh
     chmod +x run.sh
     git add run.sh manifest.xml
