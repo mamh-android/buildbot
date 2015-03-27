@@ -45,7 +45,7 @@ tar_device() {
 #if prebuildbin exist
 if [ -d "$BUILD_DIR/prebuildbin" ]; then
     echo $BUILD_DIR/prebuildbin exists already
-    exit 1
+    exit 0
 else
     echo create prebuildbin folder
     mkdir $BUILD_DIR/prebuildbin
