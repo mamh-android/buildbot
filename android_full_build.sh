@@ -2,7 +2,7 @@
 
 cbranch=$1
 
-if [ ${cbranch%%/*} == "master" ]; then
+if echo $cbranch | grep -q ".*/[0-9][0-9]*"; then
     changid=${cbranch#*/}
     obj=$(echo $changid|rev|cut -c-2|rev)
     git clone ssh://privgit.marvell.com:29418/buildbot/manifest_backup
