@@ -86,4 +86,7 @@ for i in $Devices; do
 done
 
 #update gerrit
-git push origin HEAD:refs/for/master
+if ! git branch -a | grep -q ${MANIFEST_BRANCH}$; then
+    git push origin remotes/origin/master:refs/heads/${MANIFEST_BRANCH}
+fi
+git push origin HEAD:refs/for/${MANIFEST_BRANCH}
