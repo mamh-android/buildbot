@@ -84,6 +84,7 @@ def run(owner, branchregex):
     for j in return_via_change(changeid_l):
             branch_l.append(j['branch'])
     branch_l=list(set(branch_l))
+    branch_l.sort()
     out_csv = csv.writer(open(fout, 'wb'))
     NameList.extend(branch_l)
     out_csv.writerow(NameList)
