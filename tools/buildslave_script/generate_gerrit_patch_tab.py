@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # v1.1 init code
 # v1.2 added branch sum function
+# v1.3 polished output csv style
 #    input owner (yfshi,ylin8,wchyan)
 #    regex of branch (kk4.4,lp5.1)
 
@@ -58,31 +59,45 @@ def return_via_change(changeid_l):
                 json_list.append(jsonstr)
     return json_list
 
+#branch name to morse code
+def return_mcode(branch, branch_l):
+    branch_l.sort()
+    b_l = branch.split(';')
+    morse = ''
+    for i in branch_l:
+        if b_l.count(i):
+            morse += 'M;'
+        else:
+            morse += ';'
+    return morse
+
 def run(owner, branchregex):
     #setup gerrit patch change csv
+    NameList = ['ChangeID', 'Author', 'Project', 'Subject']
     fout = str(date.today()) + '.csv'
-    out_csv = csv.writer(open(fout, 'wb'))
-    out_csv.writerow(['ChangeID', 'Author', 'Project', 'Branch', 'Subject'])
     changeid_l = []
+    branch_l = []
     wout = []
     for jstr in return_gerrit_query_jsonstr(owner, branchregex):
         changeid_l.append(jstr['id'])
     changeid_l=list(set(changeid_l))
+    for j in return_via_change(changeid_l):
+            branch_l.append(j['branch'])
+    branch_l=list(set(branch_l))
+    out_csv = csv.writer(open(fout, 'wb'))
+    NameList.extend(branch_l)
+    out_csv.writerow(NameList)
     for c in changeid_l:
-        Branch = ""
+        Branch = ''
         for f in return_via_change([c]):
             ChangeID = f['id'][0:7]
             Author = f['currentPatchSet']['author']['email']
             Project = f['project']
-            Branch += '%s; ' % f['branch']
+            Branch += '%s;' % f['branch']
             Subject = f['subject']
-        out_csv.writerow([
-                        ChangeID,
-                        Author,
-                        Project,
-                        Branch,
-                        Subject
-                        ])
+        row = [ChangeID,Author,Project,Subject]
+        row.extend(return_mcode(Branch, branch_l).split(';'))
+        out_csv.writerow(row)
 
 #User help
 def usage():
