@@ -1411,3 +1411,127 @@ updateuser/users.txt.bak
 sent 7826 bytes  received 130 bytes  15912.00 bytes/sec
 total size is 14608  speedup is 1.84
 rsync done at: 2015-04-10 13:32:25+08:00
+[detached HEAD 9278bfc] Autorsync:synced done 2015-04-10 13:32:29+08:00
+ 1 files changed, 1413 insertions(+), 0 deletions(-)
+ create mode 100644 backup.log
+done at: 2015-04-10 13:32:35+08:00
+
+start at: 2015-04-10 13:37:29+08:00
+sending incremental file list
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/files/
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/hooks/
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/templates/
+
+sent 19632 bytes  received 1271 bytes  8361.20 bytes/sec
+total size is 7259621  speedup is 347.30
+sending incremental file list
+
+sent 61 bytes  received 15 bytes  152.00 bytes/sec
+total size is 40531  speedup is 533.30
+sending incremental file list
+public_html/ppat/.git/hooks/
+public_html/ppat/.git/info/
+public_html/ppat/.git/logs/refs/heads/
+public_html/ppat/.git/logs/refs/remotes/origin/
+public_html/ppat/.git/objects/01/
+public_html/ppat/.git/objects/02/
+public_html/ppat/.git/objects/03/
+public_html/ppat/.git/objects/04/
+public_html/ppat/.git/objects/05/
+public_html/ppat/.git/objects/07/
+public_html/ppat/.git/objects/08/
+public_html/ppat/.git/objects/09/
+public_html/ppat/.git/objects/0b/
+public_html/ppat/.git/objects/0c/
+public_html/ppat/.git/objects/0d/
+public_html/ppat/.git/objects/0e/
+public_html/ppat/.git/objects/0f/
+public_html/ppat/.git/objects/10/
+public_html/ppat/.git/objects/11/
+public_html/ppat/.git/objects/12/
+public_html/ppat/.git/objects/14/
+public_html/ppat/.git/objects/15/
+public_html/ppat/.git/objects/17/
+public_html/ppat/.git/objects/1a/
+public_html/ppat/.git/objects/1c/
+public_html/ppat/.git/objects/1e/
+public_html/ppat/.git/objects/1f/
+public_html/ppat/.git/objects/20/
+public_html/ppat/.git/objects/21/
+public_html/ppat/.git/objects/22/
+public_html/ppat/.git/objects/23/
+public_html/ppat/.git/objects/24/
+public_html/ppat/.git/objects/25/
+public_html/ppat/.git/objects/26/
+public_html/ppat/.git/objects/28/
+public_html/ppat/.git/objects/29/
+public_html/ppat/.git/objects/2a/
+public_html/ppat/.git/objects/2b/
+public_html/ppat/.git/objects/2c/
+public_html/ppat/.git/objects/2d/
+public_html/ppat/.git/objects/2e/
+public_html/ppat/.git/objects/2f/
+public_html/ppat/.git/objects/31/
+public_html/ppat/.git/objects/33/
+public_html/ppat/.git/objects/34/
+public_html/ppat/.git/objects/35/
+public_html/ppat/.git/objects/36/
+public_html/ppat/.git/objects/37/
+public_html/ppat/.git/objects/39/
+public_html/ppat/.git/objects/3a/
+public_html/ppat/.git/objects/3b/
+public_html/ppat/.git/objects/3c/
+public_html/ppat/.git/objects/3d/
+public_html/ppat/.git/objects/3e/
+public_html/ppat/.git/objects/3f/
+public_html/ppat/.git/objects/40/
+public_html/ppat/.git/objects/41/
+public_html/ppat/.git/objects/42/
+public_html/ppat/.git/objects/45/
+public_html/ppat/.git/objects/47/
+public_html/ppat/.git/objects/48/
+public_html/ppat/.git/objects/4a/
+public_html/ppat/.git/objects/4b/
+public_html/ppat/.git/objects/4c/
+public_html/ppat/.git/objects/4d/
+public_html/ppat/.git/objects/52/
+public_html/ppat/.git/objects/53/
+public_html/ppat/.git/objects/54/
+public_html/ppat/.git/objects/56/
+public_html/ppat/.git/objects/57/
+public_html/ppat/.git/objects/59/
+public_html/ppat/.git/objects/e5/
+public_html/ppat/.git/objects/e6/
+public_html/ppat/.git/objects/e7/
+public_html/ppat/.git/objects/e8/
+public_html/ppat/.git/objects/e9/
+public_html/ppat/.git/objects/ea/
+public_html/ppat/.git/objects/eb/
+public_html/ppat/.git/objects/ec/
+public_html/ppat/.git/objects/ee/
+public_html/ppat/.git/objects/ef/
+public_html/ppat/.git/objects/f0/
+public_html/ppat/.git/objects/f5/
+public_html/ppat/.git/objects/f6/
+public_html/ppat/.git/objects/f7/
+public_html/ppat/.git/objects/f8/
+public_html/ppat/.git/objects/f9/
+public_html/ppat/.git/objects/fa/
+public_html/ppat/.git/objects/fb/
+public_html/ppat/.git/objects/fd/
+public_html/ppat/.git/objects/ff/
+public_html/ppat/.git/objects/pack/
+public_html/ppat/.git/rebase-apply/
+public_html/ppat/.git/refs/heads/
+public_html/ppat/.git/refs/remotes/origin/
+public_html/ppat/images/
+public_html/ppat/script/
+public_html/ppat_test/
+
+sent 23250 bytes  received 1695 bytes  9978.00 bytes/sec
+total size is 1976444  speedup is 79.23
+sending incremental file list
+
+sent 203 bytes  received 28 bytes  462.00 bytes/sec
+total size is 14608  speedup is 63.24
+rsync done at: 2015-04-10 13:37:33+08:00
