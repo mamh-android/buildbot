@@ -3,15 +3,15 @@
 
 SCRIPT=`readlink -f $0`
 BASEDIR=$(dirname $SCRIPT)
-GIT_DIR=/home/buildfarm/buildbot_backup_script/backup_last_buildmaster/
+GIT_DIR=$BASEDIR
 SRC_DIR_1=/home/buildfarm/buildbot/sandbox/lib/python2.6/site-packages/buildbot-0.8.5-py2.6.egg
-DEST_DIR_1=/home/buildfarm/buildbot_backup_script/backup_last_buildmaster/buildbot/
+DEST_DIR_1=$BASEDIR/buildbot/
 SRC_DIR_2=/home/buildfarm/buildbot/sandbox/master/master.cfg
-DEST_DIR_2=/home/buildfarm/buildbot_backup_script/backup_last_buildmaster/
+DEST_DIR_2=$BASEDIR
 SRC_DIR_3=/home/buildfarm/buildbot/sandbox/master/public_html
-DEST_DIR_3=/home/buildfarm/buildbot_backup_script/backup_last_buildmaster/
+DEST_DIR_3=$BASEDIR
 SRC_DIR_4=/home/buildfarm/buildbot/sandbox/master/updateuser
-DEST_DIR_4=/home/buildfarm/buildbot_backup_script/backup_last_buildmaster/
+DEST_DIR_4=$BASEDIR
 LOGFILE=$BASEDIR/backup.log
 
 echo "" | tee -a $LOGFILE

@@ -1,4 +1,0 @@
-#!/home/buildfarm/buildbot/sandbox/bin/python
-
-from buildbot.scripts import runner
-runner.run()
