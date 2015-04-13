@@ -20,11 +20,31 @@ import sys
 import os
 import re
 import pexpect
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 
 #Code remote server
 m_remote_server = "shgit.marvell.com"
+smtpserver = 'smtp.marvell.com'
+smtp = smtplib.SMTP()
+sender = 'chaoyang@marvell.com'
+receiver = []
 
 VERBOSE = False
+
+def send_email(msg,file_name):
+    msgRoot = MIMEMultipart('related')
+    msgRoot['Subject'] = file_name
+    msgText = MIMEText('%s'%msg,'html','utf-8')
+    msgRoot.attach(msgText)
+    att = MIMEText(open('%s'%file_name, 'rb').read(), 'base64', 'utf-8')
+    att["Content-Type"] = 'application/octet-stream'
+    att["Content-Disposition"] = 'attachment; filename="%s"'%file_name
+    msgRoot.attach(att)
+    smtp.connect(smtpserver)
+    smtp.sendmail(sender, receiver, msgRoot.as_string())
 
 def run_command_status(*argv, **env):
     if VERBOSE:
@@ -93,8 +113,8 @@ class ScanRev:
         self.project = project
         self.branch_l = branch_l
     def shgit_cmd(self, cmd):
-        ip = "gerrit2@shgit.marvell.com -p 2222"
-        passwd = "123456"
+        ip = "guest2@shgit.marvell.com -p 2222"
+        passwd = "shmarvell99"
         ret = -1
         ssh = pexpect.spawn('ssh %s "%s"' % (ip, cmd))
         try:
@@ -161,19 +181,23 @@ def run(owner, branchregex):
         row = [ChangeID,Author,Project,Subject]
         row.extend(return_mcode(Branch, branch_l).split(';'))
         out_csv.writerow(row)
+    if (len(receiver) > 0):
+        send_email("Patch Status Report Attachment", fout)
 
 #User help
 def usage():
     print "\tgen_patch_tab"
     print "\t      [-o] owner (for multi owner split them with ,)"
     print "\t      [-b] regex branch name{kk4.4|lp5.1} (for multi branch split them with ,)"
+    print "\t      [-t] receiver mail address (shg@marvell.com)"
     print "\t      [-h] help"
 
 def main(argv):
     owner = None
     branchregex = None
+    global receiver
     try:
-        opts, args = getopt.getopt(argv, "o:b:h")
+        opts, args = getopt.getopt(argv, "o:b:t:h")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -185,6 +209,8 @@ def main(argv):
             owner = arg.split(',')
         elif opt in ("-b"):
             branchregex = arg.split(',')
+	elif opt in ("-t"):
+            receiver = arg.split(',')
 
     if (owner == None) or (branchregex == None):
         usage()
