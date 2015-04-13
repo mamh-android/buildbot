@@ -2,8 +2,11 @@
 # v1.1 init code
 # v1.2 added branch sum function
 # v1.3 polished output csv style
+# v1.3.1 branch naming filter function added
+# v1.4 added scan shgit function
 #    input owner (yfshi,ylin8,wchyan)
 #    regex of branch (kk4.4,lp5.1)
+#    codebase
 
 import subprocess
 import json
@@ -15,6 +18,8 @@ import time
 from datetime import date
 import sys
 import os
+import re
+import pexpect
 
 #Code remote server
 m_remote_server = "shgit.marvell.com"
@@ -62,14 +67,64 @@ def return_via_change(changeid_l):
 #branch name to morse code
 def return_mcode(branch, branch_l):
     branch_l.sort()
-    b_l = branch.split(';')
+    branch=list(set(branch))
     morse = ''
     for i in branch_l:
-        if b_l.count(i):
+        if branch.count(i):
             morse += 'M;'
         else:
             morse += ';'
     return morse
+
+#filter the branch regex
+def filter_branch(branchregex, branch_l):
+    r_branch = []
+    for i in branch_l:
+        for j in branchregex:
+            if re.match('.*%s.*' % j,i):
+                r_branch.append(i)
+    r_branch=list(set(r_branch))
+    return r_branch
+
+#execute ssh shgit cmd and return value
+class ScanRev:
+    def __init__(self, rev, project, branch_l):
+        self.rev = rev
+        self.project = project
+        self.branch_l = branch_l
+    def shgit_cmd(self, cmd):
+        ip = "gerrit2@shgit.marvell.com -p 2222"
+        passwd = "123456"
+        ret = -1
+        ssh = pexpect.spawn('ssh %s "%s"' % (ip, cmd))
+        try:
+            i = ssh.expect(['password:', 'continue connecting (yes/no)?'], timeout=5)
+            if i == 0 :
+                ssh.sendline(passwd)
+            elif i == 1:
+                ssh.sendline('yes\n')
+                ssh.expect('password: ')
+                ssh.sendline(passwd)
+            ssh.sendline(cmd)
+            ret = ssh.expect(["commit %s" % self.rev, pexpect.EOF])
+            r = ssh.read()
+        except pexpect.EOF:
+            print "EOF"
+            ssh.close()
+            ret = -1
+        except pexpect.TIMEOUT:
+            print "TIMEOUT"
+            ssh.close()
+            ret = -2
+        return ret
+    def scan_branch(self):
+        branch_n = []
+        for b in self.branch_l:
+            cmd = "git -C /git/%s.git log %s | grep %s" % (self.project, b, self.rev)
+            index = self.shgit_cmd(cmd)
+            if index == 0:
+                branch_n.append(b)
+        return branch_n
 
 def run(owner, branchregex):
     #setup gerrit patch change csv
@@ -84,18 +139,25 @@ def run(owner, branchregex):
     for j in return_via_change(changeid_l):
             branch_l.append(j['branch'])
     branch_l=list(set(branch_l))
+    branch_l=filter_branch(branchregex, branch_l)
     branch_l.sort()
     out_csv = csv.writer(open(fout, 'wb'))
     NameList.extend(branch_l)
     out_csv.writerow(NameList)
+    p_count = 0
     for c in changeid_l:
-        Branch = ''
+        Branch = []
         for f in return_via_change([c]):
             ChangeID = f['id'][0:7]
             Author = f['currentPatchSet']['author']['email']
             Project = f['project']
-            Branch += '%s;' % f['branch']
+            Revision = f['currentPatchSet']['revision']
+            fc = ScanRev(Revision, Project, branch_l)
+            Branch.append(f['branch'])
+            Branch.extend(fc.scan_branch())
             Subject = f['subject']
+        p_count += 1
+        print "=== %s/%s === Running ===" % (p_count, len(changeid_l))
         row = [ChangeID,Author,Project,Subject]
         row.extend(return_mcode(Branch, branch_l).split(';'))
         out_csv.writerow(row)
@@ -104,7 +166,7 @@ def run(owner, branchregex):
 def usage():
     print "\tgen_patch_tab"
     print "\t      [-o] owner (for multi owner split them with ,)"
-    print "\t      [-b] regex branch {kk4.4|lp5.1} (for multi branch split them with ,)"
+    print "\t      [-b] regex branch name{kk4.4|lp5.1} (for multi branch split them with ,)"
     print "\t      [-h] help"
 
 def main(argv):
