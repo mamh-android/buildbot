@@ -161,7 +161,8 @@ def run(owner, branchregex):
     branch_l=list(set(branch_l))
     branch_l=filter_branch(branchregex, branch_l)
     branch_l.sort()
-    out_csv = csv.writer(open(fout, 'wb'))
+    fp = open(fout, 'wb')
+    out_csv = csv.writer(fp)
     NameList.extend(branch_l)
     out_csv.writerow(NameList)
     p_count = 0
@@ -181,6 +182,8 @@ def run(owner, branchregex):
         row = [ChangeID,Author,Project,Subject]
         row.extend(return_mcode(Branch, branch_l).split(';'))
         out_csv.writerow(row)
+    fp.flush()
+    fp.close()
     if (len(receiver) > 0):
         send_email("Patch Status Report Attachment", fout)
 
