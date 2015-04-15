@@ -1,0 +1,113 @@
+[Sun Apr 12 03:20:02 2015] [notice] Digest: generating secret for digest authentication ...
+[Sun Apr 12 03:20:02 2015] [notice] Digest: done
+[Sun Apr 12 03:20:02 2015] [notice] Apache/2.2.15 (Unix) DAV/2 PHP/5.3.3 configured -- resuming normal operations
+[Sun Apr 12 03:20:02 2015] [error] avahi_entry_group_add_service_strlst("10.38.250.14") failed: Invalid host name
+[Mon Apr 13 09:15:34 2015] [error] [client 220.128.79.49] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Mon Apr 13 09:15:36 2015] [error] [client 220.128.79.49] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 10:15:52 2015] [error] [client 10.22.130.250] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 10:15:53 2015] [error] [client 10.22.130.250] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 10:16:12 2015] [error] [client 10.22.130.250] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Mon Apr 13 11:02:17 2015] [error] [client 10.18.136.51] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 11:02:17 2015] [error] [client 10.18.136.51] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 11:02:28 2015] [error] [client 10.18.136.51] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Mon Apr 13 11:31:33 2015] [error] [client 10.18.136.86] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 11:31:33 2015] [error] [client 10.18.136.86] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 11:31:42 2015] [error] [client 10.18.136.86] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Mon Apr 13 11:33:00 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 11:33:02 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 11:33:03 2015] [error] [client 124.74.107.126] script '/var/www/html/files.php' not found or unable to stat
+[Mon Apr 13 11:33:03 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 11:33:04 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Mon Apr 13 12:18:28 2015] [error] [client 101.110.58.146] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 12:18:35 2015] [error] [client 101.110.58.146] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/index.php
+[Mon Apr 13 12:18:35 2015] [error] [client 101.110.58.146] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 12:18:44 2015] [error] [client 101.110.58.146] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Mon Apr 13 13:57:19 2015] [error] [client 58.250.160.58] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 16:32:15 2015] [error] [client 101.110.58.146] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 16:32:27 2015] [error] [client 101.110.58.146] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Mon Apr 13 17:47:20 2015] [error] [client 121.101.95.133] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 17:47:20 2015] [error] [client 121.101.95.133] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 17:47:54 2015] [error] [client 121.101.95.133] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Reg.php
+[Mon Apr 13 17:50:56 2015] [error] [client 121.101.95.133] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Reg.php
+[Mon Apr 13 17:51:23 2015] [error] [client 121.101.95.133] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Mon Apr 13 18:41:43 2015] [error] [client 10.36.16.75] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 18:41:51 2015] [error] [client 10.36.16.75] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 18:41:51 2015] [error] [client 10.36.16.75] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 18:41:56 2015] [error] [client 10.36.16.75] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/index.php
+[Mon Apr 13 18:43:03 2015] [error] [client 10.36.16.75] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Mon Apr 13 18:46:21 2015] [error] [client 10.18.136.86] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Mon Apr 13 18:46:21 2015] [error] [client 10.18.136.86] File does not exist: /var/www/html/favicon.ico
+[Mon Apr 13 18:46:26 2015] [error] [client 10.18.136.86] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/index.php
+[Mon Apr 13 18:46:35 2015] [error] [client 10.18.136.86] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 00:04:43 2015] [error] [client 10.69.131.1] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Tue Apr 14 00:04:56 2015] [error] [client 10.69.131.1] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 00:39:14 2015] [error] [client 10.69.130.231] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Tue Apr 14 00:39:14 2015] [error] [client 10.69.130.231] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 00:39:27 2015] [error] [client 10.69.130.231] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 02:19:13 2015] [error] [client 10.81.42.205] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Tue Apr 14 02:19:14 2015] [error] [client 10.81.42.205] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 02:19:23 2015] [error] [client 10.81.42.205] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 02:19:27 2015] [error] [client 10.81.42.205] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/key.php
+[Tue Apr 14 02:26:16 2015] [error] [client 10.81.42.205] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/key.php
+[Tue Apr 14 02:28:49 2015] [error] [client 10.81.42.205] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/key.php
+[Tue Apr 14 09:47:24 2015] [error] [client 10.18.136.70] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 09:47:24 2015] [error] [client 10.18.136.70] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 09:47:29 2015] [error] [client 10.18.136.70] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/index.php
+[Tue Apr 14 09:47:37 2015] [error] [client 10.18.136.70] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 10:37:05 2015] [error] [client 10.18.136.82] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/index.php
+[Tue Apr 14 10:37:05 2015] [error] [client 10.18.136.82] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 10:37:19 2015] [error] [client 10.18.136.82] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 10:37:19 2015] [error] [client 10.18.136.82] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 10:49:17 2015] [error] [client 10.22.130.250] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Tue Apr 14 10:49:17 2015] [error] [client 10.22.130.250] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 10:49:22 2015] [error] [client 10.22.130.250] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 13:54:31 2015] [error] [client 210.94.41.89] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/index.php
+[Tue Apr 14 13:54:31 2015] [error] [client 210.94.41.89] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 13:54:57 2015] [error] [client 210.94.41.89] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 13:54:57 2015] [error] [client 210.94.41.89] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 14:04:17 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Tue Apr 14 14:04:43 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Tue Apr 14 18:34:39 2015] [error] [client 10.18.136.69] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Tue Apr 14 18:34:39 2015] [error] [client 10.18.136.69] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 18:34:44 2015] [error] [client 10.18.136.69] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/index.php
+[Tue Apr 14 18:34:44 2015] [error] [client 10.18.136.69] File does not exist: /var/www/html/favicon.ico
+[Tue Apr 14 18:34:59 2015] [error] [client 10.18.136.69] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/index.php
+[Tue Apr 14 18:35:19 2015] [error] [client 10.18.136.69] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 04:58:25 2015] [error] [client 10.81.42.239] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 04:58:26 2015] [error] [client 10.81.42.239] File does not exist: /var/www/html/favicon.ico
+[Wed Apr 15 04:58:38 2015] [error] [client 10.81.42.239] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 07:19:29 2015] [error] [client 10.81.42.239] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 07:19:38 2015] [error] [client 10.81.42.239] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 07:32:09 2015] [error] [client 10.81.42.239] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 07:32:20 2015] [error] [client 10.81.42.239] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 07:44:00 2015] [error] [client 180.43.118.66] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 07:44:00 2015] [error] [client 180.43.118.66] File does not exist: /var/www/html/favicon.ico
+[Wed Apr 15 07:44:05 2015] [error] [client 180.43.118.66] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 09:40:26 2015] [error] [client 10.38.32.147] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 09:40:27 2015] [error] [client 10.38.32.147] File does not exist: /var/www/html/favicon.ico
+[Wed Apr 15 09:41:05 2015] [error] [client 10.38.32.147] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 09:43:17 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 09:43:26 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 09:43:31 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 09:50:33 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 09:53:07 2015] [error] [client 10.22.130.250] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 09:53:07 2015] [error] [client 10.22.130.250] File does not exist: /var/www/html/favicon.ico
+[Wed Apr 15 09:53:12 2015] [error] [client 10.22.130.250] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 10:00:17 2015] [error] [client 10.38.32.147] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/key.php
+[Wed Apr 15 10:03:34 2015] [error] [client 180.43.118.66] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 10:08:58 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 10:36:17 2015] [error] [client 101.230.11.195] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 10:36:17 2015] [error] [client 101.230.11.195] File does not exist: /var/www/html/favicon.ico
+[Wed Apr 15 10:36:28 2015] [error] [client 101.230.11.195] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 10:40:02 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 10:40:55 2015] [error] [client 101.230.11.195] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/index.php
+[Wed Apr 15 10:43:06 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 11:14:54 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 11:16:26 2015] [error] [client 10.18.136.70] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 11:16:35 2015] [error] [client 10.18.136.70] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 11:44:59 2015] [error] [client 121.101.95.133] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 11:44:59 2015] [error] [client 121.101.95.133] File does not exist: /var/www/html/favicon.ico
+[Wed Apr 15 11:45:15 2015] [error] [client 121.101.95.133] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 12:30:47 2015] [error] [client 180.43.118.66] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/
+[Wed Apr 15 12:30:51 2015] [error] [client 180.43.118.66] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
+[Wed Apr 15 13:36:03 2015] [error] [client 124.74.107.126] File does not exist: /var/www/html/images/bg_global_top_left.gif, referer: http://github.marvell.com/Files.php
