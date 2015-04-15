@@ -36,7 +36,7 @@ VERBOSE = False
 
 def send_email(msg,file_name):
     msgRoot = MIMEMultipart('related')
-    msgRoot['Subject'] = file_name
+    msgRoot['Subject'] = 'Patch Status Report -' + file_name[0:file_name.index('.')]
     msgText = MIMEText('%s'%msg,'html','utf-8')
     msgRoot.attach(msgText)
     att = MIMEText(open('%s'%file_name, 'rb').read(), 'base64', 'utf-8')
@@ -185,7 +185,9 @@ def run(owner, branchregex):
     fp.flush()
     fp.close()
     if (len(receiver) > 0):
-        send_email("Patch Status Report Attachment", fout)
+        delimiter = ','
+        body = "User: " + delimiter.join(owner) + "\n" + "Branches: " + delimiter.join(branchregex)
+        send_email(body, fout)
 
 #User help
 def usage():
