@@ -94,7 +94,7 @@ def return_revision_via_cfg(cfg_file):
 def return_board_via_cfg(cfg_file):
     config = ConfigParser.RawConfigParser()
     config.read(cfg_file)
-    return config.get('board.mk', 'product'), config.get('board.mk', 'device'), config.get('board.mk', 'reason')
+    return config.get('board.mk', 'branch'), config.get('board.mk', 'product'), config.get('board.mk', 'device'), config.get('board.mk', 'reason')
 
 #return maillist from cfg
 def return_mail_via_cfg(cfg_file):
@@ -181,9 +181,9 @@ odvb_and_ppat_factory.addStep(ShellCommand(command=["bash","/home/buildfarm/buil
 odvb_and_ppat_factory.addStep(Git_marvell(repourl='ssh://buildfarm@shgit/git/android/shared/Buildbot/ppat.git', mode='full', method='fresh', workdir="build_script", haltOnFailure="True"))
 odvb_and_ppat_factory.addStep(ShellCommand(command=["bash","/home/buildfarm/buildbot_script/buildbot/tools/PPAT/startPPAT.sh", Property('Build_Device'), Property('Build_Blf'), Property('useremail'), Property('PPAT_Xml'), Property('Reason')]))
 '''
-def run(branch):
+def run(cfg):
     print "[Self-build] get values"
-    Gerrit_Patch = return_revision_via_cfg("%s/%s.cfg" % (CFG_FILE, branch))
+    Gerrit_Patch = return_revision_via_cfg("%s/%s.cfg" % (CFG_FILE, cfg))
     if not Gerrit_Patch:
         print "Gerrit patch is empty"
         print "~~<result>PASS</result>"
@@ -191,12 +191,12 @@ def run(branch):
         exit(-1)
     Manifest_Xml= "%s/manifest.xml" % return_last_manifest(branch)
     OUTPUT_DIR = "ODVB_PPAT_AUTO"
-    (Product_Type, Build_Device, Purpose) = return_board_via_cfg("%s/%s.cfg" % (CFG_FILE, branch))
+    (Branch, Product_Type, Build_Device, Purpose) = return_board_via_cfg("%s/%s.cfg" % (CFG_FILE, cfg))
     print "[Self-build] start ODVB"
     cmd = ODVB_BASH
     cmd += " -p %s" % Gerrit_Patch
     cmd += " -m %s" % Manifest_Xml
-    cmd += " -b %s" % branch
+    cmd += " -b %s" % Branch
     cmd += " -d %s" % OUTPUT_DIR
     cmd += " -v %s -de %s" % (Product_Type, Build_Device)
     print cmd
@@ -209,8 +209,8 @@ def run(branch):
         print cmd
         ret_p = os.system(cmd)
         print "[Self-build] Send failure mail"
-        subject, text = return_mail_text(branch, 'failed')
-        send_html_mail(subject,ADM_USER,return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, branch)),text)
+        subject, text = return_mail_text(Branch, 'failed')
+        send_html_mail(subject,ADM_USER,return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, cfg)),text)
         os.system("%s/fail.py" % SCRIPT_PATH)
         exit(1)
     print "[Self-build] Gerrit review update"
@@ -219,13 +219,13 @@ def run(branch):
     print cmd
     ret_p = os.system(cmd)
     print "[Self-build] Send success mail"
-    subject, text = return_mail_text(branch, 'success', return_build_device(STD_LOG))
-    send_html_mail(subject,ADM_USER,return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, branch)),text)
+    subject, text = return_mail_text(Branch, 'success', return_build_device(STD_LOG))
+    send_html_mail(subject,ADM_USER,return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, cfg)),text)
     os.system("%s/pass.py" % SCRIPT_PATH)
     print "[Self-build] start PPAT"
     cmd = "%s/trigger.py" % sync_build_code(PPAT_GIT)
     cmd += " --imagepath %s --device %s --purpose \"%s\" --mode gc" % (return_build_device(STD_LOG), Build_Device, Purpose)
-    cmd += " --assigner %s" % ','.join(return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, branch)))
+    cmd += " --assigner %s" % ','.join(return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, cfg)))
     print cmd
     ret_p = os.system(cmd)
     if not (ret_p==0):
@@ -237,11 +237,11 @@ def run(branch):
 #User help
 def usage():
     print "\tandroid_gc_ppat.py"
-    print "\t      [-b] branch"
+    print "\t      [-b] cfg file"
     print "\t      [-h] help"
 
 def main(argv):
-    branch = None
+    cfg = None
     try:
         opts, args = getopt.getopt(argv,"b:h")
     except getopt.GetoptError:
@@ -252,12 +252,12 @@ def main(argv):
             usage()
             sys.exit()
         elif opt in ("-b"):
-            branch = arg
-    if not branch:
+            cfg = arg
+    if not cfg:
         usage()
         sys.exit(2)
 
-    run(branch)
+    run(cfg)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
