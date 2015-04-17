@@ -189,9 +189,9 @@ def run(cfg):
         print "~~<result>PASS</result>"
         print "~~<result-details>No build</result-details>"
         exit(-1)
-    Manifest_Xml= "%s/manifest.xml" % return_last_manifest(branch)
-    OUTPUT_DIR = "ODVB_PPAT_AUTO"
     (Branch, Product_Type, Build_Device, Purpose) = return_board_via_cfg("%s/%s.cfg" % (CFG_FILE, cfg))
+    Manifest_Xml= "%s/manifest.xml" % return_last_manifest(Branch)
+    OUTPUT_DIR = "ODVB_PPAT_AUTO"
     print "[Self-build] start ODVB"
     cmd = ODVB_BASH
     cmd += " -p %s" % Gerrit_Patch
