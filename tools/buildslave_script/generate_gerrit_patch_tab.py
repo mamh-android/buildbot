@@ -15,6 +15,7 @@ import getopt
 import pickle
 import csv
 import time
+from time import localtime, strftime
 from datetime import date
 import sys
 import os
@@ -82,6 +83,7 @@ def return_via_change(changeid_l):
             jsonstr = json.loads(output)
             if not jsonstr.has_key('runTimeMilliseconds'):
                 json_list.append(jsonstr)
+    json_list = sorted(json_list, key=lambda j: j['createdOn'])
     return json_list
 
 #branch name to morse code
@@ -148,7 +150,7 @@ class ScanRev:
 
 def run(owner, branchregex):
     #setup gerrit patch change csv
-    NameList = ['ChangeID', 'Author', 'Project', 'Subject']
+    NameList = ['ChangeID', 'Author', 'Project', 'Subject', 'LastCreatedOn']
     fout = str(date.today()) + '.csv'
     changeid_l = []
     branch_l = []
@@ -177,9 +179,10 @@ def run(owner, branchregex):
             Branch.append(f['branch'])
             Branch.extend(fc.scan_branch())
             Subject = f['subject']
+            LastCreatedOn = strftime("%Y/%m/%d %H:%M:%S", time.localtime(f['createdOn']))
         p_count += 1
         print "=== %s/%s === Running ===" % (p_count, len(changeid_l))
-        row = [ChangeID,Author,Project,Subject]
+        row = [ChangeID,Author,Project,Subject,LastCreatedOn]
         row.extend(return_mcode(Branch, branch_l).split(';'))
         out_csv.writerow(row)
     fp.flush()
