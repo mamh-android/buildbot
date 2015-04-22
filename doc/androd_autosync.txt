@@ -1,0 +1,10 @@
+Author: Yufei Shi
+
+#enable autosync.sh
+/etc/crontab
+
+#android
+/git/git/android/autosync.sh
+
+#lpre
+/git/git/lpre/autosync.sh

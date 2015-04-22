@@ -1,0 +1,7 @@
+1. "tail /etc/passwd" to find largest uid. Then add new user with next uid
+2. adduser -u 100511 -c "Account info, team info" -g qae account_name. account_name
+should be aligned with Windows/outlook alias to ease management
+
+adduser -u 100511 -c "Tom Li, PIE" -g qae toml
+
+3. passwd account_name

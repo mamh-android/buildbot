@@ -1,0 +1,35 @@
+Quote from:
+http://www.cyberciti.biz/tips/howto-configure-ubuntu-fedora-linux-pptp-client.html
+
+1. Append the following line into /etc/ppp/chap-secrets file for security configuration.
+   sh PPTP sh 10.19.132.38
+Note: first 'sh' means Username, 'PPTP' means the assumed name of the remote system for authentication purposes to name, second 'sh' means Password, 10.18.132.38 means the IP address this security file is used for.
+
+2. Create a peer file into /etc/ppp/peers/. I named it as pptp-vpn-01. The content is:
+   pty "pptp 10.19.132.38 --nolaunchpppd"
+   name sh
+   remotename PPTP
+   file /etc/ppp/options.pptp
+   ipparam pptp-vpn-01
+Note: empty for now. :) You can google it for detials.
+
+3. Configure the route table to make sure all traffic outside is through VPN. Create a file in /etc/ppp/ip-up.d/ named route-traffic, the content is:
+   #!/bin/bash
+   route add -net 10.0.0.0 netmask 255.0.0.0 dev eth0
+   route del -net default dev eth0
+   route add -net default dev ppp0
+And assign the execution permission to that file.
+
+4. To support vpn can by on/off dynamically, also create a file in /etc/ppp/ip-down.d/ named disableroute, the content is:
+   #!/bin/bash
+   route add -net default gw 10.38.116.1 dev eth0
+And assign the execution permission to that file.
+
+5. Launch the following command to connect the VPN:
+   pon pptp-vpn-01
+
+6. Launch the following command to disconnect the VPN:
+   poff pptp-vpn-01
+
+7. To make sure the vpn is working by default, add the following line into /etc/rc.local
+   pon pptp-vpn-01

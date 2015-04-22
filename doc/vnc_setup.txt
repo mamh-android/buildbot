@@ -1,0 +1,26 @@
+Author: Yilu Mao
+
+Quote from:
+http://www.techrepublic.com/blog/linux-and-open-source/linux-101-easy-vnc-server-setup/
+
+1. Ask each user (for example, user name is "myvnc") to set its vnc password by the following command:
+	# vncpasswd
+
+2. Configure vnc server for such user by adding the following in the /etc/sysconfig/vncservers file.
+	VNCSERVERS="num:myvnc"
+	VNCSERVERARGS[num]="-geometry 1600x1200"
+Note: num is a different number other than other users.
+
+The final vncservers file should be like:
+	VNCSERVERS="1:vncuser1 2:vncuser2 3:vncuser3"
+	VNCSERVERARGS[1]="-geometry 640x480"
+	VNCSERVERARGS[2]="-geometry 800x600"
+	VNCSERVERARGS[3]="-geometry 1600x1200"
+
+3. Also ask user to configure its own config file in ~/.vnc/xstartup to uncomment the following two lines:
+	unset SESSION_MANAGER
+	exec /etc/X11/xinit/xinitrc
+
+4. Restart VNC server by:
+	service vncserver restart
+				

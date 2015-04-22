@@ -1,0 +1,62 @@
+========================================================
+How to avoid inputting password for every git clone/pull
+========================================================
+1, Generating public/private rsa key pair with ssh-keygen:
+$ssh-keygen
+press enter for all pop out. Then your public key is in ~/.ssh/id_rsa.pub
+
+2, ssh-copy-id name@shgit.marvell.com
+
+========================================================
+What if client PC user name is not same with git account
+========================================================
+1. create ~/.ssh/config if it does not exist.
+2. add below two lines
+
+host shgit.marvell.com
+     user account_name
+
+========================================================
+send patches into mailist by git directly
+========================================================
+We can review patch and add comments in email client directly.
+
+I. We have to use smtp to send our patches.
+
+1. Install git git-core git-email
+
+      #apt-get install git git-core git-email
+
+2. Install msmtp package
+
+      #apt-get install msmtp
+
+3. Edit ~/.msmtprc, add this configuration
+
+# Example for a user configuration file
+# Set default values for all following accounts.
+defaults
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile ~/.msmtp.log
+
+# Marvell email service
+account marvell
+host 10.68.76.51
+port 25
+from user.name@marvell.com
+auth off
+tls off
+user user.name@marvell.com
+
+# Set a default account
+account default : marvell
+
+4. Choose smtp server
+git-config --global sendemail.smtpserver /usr/bin/msmtp
+
+5. Change the permission of ~/.msmtprc to 600.
+
+6. Test git-send-email
+git-send-email --suppress-cc=all [file/directory]
+

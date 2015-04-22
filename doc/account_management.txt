@@ -1,0 +1,16 @@
+==============================================
+Grant permission to a user
+==============================================
+setfacl -R -m username:rwx /git/xxx/xxx.git
+
+
+==============================================
+Remove permission from a user
+==============================================
+
+==============================================
+Grant a user releaseadm access
+==============================================
+add valid key in /home/usr/.ssh/authorized_keys to
+/home/releaseadm/.ssh/authorized_keys to grant
+releaseadm access without password inputing.
