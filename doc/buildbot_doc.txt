@@ -1,0 +1,12 @@
+Author: Yufei Shi
+
+#buildbot master start
+$cd /home/buildfarm/buildbot/sandbox/ && . bin/activate
+$cd master && buildbot start
+
+#buildbot add user
+$vim /home/buildfarm/buildbot/sandbox/master/updateuser/users.txt
+run updateuser.py at /home/buildfarm/buildbot/sandbox/master/updateuser/
+
+#buildbot intergrator permission
+modify /home/buildfarm/buildbot/sandbox/master/public_html/public.js
