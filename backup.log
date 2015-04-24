@@ -1866,3 +1866,25 @@ sending incremental file list
 sent 203 bytes  received 28 bytes  462.00 bytes/sec
 total size is 14608  speedup is 63.24
 rsync done at: 2015-04-24 04:25:05+08:00
+[detached HEAD 82c5886] Autorsync:synced done 2015-04-24 04:25:07+08:00
+ 2 files changed, 25 insertions(+), 0 deletions(-)
+done at: 2015-04-24 04:25:13+08:00
+
+start at: 2015-04-25 04:25:01+08:00
+sending incremental file list
+
+sent 19659 bytes  received 1265 bytes  8369.60 bytes/sec
+total size is 7307739  speedup is 349.25
+sending incremental file list
+
+sent 61 bytes  received 15 bytes  152.00 bytes/sec
+total size is 41204  speedup is 542.16
+sending incremental file list
+
+sent 22956 bytes  received 1401 bytes  9742.80 bytes/sec
+total size is 1976584  speedup is 81.15
+sending incremental file list
+
+sent 203 bytes  received 28 bytes  462.00 bytes/sec
+total size is 14608  speedup is 63.24
+rsync done at: 2015-04-25 04:25:05+08:00
