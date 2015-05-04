@@ -66,6 +66,7 @@ def return_gerrit_query_jsonstr(owner, branchregex=None):
     json_list = []
     for o in owner:
         for b in branchregex:
+            print "[Patch Status][%s] Gerrit query %s %s" % (str(datetime.datetime.now()), o, b)
             cmd = "ssh -p 29418 %s gerrit query --current-patch-set --format=JSON status:merged owner:%s branch:^.*%s.*" % (m_remote_server, o, b)
             (status, remote_output) = run_command_status(cmd)
             for output in remote_output.split('\n'):
@@ -78,6 +79,7 @@ def return_gerrit_query_jsonstr(owner, branchregex=None):
 def return_via_change(changeid_l):
     json_list = []
     for c in changeid_l:
+        print "[Patch Status][%s] Gerrit query %s" % (str(datetime.datetime.now()), c)
         cmd = "ssh -p 29418 %s gerrit query --current-patch-set --format=JSON status:merged message:%s" % (m_remote_server, c)
         (status, remote_output) = run_command_status(cmd)
         for output in remote_output.split('\n'):
@@ -161,7 +163,7 @@ def run(owner, branchregex):
         changeid_l.append(jstr['id'])
     changeid_l=list(set(changeid_l))
     for j in return_via_change(changeid_l):
-            branch_l.append(j['branch'])
+        branch_l.append(j['branch'])
     branch_l=list(set(branch_l))
     branch_l=filter_branch(branchregex, branch_l)
     branch_l.sort()
