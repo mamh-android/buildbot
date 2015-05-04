@@ -17,6 +17,7 @@ import csv
 import time
 from time import localtime, strftime
 from datetime import date
+import datetime
 import sys
 import os
 import re
@@ -149,6 +150,7 @@ class ScanRev:
         return branch_n
 
 def run(owner, branchregex):
+    print "[Patch Status][%s] Start creating changid tab" % (str(datetime.datetime.now()))
     #setup gerrit patch change csv
     NameList = ['ChangeID', 'Author', 'Project', 'Subject', 'LastCreatedOn']
     fout = str(date.today()) + '.csv'
@@ -168,6 +170,7 @@ def run(owner, branchregex):
     NameList.extend(branch_l)
     out_csv.writerow(NameList)
     p_count = 0
+    print "[Patch Status][%s] Start to scan changeids via shgit" % (str(datetime.datetime.now()))
     for c in changeid_l:
         Branch = []
         for f in return_via_change([c]):
@@ -187,6 +190,7 @@ def run(owner, branchregex):
         out_csv.writerow(row)
     fp.flush()
     fp.close()
+    print "[Patch Status][%s] End sending the mail" % (str(datetime.datetime.now()))
     if (len(receiver) > 0):
         delimiter = ','
         body = "User: " + delimiter.join(owner) + "\n" + "Branches: " + delimiter.join(branchregex)
