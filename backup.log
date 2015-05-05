@@ -2117,3 +2117,51 @@ updateuser/.users.txt.swp
 sent 439 bytes  received 50 bytes  978.00 bytes/sec
 total size is 22811  speedup is 46.65
 rsync done at: 2015-05-05 04:25:06+08:00
+[detached HEAD ed0ba62] Autorsync:synced done 2015-05-05 04:25:08+08:00
+ 3 files changed, 33 insertions(+), 6 deletions(-)
+ rewrite updateuser/.users.txt.swp (72%)
+done at: 2015-05-05 04:25:15+08:00
+
+start at: 2015-05-06 04:25:01+08:00
+sending incremental file list
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/templates/
+
+sent 19665 bytes  received 1271 bytes  5981.71 bytes/sec
+total size is 7307844  speedup is 349.06
+sending incremental file list
+master.cfg
+
+sent 6542 bytes  received 31 bytes  13146.00 bytes/sec
+total size is 41288  speedup is 6.28
+sending incremental file list
+public_html/
+public_html/.public.js.swo
+public_html/public.js
+public_html/ppat/
+public_html/ppat/trigger_jenkins.py
+public_html/ppat/.git/
+public_html/ppat/.git/FETCH_HEAD
+public_html/ppat/.git/HEAD
+public_html/ppat/.git/index
+public_html/ppat/.git/logs/HEAD
+public_html/ppat/.git/logs/refs/remotes/origin/master
+public_html/ppat/.git/objects/
+public_html/ppat/.git/objects/38/
+public_html/ppat/.git/objects/38/c4c3fc06ed08321792f25e4481c15fa1360d0e
+public_html/ppat/.git/objects/42/
+public_html/ppat/.git/objects/42/395f49a251da2fe37ba0085d706cc01295b63a
+public_html/ppat/.git/objects/d0/
+public_html/ppat/.git/objects/d0/d11415f617f1c300b3576ab5f621d250e6d067
+public_html/ppat/.git/refs/remotes/origin/
+public_html/ppat/.git/refs/remotes/origin/master
+
+sent 55435 bytes  received 1633 bytes  16305.14 bytes/sec
+total size is 2044850  speedup is 35.83
+sending incremental file list
+updateuser/
+updateuser/users.txt
+
+sent 3884 bytes  received 47 bytes  2620.67 bytes/sec
+total size is 14619  speedup is 3.72
+rsync done at: 2015-05-06 04:25:08+08:00
