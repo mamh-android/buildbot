@@ -2165,3 +2165,29 @@ updateuser/users.txt
 sent 3884 bytes  received 47 bytes  2620.67 bytes/sec
 total size is 14619  speedup is 3.72
 rsync done at: 2015-05-06 04:25:08+08:00
+[detached HEAD f99ac9b] Autorsync:synced done 2015-05-06 04:25:09+08:00
+ 2 files changed, 50 insertions(+), 1 deletions(-)
+done at: 2015-05-06 04:25:16+08:00
+
+start at: 2015-05-07 04:25:01+08:00
+sending incremental file list
+
+sent 19659 bytes  received 1265 bytes  5978.29 bytes/sec
+total size is 7307844  speedup is 349.26
+sending incremental file list
+
+sent 61 bytes  received 15 bytes  152.00 bytes/sec
+total size is 41288  speedup is 543.26
+sending incremental file list
+public_html/
+public_html/ppat/.git/objects/38/
+public_html/ppat/.git/objects/42/
+public_html/ppat/.git/objects/d0/
+
+sent 23142 bytes  received 1423 bytes  16376.67 bytes/sec
+total size is 1979314  speedup is 80.57
+sending incremental file list
+
+sent 203 bytes  received 28 bytes  462.00 bytes/sec
+total size is 14619  speedup is 63.29
+rsync done at: 2015-05-07 04:25:06+08:00
