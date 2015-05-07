@@ -2191,3 +2191,31 @@ sending incremental file list
 sent 203 bytes  received 28 bytes  462.00 bytes/sec
 total size is 14619  speedup is 63.29
 rsync done at: 2015-05-07 04:25:06+08:00
+[detached HEAD 7cbafdf] Autorsync:synced done 2015-05-07 04:25:08+08:00
+ 1 files changed, 26 insertions(+), 0 deletions(-)
+done at: 2015-05-07 04:25:14+08:00
+
+start at: 2015-05-08 04:25:01+08:00
+sending incremental file list
+buildbot-0.8.5-py2.6.egg/buildbot/
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/templates/
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/templates/layout.html
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/templates/trigger.html
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/templates/trigger.html.2015.5.7
+buildbot-0.8.5-py2.6.egg/buildbot/status/web/templates/trigger.html.old
+
+sent 38414 bytes  received 1341 bytes  11358.57 bytes/sec
+total size is 7406513  speedup is 186.30
+sending incremental file list
+
+sent 61 bytes  received 15 bytes  152.00 bytes/sec
+total size is 41288  speedup is 543.26
+sending incremental file list
+
+sent 23130 bytes  received 1411 bytes  9816.40 bytes/sec
+total size is 1979314  speedup is 80.65
+sending incremental file list
+
+sent 203 bytes  received 28 bytes  462.00 bytes/sec
+total size is 14619  speedup is 63.29
+rsync done at: 2015-05-08 04:25:06+08:00
