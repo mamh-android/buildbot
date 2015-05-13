@@ -1,8 +1,7 @@
 #!/usr/bin/python
-# v1.0
-#    cp from Image Auto Test Script(IMAUTO)
-#    the script will be triggered depends on cosmo build results
-#    Author: yfshi@marvell.com
+
+#cp from Image Auto Test Script(IMAUTO)
+#the script will be triggered depends on cosmo build results
 
 import os
 import sys
@@ -35,13 +34,13 @@ GERRIT_SERVER = "privgit.marvell.com"
 SMTP_SERVER = "10.93.76.20"
 
 #Buildfarm Maintainer
-BF_ADMIN = "yfshi@marvell.com"
+BF_ADMIN = "mamh@marvell.com"
 
 #MAIL_LIST = get_mail_list("cosmo-dev")
 #MAIL_LIST = ['gr-apse-cosmo@marvell.com']
 MAIL_LIST = ['hli16@marvell.com','allenw@marvell.com','penglin@marvell.com','yzhan45@marvell.com','beibeiq@marvell.com','bxia1@marvell.com']
 #extend extra people who not in the gr-apse-cosmo
-#MAIL_LIST.extend(['yfshi@marvell.com', 'skershaw@marvell.com', 'seankuo@marvell.com', 'pstsai@marvell.com', 'dongli@marvell.com', 'ejin@marvell.com'])
+#MAIL_LIST.extend(['mamh@marvell.com', 'skershaw@marvell.com', 'seankuo@marvell.com', 'pstsai@marvell.com', 'dongli@marvell.com', 'ejin@marvell.com'])
 
 ''' Force Python's print function to output to the screen.
 '''

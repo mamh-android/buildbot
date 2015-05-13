@@ -1,9 +1,5 @@
 #!/usr/bin/python
 
-# v1.0
-#    Cosmo On Demaind Tuning (cosmo ODT)
-#    Author: yfshi@marvell.com
-
 import os
 import sys
 import getopt
@@ -36,7 +32,7 @@ GERRIT_SERVER = "privgit.marvell.com"
 SMTP_SERVER = "10.93.76.20"
 
 #Buildfarm Maintainer
-BF_ADMIN = "yfshi@marvell.com"
+BF_ADMIN = "mamh@marvell.com"
 
 #MAIL_LIST
 MAIL_LIST = []

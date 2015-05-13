@@ -1,7 +1,4 @@
 #!/usr/bin/python
-# v1.0
-#    Cosmo By Patch Build (Cosmo_BPB)
-#    Author: yfshi@marvell.com
 
 import os
 import sys

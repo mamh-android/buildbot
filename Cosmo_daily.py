@@ -1,9 +1,5 @@
 #!/usr/bin/python
 
-# v1.1
-#    Cosmo Daily Build Script(Cosmo_daily)
-#    Author: yfshi@marvell.com
-
 import os
 import sys
 import getopt
@@ -35,12 +31,12 @@ GERRIT_SERVER = "privgit.marvell.com"
 SMTP_SERVER = "10.93.76.20"
 
 #Buildfarm Maintainer
-BF_ADMIN = "yfshi@marvell.com"
+BF_ADMIN = "mamh@marvell.com"
 
 #MAIL_LIST = get_mail_list("cosmo-dev")
 MAIL_LIST = ['gr-apse-cosmo@marvell.com']
 #extend extra people who not in the gr-apse-cosmo
-MAIL_LIST.extend(['yfshi@marvell.com', 'skershaw@marvell.com', 'seankuo@marvell.com', 'pstsai@marvell.com', 'dongli@marvell.com', 'ejin@marvell.com', 'samson@marvell.com','chwu@marvell.com','hhornung@marvell.com'])
+MAIL_LIST.extend(['mamh@marvell.com', 'shhgu@marvell.com','skershaw@marvell.com', 'seankuo@marvell.com', 'pstsai@marvell.com', 'dongli@marvell.com', 'ejin@marvell.com', 'samson@marvell.com','chwu@marvell.com','hhornung@marvell.com'])
 
 ''' Force Python's print function to output to the screen.
 '''

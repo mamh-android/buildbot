@@ -1,7 +1,6 @@
 #!/usr/bin/python
-# v1.0
-#    sendmail script
-#    Author: yfshi@marvell.com
+
+#sendmail script
 
 import getopt
 import sys
@@ -104,7 +103,7 @@ def main(argv):
     results = ""
     dir_path = ""
     get_mail_list()
-    #send_html_mail("It's just a test",ADM_USER,["yfshi@marvell.com"],"success")
+    #send_html_mail("It's just a test",ADM_USER,["mamh@marvell.com"],"success")
     #send_html_mail("It's just a test", ADM_USER, get_mail_list(), "success")
     try:
         opts, args = getopt.getopt(argv,"r:d:h")

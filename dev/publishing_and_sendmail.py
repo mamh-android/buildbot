@@ -1,7 +1,6 @@
 #!/usr/bin/python
-# v1.0
-#    publishing and send mail script
-#    Author: yfshi@marvell.com
+
+#publishing and send mail script
 
 
 import os

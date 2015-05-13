@@ -46,7 +46,7 @@ def exec_commands(cmds):
         print "[AutoTest][%s][PID:%s] exit with none Zero" % (str(datetime.datetime.now()), p.pid)
         print p.stdout.read()
         sys.exit(1)
-    
+
     '''MAX task count 
     '''
     max_task = cpu_count()
@@ -57,7 +57,7 @@ def exec_commands(cmds):
             p = subprocess.Popen(task, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
             processes[p.pid] = p
             print "[AutoTest][%s][PID:%s]'%s' append to CPU" % (str(datetime.datetime.now()), p.pid, task)
-     
+
         if not processes and not cmds:
             print "tasklist done"
             break
@@ -82,16 +82,6 @@ commands_1 = [
     ["test4.py"]
 ]
 
-commands_2 = [
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test1.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test2.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test3.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test4.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test1.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test2.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test3.py"],
-    ["/home/yfshi/workspace/cosmo_build/buildscript/dev/test4.py"]
-]
 
 cmds_array = []
 cmds_array.append(commands_1)

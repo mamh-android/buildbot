@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # v1.0
 #    Image Auto Test Script(IMAUTO)
-#    Author: yfshi@marvell.com
+#    Author: mamh@marvell.com
 
 import os
 import sys
@@ -29,12 +29,12 @@ GERRIT_SERVER = "privgit.marvell.com"
 SMTP_SERVER = "10.93.76.20"
 
 #Buildfarm Maintainer
-BF_ADMIN = "yfshi@marvell.com"
+BF_ADMIN = "mamh@marvell.com"
 CAM_QAE_ADMIN = "yzhan45@marvell.com"
 
 #Mail list
 MAIL_LIST = []
-MAIL_LIST.append(CAM_QAE_ADMIN)
+MAIL_LIST.append(CAM_QAE_ADMIN, 'shhgu@marvell.com')
 
 ''' Force Python's print function to output to the screen.
 '''
