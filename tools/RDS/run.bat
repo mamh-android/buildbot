@@ -2,7 +2,7 @@
 rem ***************************************
 rem windows daily task scheduler
 rem use forfile to release the disk space under \android\autobuild
-rem Author: yfshi@marvell.com
+rem Author: mamh@marvell.com
 rem ***************************************
 
 set workingdir=C:\RDS\
@@ -11,7 +11,7 @@ set olderthan3m=90
 set olderthan6m=180
 set olderthan1y=365
 set source=D:\autobuild\android
-set email=yfshi@marvell.com
+set email=mamh@marvell.com
 set blat=%workingdir%blat\full\blat.exe
 set extension=tgz
 set relayserver=localhost
@@ -90,7 +90,7 @@ time /t >>%loglocation%
 rem ***************************************
 rem sent report
 rem use blat sent the releaselog
-rem Author: yfshi@marvell.com
+rem Author: mamh@marvell.com
 rem ***************************************
 rem echo Delete finished... Sending Report.
 rem set server=%computername%
