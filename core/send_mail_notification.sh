@@ -15,7 +15,7 @@ build_maintainer="mamh@marvell.com"
 buildbot_url="http://10.38.34.92:8010/builders/"
 STD_LOG=/home/buildfarm/buildbot_script/stdio.log
 PACKAGE_LINK=$( awk -F"<result-dir>|</result-dir>" ' /<result-dir>/ { print $2 } ' $STD_LOG )
-DEV_TEAM="APSE-SE2"
+DEV_TEAM="APSE-SE1-LT"
 PUBLISH_SERVER=/APSE_Release
 
 help() {
@@ -93,7 +93,7 @@ validate_parameters() {
 generate_error_notification_email() {
 cat <<-EOF
 From: $build_maintainer
-To: $USEREMAIL
+To: $USEREMAIL,mamh@marvell.com
 Subject: [$BUILDTYPE] is failed! please check
 
 This is an automated email from the autobuild script. It was
@@ -121,7 +121,7 @@ EOF
 generate_odvb_success_notification_email() {
 cat <<-EOF
 From: $build_maintainer
-To: $USEREMAIL
+To: $USEREMAIL,mamh@marvell.com
 Subject: [$BUILDTYPE] is done.
 
 This is an automated email from the autobuild script. It was
@@ -141,7 +141,7 @@ EOF
 generate_uprb_success_notification_email() {
 cat <<-EOF
 From: $build_maintainer
-To: $USEREMAIL,gqxu@marvell.com,
+To: $USEREMAIL,gqxu@marvell.com,mamh@marvell.com
 Subject: [$BUILDTYPE] is done.
 
 This is an automated email from the autobuild script. It was
@@ -189,7 +189,7 @@ send_uprb_success_notification() {
 easter_egg_mail(){
 cat <<-EOF
 From: $build_maintainer
-To: $USEREMAIL,qgu2@marvell.com,wchyan@marvell.com,
+To: $USEREMAIL,qgu2@marvell.com,wchyan@marvell.com,mamh@marvell.com
 Subject: [BUILDFARM EASTER EGG]
 
 Congratulation
