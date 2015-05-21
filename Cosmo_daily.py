@@ -36,7 +36,7 @@ BF_ADMIN = "mamh@marvell.com"
 #MAIL_LIST = get_mail_list("cosmo-dev")
 MAIL_LIST = ['gr-apse-cosmo@marvell.com']
 #extend extra people who not in the gr-apse-cosmo
-MAIL_LIST.extend(['mamh@marvell.com', 'shhgu@marvell.com','skershaw@marvell.com', 'seankuo@marvell.com', 'pstsai@marvell.com', 'dongli@marvell.com', 'ejin@marvell.com', 'samson@marvell.com','chwu@marvell.com','hhornung@marvell.com'])
+MAIL_LIST.extend(['mamh@marvell.com', 'shhgu@marvell.com','skershaw@marvell.com', 'seankuo@marvell.com', 'dongli@marvell.com',  'samson@marvell.com','chwu@marvell.com','hhornung@marvell.com'])
 
 ''' Force Python's print function to output to the screen.
 '''
