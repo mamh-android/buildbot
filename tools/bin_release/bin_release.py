@@ -265,7 +265,7 @@ def run(target_product, build_branch, build_nr, android_variant):
     secs = cf.sections()
     for s in secs:
         product_list = []
-        if cf.has_option(project, 'target_product'):
+        if cf.has_option(s, 'target_product'):
             product = cf.get(s, 'target_product')
             product_list = product.split(',')
         else:
