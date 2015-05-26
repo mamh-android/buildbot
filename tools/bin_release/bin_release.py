@@ -21,10 +21,6 @@ BUILD_STDIO = "/home/buildfarm/buildbot_script/stdio.log"
 FILE_SERVER = '\\\\sh-fs04'
 CONFIG_FILE='/autobuild/temp/binary_release/bin_release.cfg'
 
-#target_product='pxa1936dkb_64bit'
-#build_branch='pxa1936-lp5.1'
-#build_nr=1000
-
 def runCMD( cmd , workDir=None):
     printedLines = []
     if workDir is None:
@@ -268,9 +264,13 @@ def run(target_product, build_branch, build_nr, android_variant):
     projects = []
     secs = cf.sections()
     for s in secs:
-        product = cf.get(s, 'target_product')
+        product_list = []
+        if cf.has_option(project, 'target_product'):
+            product = cf.get(s, 'target_product')
+            product_list = product.split(',')
+        else:
+            product_list.append(target_product)
         branch = cf.get(s, 'build_branch')
-        product_list = product.split(',')
         branch_list = branch.split(',')
         for p in product_list:
             for b in branch_list:
@@ -413,6 +413,8 @@ def main(argv):
         usage()
         sys.exit(2)
 
+    #From distribution build, it build branch will be pxa1936-lp5.1/3148
+    build_branch = build_branch.split('/')[0]
     run(target_product, build_branch, build_nr, android_variant)
 
 if __name__ == '__main__':
