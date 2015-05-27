@@ -2,12 +2,14 @@
 
 cbranch=$1
 
+build_type="DEVB"
 if echo $cbranch | grep -q ".*/[0-9][0-9]*"; then
     changid=${cbranch#*/}
     obj=$(echo $changid|rev|cut -c-2|rev)
     git clone ssh://privgit.marvell.com:29418/buildbot/manifest_backup
     cd manifest_backup && git fetch ssh://privgit.marvell.com:29418/buildbot/manifest_backup refs/changes/$obj/$changid/1 && git reset --hard FETCH_HEAD && cd -
     . manifest_backup/run.sh
+    build_type="DISB"
 else
     MANIFEST_BRANCH=$1
 fi
@@ -21,6 +23,7 @@ ids_2=$2
 echo PLATFORM_ANDROID_VARIANT: $2
 STD_LOG=/home/buildfarm/buildbot_script/stdio.log
 rm -f $STD_LOG
+echo "Build type: $build_type" | tee -a $STD_LOG
 . ~/buildbot_script/buildbot/core/check_update.sh
 cd ~/aabs && git reset --hard origin/master
 if [ "$ids_2" != "" -a "$ids_2" != "None" ]; then

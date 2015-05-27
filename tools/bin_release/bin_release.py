@@ -10,7 +10,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-GIT_BASE='ssh://wchyan@shgit.marvell.com:29418/git/android/'
+GIT_BASE='ssh://shgit.marvell.com:29418/git/android/'
 MAX_PROJECT_NUM=10
 PUBLISH_DEST = '/autobuild/temp/binary_release'
 # Mavell SMTP server
