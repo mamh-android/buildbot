@@ -182,6 +182,7 @@ fi
 export ABS_SOURCE_DIR=$SYNC_GIT_WORKING_DIR
 export ABS_PUBLISH_DIR=$DEST_DIR
 
+echo "ANDROID_SOURCE_DIR: $ABS_SOURCE_DIR"
 tools/build_platforms.sh ${target} no-checkout | tee -a log.txt
 result=`grep ">PASS<" log.txt`
 if [ -n "$result" ]; then

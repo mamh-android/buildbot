@@ -120,6 +120,7 @@ export ABS_REAL_TIME_VIRTUAL_BUILD=true
 export ABS_SOURCE_DIR=$SYNC_GIT_WORKING_DIR
 export ABS_PUBLISH_DIR=$DEST_DIR
 
+echo "ANDROID_SOURCE_DIR: $ABS_SOURCE_DIR"
 ~/aabs/tools/build_platforms.sh ${target} | tee -a log.txt
 result=`grep ">PASS<" log.txt`
 if [ -n "$result" ]; then
