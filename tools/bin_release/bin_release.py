@@ -16,7 +16,7 @@ PUBLISH_DEST = '/autobuild/temp/binary_release'
 # Mavell SMTP server
 SMTP_SERVER = '10.93.76.20'
 ADMIN_MAIL='wchyan@marvell.com'
-BUILDBOT_URL = 'http://buildbot.marvell.com:8010/builders/android_develop_build/builds/'
+BUILDBOT_URL = 'http://buildbot.marvell.com:8010/builders/'
 BUILD_STDIO = "/home/buildfarm/buildbot_script/stdio.log"
 FILE_SERVER = '\\\\sh-fs04'
 CONFIG_FILE='/autobuild/temp/binary_release/bin_release.cfg'
@@ -91,11 +91,18 @@ def get_publish_folder(base, project, module, branch):
             else:
                 i = i + 1 
 
-def return_mail_text(project, board, branch, build_nr, result, package_link=None, failurelog=None):
+def return_mail_text(project, board, branch, build_type, build_nr, result, package_link=None, failurelog=None):
+    build_type_url = "android_develop_build"
+    if build_type == 'ODVB':
+        build_type_url = 'on_demand_virtual_build'
+    elif build_type == 'DISB':
+        build_type_url = 'android_distraction_build'
+    elif build_type == 'RTVB':
+        build_type_url = 'android_develop_build'
     subject = "[binary autobuild][%s-%s] %s %s" % (board, branch, str(date.today()), result)
     message =  "This is an automated email from auto build system.\n"
     message += "It was generated because build %s %s\n\n" % (project, result)
-    message += "Buildbot Url:\n%s%s\n\n" % (BUILDBOT_URL, build_nr)
+    message += "Buildbot Url:\n%s%s/builds/%s\n\n" % (BUILDBOT_URL, build_type_url, build_nr)
     if (result == 'failed'):
         message += "Last part of the build log is followed:\n%s\n\n" % failurelog
     if (result == 'success'):
@@ -238,6 +245,7 @@ def build_project(target_product, android_variant, anroid_root, path_name, build
 def get_last_build_product():
     target_product = None
     android_root = None
+    build_type = None
 
     if os.path.isfile(BUILD_STDIO):
         with open(BUILD_STDIO, 'r') as file:
@@ -246,16 +254,19 @@ def get_last_build_product():
                     target_product = line.split('=')[1]
                 if line.startswith('repo has been initialized in'):
                     android_root = line.split(' ')[5]
+                if line.startswith('Build type:')
+                    build_type = line.split(':')[1]
+                    build_type.strip()
     target_product = target_product.split('\n')[0]
     android_root = android_root.split('\n')[0]
     print '--- Get last android root: %s, product: %s from stdio.log' % (android_root, target_product)
-    return android_root, target_product
+    return android_root, target_product, build_type
 
 def run(target_product, build_branch, build_nr, android_variant):
     #read all config file
     cf = ConfigParser.ConfigParser()
     cf.read(CONFIG_FILE)
-    android_root, _product = get_last_build_product()
+    android_root, _product, build_type = get_last_build_product()
     if target_product == None:
         target_product = _product
 
@@ -368,7 +379,7 @@ def run(target_product, build_branch, build_nr, android_variant):
             result = 'success'
         print '--- build ' + result
         print '--- notification sendmail '
-        mail_subject, mail_text = return_mail_text(project_name, target_product, build_branch, build_nr, result, package_link=dst_folder, failurelog=msg)
+        mail_subject, mail_text = return_mail_text(project_name, target_product, build_branch, build_type, build_nr, result, package_link=dst_folder, failurelog=msg)
         send_mail(mail_subject, ADMIN_MAIL, mail_owner, mail_text) 
 
         #clean the previous project build
@@ -413,8 +424,10 @@ def main(argv):
         usage()
         sys.exit(2)
 
-    #From distribution build, it build branch will be pxa1936-lp5.1/3148
+    #From distribution build, it build branch will like pxa1936-lp5.1/3148
     build_branch = build_branch.split('/')[0]
+    #From odvb , the product is product:device
+    target_product = target_product.split(':')[0]
     run(target_product, build_branch, build_nr, android_variant)
 
 if __name__ == '__main__':
