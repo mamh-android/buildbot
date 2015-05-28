@@ -31,7 +31,7 @@ def repo_init(src_manifest_path, manifest_branch, manifest_xml, addition):
     process = subprocess.Popen(arg, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Input Your name, Your email, Is it correct
     process.communicate("\n\ny\n")[0]
-    subprocess.check_call("repo sync", shell=True)
+    subprocess.check_call("repo sync -q --jobs=8", shell=True)
 
 def usage():
     print "fetchcode -u {manifest url} | [-b {manifest branch}] | [-m {manifest xml}]"
@@ -43,7 +43,7 @@ def main(argv):
     manifest_xml = ""
     addition = ""
     try:
-        opts, args = getopt.getopt(argv, "b:u:m:h", ["reference=", "repo-url="])
+        opts, args = getopt.getopt(argv, "b:u:m:h", ["reference=", "repo-url=","depth="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -61,6 +61,8 @@ def main(argv):
             addition += " --reference=" + arg
         elif opt in ("--repo-url"):
             addition += " --repo-url=" + arg
+        elif opt in ("--depth"):
+            addition += " --depth=" + arg
 
     if manifest_url == "":
         usage()

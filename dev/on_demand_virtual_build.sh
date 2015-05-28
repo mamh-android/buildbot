@@ -11,6 +11,9 @@
 # Command usage:
 #test_setup_code_via_manifest_and_gerrit_patchsetid.sh -m <manifest xml> -b <manifest branch> -g <gerrit patchsetID list>
 #gerrit patchsetID list must be an array of first-order, such as A="001 002 003 004 005"
+function printcolor(){
+    printf "\033[1;33m[odvb]\033[0m\033[1;31m$1\n\033[0m"
+}
 
 export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-~/aabs/odvb_work}
 export GERRIT_SERVER=${GERRIT_SERVER:-http://shgit.marvell.com}
@@ -74,6 +77,7 @@ case "${11}" in
         *) echo "wrong parameter ${11}"; exit 1 ;;
 esac
 # Clean the working directory
+printcolor "clean the working drectory: $SYNC_GIT_WORKING_DIR"
 rm -fr $SYNC_GIT_WORKING_DIR
 
 # Create working diretory
@@ -90,17 +94,17 @@ if [ $? -ne 0 ]; then
 fi
 
 # Copy manifest xml into current directory
-echo $4
+printcolor "copy manifest: $4"
 cp $4 $MANIFEST_XML
 
-echo $SCRIPT_PATH
+printcolor $SCRIPT_PATH
 
 # Fetch code from Developer Server with mrvl-ics branch
 if [ -f $MANIFEST_DIR/manifest.commit ]; then
     MANIFEST_C=$(cat $MANIFEST_DIR/manifest.commit)
-    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_C $REFERENCE_URL $REPO_URL
+    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_C $REFERENCE_URL $REPO_URL --depth=1
 else
-    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
+    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL --depth=1
 fi
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -110,8 +114,9 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Fetch code from Developer Server with manifest xml
+printcolor "fetch code: "
 if [ -f $MANIFEST_XML ];then
-    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
+    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL --depth=1
     # Reset hard aabs
     cd ~/aabs
     git fetch origin
