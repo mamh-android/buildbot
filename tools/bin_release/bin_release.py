@@ -252,8 +252,9 @@ def get_last_build_product():
             for line in file:
                 if line.startswith('TARGET_PRODUCT='):
                     target_product = line.split('=')[1]
-                if line.startswith('repo has been initialized in'):
-                    android_root = line.split(' ')[5]
+                if line.startswith('ANDROID_SOURCE_DIR'):
+                    android_root = line.split(':')[1]
+                    build_type.strip()
                 if line.startswith('Build type:'):
                     build_type = line.split(':')[1]
                     build_type.strip()
