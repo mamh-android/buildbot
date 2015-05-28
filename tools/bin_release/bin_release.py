@@ -215,7 +215,7 @@ def get_project_source(git_name, branch_name, path_name):
 
     return ret, msg
 
-def build_project(target_product, android_variant, anroid_root, path_name, build_mode):
+def build_project(target_product, android_variant, android_root, path_name, build_mode):
     build_fail = False
     msg = ''
     ret = 0
