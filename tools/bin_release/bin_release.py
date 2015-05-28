@@ -254,7 +254,7 @@ def get_last_build_product():
                     target_product = line.split('=')[1]
                 if line.startswith('repo has been initialized in'):
                     android_root = line.split(' ')[5]
-                if line.startswith('Build type:')
+                if line.startswith('Build type:'):
                     build_type = line.split(':')[1]
                     build_type.strip()
     target_product = target_product.split('\n')[0]
