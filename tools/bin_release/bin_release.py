@@ -260,7 +260,7 @@ def get_last_build_product():
                     build_type.strip()
     target_product = target_product.split('\n')[0]
     android_root = android_root.split('\n')[0]
-    build_type = build_type..split('\n')[0]
+    build_type = build_type.split('\n')[0]
     print '--- Get last android root: %s, product: %s from stdio.log' % (android_root, target_product)
     return android_root, target_product, build_type
 
