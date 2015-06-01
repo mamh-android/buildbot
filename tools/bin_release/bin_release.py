@@ -402,7 +402,7 @@ def usage():
 
 def main(argv):
     build_branch = ''
-    target_product = None
+    target_product = 'pxa1936dkb_tz:pxa1936'
     build_nr = ''
     android_variant = 'userdebug'
     try:
@@ -425,6 +425,9 @@ def main(argv):
     if not build_branch or not build_nr:
         usage()
         sys.exit(2)
+    if build_branch != "pxa1936-lp5.1":
+        print "only support pxa1936-lp5.1"
+        sys.exit(0)
 
     #From distribution build, it build branch will like pxa1936-lp5.1/3148
     build_branch = build_branch.split('/')[0]
