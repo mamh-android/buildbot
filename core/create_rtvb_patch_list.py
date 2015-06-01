@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # v1.1
-#    Author: yfshi@marvell.com
 
 import subprocess
 import getopt

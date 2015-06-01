@@ -1,8 +1,4 @@
 #!/bin/bash
-#
-# ver1.0: 2014-09-09 yfshi@marvell.com bacis function ready select function is still under developing
-#
-#
 
 # 1. To enable this hook, copy it to ".git/hooks/prepare-commit-msg".
 # 2. Please add your own CATEGORY here

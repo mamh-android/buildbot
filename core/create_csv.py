@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # v1.0
 #    current it only support gerrit 2.4.2 database structure
-#    Author: yfshi@marvell.com
 
 import subprocess
 import getopt

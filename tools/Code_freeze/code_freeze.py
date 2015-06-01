@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # v1.0
 #    Code freeze Script
-#    Author: yfshi@marvell.com
 
 import os
 import sys
@@ -18,9 +17,9 @@ ALL_PROJECT="ssh://shgit.marvell.com/All-Projects"
 #Mavell SMTP server
 SMTP_SERVER = "10.93.76.20"
 #Gerrit admin user
-ADM_USER = "yfshi@marvell.com"
+ADM_USER = "mamh@marvell.com"
 #Mail list
-MAIL_LIST = []
+MAIL_LIST = ["mamh@marvell.com"]
 
 ''' Force Python's print function to output to the screen.
 '''
@@ -131,7 +130,7 @@ def run(branch, rev, mail):
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
     os.system("git push origin HEAD:refs/meta/config")
     print "[%s] All-Projects Code update done" % (str(datetime.datetime.now()))
-    
+
 #User help
 def usage():
     print "\tcode_freeze.py"

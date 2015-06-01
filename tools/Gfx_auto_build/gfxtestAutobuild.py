@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # v1.0
 #    Load gfx autobuild
-#    Author: yfshi@marvell.com
 
 import os
 import sys

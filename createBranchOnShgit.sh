@@ -14,7 +14,7 @@ export REFERENCE_URL=${REFERENCE_URL:-"--reference=/mnt/mirror/default"}
 export SRC_URL=${SRC_URL:-ssh://shgit.marvell.com/git/android/platform/manifest.git}
 export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"}
 
-build_maintainer="yfshi@marvell.com"
+build_maintainer="mamh@marvell.com"
 DEV_TEAM="APSE"
 
 #script path
@@ -35,7 +35,7 @@ dir_to_branch() {
 generate_success_notification_email() {
 cat <<-EOF
 From: $build_maintainer
-To: $USEREMAIL,
+To: $USEREMAIL,mamh@marvell.com
 Subject: [Create a release branch] is done.
 
 This is an automated email from the autobuild script. It was

@@ -2,7 +2,6 @@
 # v1.1
 #    Cherry pick patches from git server by gerrit patchsetID
 #    patchsetID should be a list, such as ["001","002","003","004","005"]
-#    Author: yfshi@marvell.com
 
 import subprocess
 import getopt

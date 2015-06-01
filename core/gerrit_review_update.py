@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # v1.0
 #    gerrit auto review script
-#    Author: yfshi@marvell.com
 
 import subprocess
 import getopt

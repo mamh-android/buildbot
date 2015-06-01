@@ -4,7 +4,7 @@
 # v1.3 polished output csv style
 # v1.3.1 branch naming filter function added
 # v1.4 added scan shgit function
-#    input owner (yfshi,ylin8,wchyan)
+#    input owner (ylin8,wchyan)
 #    regex of branch (kk4.4,lp5.1)
 #    codebase
 
@@ -223,7 +223,7 @@ def main(argv):
             owner = arg.split(',')
         elif opt in ("-b"):
             branchregex = arg.split(',')
-	elif opt in ("-t"):
+        elif opt in ("-t"):
             receiver = arg.split(',')
 
     if (owner == None) or (branchregex == None):

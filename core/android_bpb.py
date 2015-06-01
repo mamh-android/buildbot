@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # v1.0
 #    Android By Patch Build (android_bpb)
-#    Author: yfshi@marvell.com
 
 import os
 import sys
@@ -30,7 +29,7 @@ FAILURE_COUNT = 0
 #Mavell SMTP server and config
 SMTP_SERVER = "10.93.76.20"
 ADM_USER = "srv-buildfarm@marvell.com"
-MAIL_LIST = ['yfshi@marvell.com']
+MAIL_LIST = ['mamh@marvell.com']
 MAIL_LIST.extend(['fuqzhai@marvell.com', 'wchyan@marvell.com','guojia@marvell.com'])
 
 # Internal variable

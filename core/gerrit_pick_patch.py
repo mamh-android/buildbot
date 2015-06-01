@@ -3,7 +3,6 @@
 #    Cherry pick patches from git server by gerrit patchsetID
 #    patchsetID should be a list, such as ["001","002","003","004","005"]
 #    current it only support gerrit 2.4.2 database structure
-#    Author: yfshi@marvell.com
 
 import subprocess
 import getopt

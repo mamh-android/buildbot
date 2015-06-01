@@ -2,7 +2,6 @@
 # v1.0
 #    work around for gerrit project path does not match with manifest
 #    please import this script and use function gerrit_path_convert_to_manifest_path(gerrit_path)
-#    Author: yfshi@marvell.com
 
 import subprocess
 import getopt

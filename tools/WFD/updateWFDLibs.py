@@ -65,8 +65,8 @@ gVars = {}
 gVars['smtp_server'] = "10.68.76.51" # default
 gVars['mail_subject']= "Build notification of WFD from autobuild server"
 gVars['mail_from_who'] = "autobuild@marvell.com"
-gVars['mail_to_who'  ] = ["lbi@marvell.com"]
-gVars['mail_to_who_autobuild'] = ["yfshi@marvell.com"]
+gVars['mail_to_who'  ] = ["lbi@marvell.com","mamh@marvell.com"]
+gVars['mail_to_who_autobuild'] = ["mamh@marvell.com"]
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++
 # (End)

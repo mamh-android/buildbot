@@ -1,6 +1,4 @@
 #!/bin/sh
-#
-# ver1.0: 2014-09-09 yfshi@marvell.com bacis function ready
 
 unset GREP_OPTIONS
 
