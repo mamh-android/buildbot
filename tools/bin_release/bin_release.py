@@ -433,6 +433,8 @@ def main(argv):
         usage()
         sys.exit(2)
 
+    if android_variant == 'None':
+        android_variant = 'userdebug'
     #From distribution build, it build branch will like pxa1936-lp5.1/3148
     build_branch = build_branch.split('/')[0]
     #From odvb , the product is product:device
