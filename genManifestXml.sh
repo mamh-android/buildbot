@@ -85,6 +85,14 @@ for i in $Devices; do
     git commit -sm "$(date) ${MANIFEST_BRANCH} ${i}"
 done
 
+dist_file=/autobuild/temp/DISTRIBUTED_BUILD.${MANIFEST_BRANCH}
+old_files=`cat  ${dist_file}`
+echo "clean old file ${old_files} in ${dist_file}"
+for i in `cat  ${dist_file}`; do
+    rm -rf $i
+done
+rm -rf ${dist_file}
+
 #update gerrit
 if ! git branch -a | grep -q ${MANIFEST_BRANCH}$; then
     git push origin remotes/origin/master:refs/heads/${MANIFEST_BRANCH}
