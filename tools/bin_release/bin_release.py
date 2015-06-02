@@ -258,9 +258,12 @@ def get_last_build_product():
                 if line.startswith('Build type:'):
                     build_type = line.split(':')[1]
                     build_type.strip()
-    target_product = target_product.split('\n')[0]
-    android_root = android_root.split('\n')[0]
-    build_type = build_type.split('\n')[0]
+    if target_product != None:
+        target_product = target_product.split('\n')[0]
+    if android_root != None:
+        android_root = android_root.split('\n')[0]
+    if build_type != None:
+        build_type = build_type.split('\n')[0]
     print '--- Get last android root: %s, product: %s from stdio.log' % (android_root, target_product)
     return android_root, target_product, build_type
 
@@ -269,6 +272,10 @@ def run(target_product, build_branch, build_nr, android_variant):
     cf = ConfigParser.ConfigParser()
     cf.read(CONFIG_FILE)
     android_root, _product, build_type = get_last_build_product()
+    if android_root == None or build_type == None:
+        print 'Not found android source code or build type, stop binary release build'
+        return
+
     if target_product == None:
         target_product = _product
 
