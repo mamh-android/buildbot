@@ -92,6 +92,7 @@ def get_publish_folder(base, project, module, branch, product):
                 i = i + 1 
 
 def return_mail_text(project, board, branch, build_type, build_nr, result, package_link=None, failurelog=None):
+    print "Build type: %s!" % build_type 
     build_type_url = "android_develop_build"
     if build_type == 'ODVB':
         build_type_url = 'on_demand_virtual_build'
