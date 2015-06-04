@@ -72,9 +72,9 @@ def copy_file(src, dst):
     return 0
 
 #create a folder according to git branch name and time.today
-def get_publish_folder(base, project, module, branch):
+def get_publish_folder(base, project, module, branch, product):
     today = date.today()
-    folder = str(today) + '_' + branch
+    folder = str(today) + '_' + product + '_' + branch
     folder_server = base + '/' + project + '/' + module + '/' + folder
     f = folder_server
     if not os.path.isdir(f):
@@ -371,7 +371,7 @@ def run(target_product, build_branch, build_nr, android_variant):
             ret = 0
             file_name = ''
             module = git_name.split('/')[-1]
-            dst_folder = get_publish_folder(PUBLISH_DEST, project, module, build_branch) 
+            dst_folder = get_publish_folder(PUBLISH_DEST, project, module, build_branch, target_product)
             build_fail, msg = publish_to_dir(android_top, dst_folder, publish_dir, msg)
             if build_fail:
                 break
