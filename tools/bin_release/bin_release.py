@@ -119,7 +119,8 @@ def send_mail(subject, from_who, to_who, text):
     part1 = MIMEText(text, 'plain')
     msg.attach(part1)
     s = smtplib.SMTP(SMTP_SERVER)
-    s.sendmail(from_who, to_who, msg.as_string())
+    to_who_list = [x for x in to_who.split(',')]
+    s.sendmail(from_who, to_who_list, msg.as_string())
     s.quit()
 
 def get_android_env(msg):
