@@ -253,12 +253,13 @@ def get_last_build_product():
             for line in file:
                 if line.startswith('TARGET_PRODUCT='):
                     target_product = line.split('=')[1]
+                    target_product = target_product.strip()
                 if line.startswith('ANDROID_SOURCE_DIR'):
                     android_root = line.split(':')[1]
-                    android_root.strip()
+                    android_root = android_root.strip()
                 if line.startswith('Build type:'):
                     build_type = line.split(':')[1]
-                    build_type.strip()
+                    build_type = build_type.strip()
     if target_product != None:
         target_product = target_product.split('\n')[0]
     if android_root != None:
