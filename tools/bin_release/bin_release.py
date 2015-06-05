@@ -186,9 +186,10 @@ def publish_by_config(android_top, android_out, dst_folder, project_path):
                         msg = project_path + ' publish copy' + src + ' Failure!'
                         break
                 else:
-                    build_fail = True
-                    msg = project_path + ' publish failure ' + src + ' is not exist!'
-                    break
+                    #build_fail = True
+                    msg = src + ' is not exist!'
+                    print  msg
+
     return build_fail, msg
 
 def publish_git_log(android_top, path_name, dst_folder):
