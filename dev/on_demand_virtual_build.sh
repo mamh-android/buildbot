@@ -53,7 +53,7 @@ case "$5" in
         *) echo "wrong parameter $5"; exit 1 ;;
 esac
 case "$7" in
-        "-d") DEST_DIR=/autobuild/odvb/$8 ;;
+        "-d") DEST_DIR=/miscbuild/odvb/$8 ;;
         *) echo "wrong parameter $7"; exit 1 ;;
 esac
 case "$9" in
