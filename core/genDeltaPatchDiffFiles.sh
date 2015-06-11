@@ -7,7 +7,7 @@ REPO_MIRROR=/mnt/mirror/default
 
 DATE=$(date +%Y-%m-%d-%H-%M-%S)
 
-export OUTPUT_FOLDER=${OUTPUT_FOLDER:-/autobuild/code-compare/${DATE}}
+export OUTPUT_FOLDER=${OUTPUT_FOLDER:-/miscbuild/code-compare/${DATE}}
 OUTPUT_FILE=${OUTPUT_FOLDER}/patch_list.diff
 
 mkdir -p ${OUTPUT_FOLDER}
