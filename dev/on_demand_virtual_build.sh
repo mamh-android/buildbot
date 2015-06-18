@@ -102,9 +102,9 @@ printcolor $SCRIPT_PATH
 # Fetch code from Developer Server with mrvl-ics branch
 if [ -f $MANIFEST_DIR/manifest.commit ]; then
     MANIFEST_C=$(cat $MANIFEST_DIR/manifest.commit)
-    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_C $REFERENCE_URL $REPO_URL --depth=1
+    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_C $REFERENCE_URL $REPO_URL
 else
-    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL --depth=1
+    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
 fi
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -116,7 +116,7 @@ fi
 # Fetch code from Developer Server with manifest xml
 printcolor "fetch code: "
 if [ -f $MANIFEST_XML ];then
-    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL --depth=1
+    $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
     # Reset hard aabs
     cd ~/aabs
     git fetch origin

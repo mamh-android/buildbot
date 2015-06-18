@@ -43,7 +43,7 @@ def main(argv):
     manifest_xml = ""
     addition = ""
     try:
-        opts, args = getopt.getopt(argv, "b:u:m:h", ["reference=", "repo-url=","depth="])
+        opts, args = getopt.getopt(argv, "b:u:m:h", ["reference=", "repo-url="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -61,8 +61,6 @@ def main(argv):
             addition += " --reference=" + arg
         elif opt in ("--repo-url"):
             addition += " --repo-url=" + arg
-        elif opt in ("--depth"):
-            addition += " --depth=" + arg
 
     if manifest_url == "":
         usage()
