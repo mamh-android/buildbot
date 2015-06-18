@@ -45,6 +45,7 @@ def sync_build_code(repo_url):
 
 def run(branch):
     # check if in branch list
+    print "branch_list=%s" % BRANCH_LIST
     if not branch in BRANCH_LIST:
         print "%s do not request gfxtest build" % branch
         exit(255)
@@ -73,6 +74,9 @@ def usage():
     print "\t      [-h] help"
 
 def main(argv):
+    print "argv=%s" % argv
+
+
     branch = ""
     try:
         opts, args = getopt.getopt(argv,"b:n:h")
@@ -89,6 +93,9 @@ def main(argv):
         usage()
         sys.exit(2)
 
+    print "branch=%s" % branch
+    branch = branch.split("/")[0]
+    print "after split(): branch=%s" % branch
     run(branch)
 
 if __name__ == "__main__":
