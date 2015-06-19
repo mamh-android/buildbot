@@ -46,6 +46,9 @@ CFG_FILE = "/home/%s/buildbot_script/buildbot/tools/GC_power_performance/config"
 GERRIT_REVIEW = "/home/%s/buildbot_script/buildbot/core/gerrit_review_update.py" % m_user
 STD_LOG = "/home/%s/buildbot_script/stdio.log" % m_user
 
+def debug(msg):
+    print "[debug]%s" % msg
+
 def run_command_status(*argv, **env):
     if VERBOSE:
         print(datetime.datetime.now(), "Running:", " ".join(argv))
@@ -65,6 +68,7 @@ def run_command(*argv, **env):
 
 #return revision from cfg
 def return_revision_via_cfg(cfg_file):
+    debug("config file: [%s]" % cfg_file)
     config = ConfigParser.RawConfigParser()
     try:
         config.read(cfg_file)
@@ -77,6 +81,7 @@ def return_revision_via_cfg(cfg_file):
     revision = []
     for i in l_project:
         cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON is:open label:Verified=0" % (m_user, m_remote_server)
+        debug("gerrit query cmd is: [%s]" % cmd)
         config.options(i)
         for j in config.options(i):
             cmd += ' ' + j + ':' + config.get(i, j)
@@ -198,7 +203,7 @@ def run(cfg):
     cmd += " -b %s" % Branch
     cmd += " -d %s" % OUTPUT_DIR
     cmd += " -v %s -de %s" % (Product_Type, Build_Device)
-    print cmd
+    debug("cmd is: [%s]" % cmd)
     ret_p = os.system(cmd)
     if not (ret_p==0):
         print "[Self-build] Failed ODVB"
@@ -215,7 +220,7 @@ def run(cfg):
     print "[Self-build] Gerrit review update"
     cmd = GERRIT_REVIEW
     cmd += " -p %s -m \"GCVB base:%s\" -r success -d %s" % (Gerrit_Patch, Manifest_Xml, return_build_device(STD_LOG))
-    print cmd
+    debug("cmd is: [%s]" % cmd)
     ret_p = os.system(cmd)
     print "[Self-build] Send success mail"
     subject, text = return_mail_text(Branch, 'success', return_build_device(STD_LOG))
@@ -225,7 +230,7 @@ def run(cfg):
     cmd = "%s/trigger.py" % sync_build_code(PPAT_GIT)
     cmd += " --imagepath %s --device %s --purpose \"%s\" --mode gc" % (return_build_device(STD_LOG), Build_Device, Purpose)
     cmd += " --assigner %s" % ','.join(return_mail_via_cfg("%s/%s.cfg" % (CFG_FILE, cfg)))
-    print cmd
+    debug("trigger ppat cmd is: [%s]" % cmd)
     ret_p = os.system(cmd)
     if not (ret_p==0):
         print "[Self-build] Failed startPPAT"
