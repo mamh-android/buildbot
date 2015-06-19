@@ -85,12 +85,32 @@ for i in $Devices; do
     git commit -sm "$(date) ${MANIFEST_BRANCH} ${i}"
 done
 
+#clean old files
+var_0=`echo ${MANIFEST_BRANCH%%_*}`
+if [ ! "${var_0}" == "rls" ]; then
+  target=$MANIFEST_BRANCH
+  echo "platform-product: $target"
+else
+  var_1=`echo ${MANIFEST_BRANCH#*_}`
+  platform=`echo ${var_1%%_*}`
+  echo "platform: $platform"
+  last=`echo ${var_1#*_}`
+  product=`echo ${last%%_*}`
+  echo "product: $product"
+  last=`echo ${last#*_}`
+  if [ "$product" = "${last}" ]; then
+    target="$platform-$product"
+  else
+    echo "release: $last"
+    target="${platform}-${product}_${last}"
+  fi
+  echo $target
+fi
+
+old_files="/miscbuild/temp/*$target"
+echo "old files: $old_files"
+rm -rf `echo $old_files`
 dist_file=/miscbuild/temp/DISTRIBUTED_BUILD.${MANIFEST_BRANCH}
-old_files=`cat  ${dist_file}`
-echo "clean old file ${old_files} in ${dist_file}"
-for i in `cat  ${dist_file}`; do
-    rm -rf $i
-done
 rm -rf ${dist_file}
 
 #update gerrit
