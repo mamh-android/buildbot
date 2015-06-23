@@ -4,12 +4,12 @@
 #
 # History:
 # V1: 2015-2-12:Yufei: initial code
-
+# V2: 2015-6-22:Shaohua: update
 set -e
 
 VERSION=1
 
-  BUILDMASTER=10.38.34.92
+  BUILDMASTER=10.38.116.72
   BRANCHES=$(ssh $BUILDMASTER cat ~/buildbot/sandbox/master/master.cfg | awk -F'=|\"|\,' ' /timed.Nightly\(name=/ { print $8 } ')
   AABS_F=~/aabs
 
@@ -64,4 +64,8 @@ for i in $outList; do
         rm -rf $i
     fi
 done
+
+echo "[$(date)] clean rtvb floder" | tee -a $LOGFILE
+    rm -rf rtvb*
+    rm -rf odvb*
 echo "[$(date)] completed clean the folder" | tee -a $LOGFILE
