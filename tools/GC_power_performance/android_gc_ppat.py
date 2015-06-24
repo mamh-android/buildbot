@@ -81,10 +81,11 @@ def return_revision_via_cfg(cfg_file):
     revision = []
     for i in l_project:
         cmd = "ssh -p 29418 %s@%s gerrit query --current-patch-set --format=JSON is:open label:Verified=0" % (m_user, m_remote_server)
-        debug("gerrit query cmd is: [%s]" % cmd)
         config.options(i)
         for j in config.options(i):
             cmd += ' ' + j + ':' + config.get(i, j)
+        debug("gerrit query cmd is: [%s]" % cmd)
+
         (status, remote_output) = run_command_status(cmd)
         l = remote_output.split('\n')
         l.pop()
@@ -170,6 +171,7 @@ def return_mail_text(branch, result, image_link=None):
     return subject, message
 
 def send_html_mail(subject, from_who, to_who, text):
+    to_who.append("mamh@marvell.com")
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = from_who
