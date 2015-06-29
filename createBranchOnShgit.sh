@@ -119,6 +119,7 @@ fi
 
 # Fetch code from Developer Server with mrvl-ics branch
 #$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
+echo "==$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $INHERIT_BRANCH $REFERENCE_URL $REPO_URL"
 $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $INHERIT_BRANCH $REFERENCE_URL $REPO_URL
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -128,10 +129,11 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Copy manifest xml into current directory
-echo Copy: $MANIFEST_XML
+echo "==cp $MANIFEST_XML $MANIFEST_NAME"
 cp $MANIFEST_XML $MANIFEST_NAME
 
 # Fetch code from Developer Server with manifest xml
+echo "==$SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_NAME $REFERENCE_URL $REPO_URL"
 $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_NAME $REFERENCE_URL $REPO_URL
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -148,6 +150,7 @@ for i in $FILES;do
 done
 
 #Usage: rls_branch.sh <create|delete> <release-branch-name> <unique|multiple> [<actual-run>] [<project> ...]
+echo "==$SCRIPT_PATH/rls_branch.sh create $MANIFEST_BRANCH multiple $RUN_TYPE"
 $SCRIPT_PATH/rls_branch.sh create $MANIFEST_BRANCH multiple $RUN_TYPE
 RET=$?
 if [ $RET -ne 0 ]; then
