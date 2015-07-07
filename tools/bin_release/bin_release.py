@@ -231,8 +231,14 @@ def build_project(target_product, android_variant, android_root, path_name, buil
         build_cmd += 'mm -B'
         print build_cmd
         ret, msg = runCMDNeedShellBuiltin(build_cmd)
-    elif build_mode == 'make': 
-        pass
+    elif build_mode.startswith('make'): 
+        build_cmd = 'cd ' + android_root + ' && '
+        build_cmd += 'source build/envsetup.sh && '
+        build_cmd += 'lunch ' + target_product + '-' + android_variant + ' && '
+        build_cmd += 'env && '
+        build_cmd += build_mode
+        print build_cmd
+        ret, msg = runCMDNeedShellBuiltin(build_cmd)
     elif build_mode == 'user':
         pass
     else:
