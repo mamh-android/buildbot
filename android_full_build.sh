@@ -6,7 +6,11 @@ build_type="DEVB"
 if echo $cbranch | grep -q ".*/[0-9][0-9]*"; then
     changid=${cbranch#*/}
     obj=$(echo $changid|rev|cut -c-2|rev)
+    echo "==DISBUILD== rm -rf manifest_backup"
+    rm -rf manifest_backup
+    echo "==DISBUILD== git clone ssh://privgit.marvell.com:29418/buildbot/manifest_backup"
     git clone ssh://privgit.marvell.com:29418/buildbot/manifest_backup
+    echo "==DISBUILD== cd manifest_backup && git fetch ssh://privgit.marvell.com:29418/buildbot/manifest_backup refs/changes/$obj/$changid/1 && git reset --hard FETCH_HEAD && cd -"
     cd manifest_backup && git fetch ssh://privgit.marvell.com:29418/buildbot/manifest_backup refs/changes/$obj/$changid/1 && git reset --hard FETCH_HEAD && cd -
     . manifest_backup/run.sh
     build_type="DISB"
