@@ -34,7 +34,8 @@ CAM_QAE_ADMIN = "yzhan45@marvell.com"
 
 #Mail list
 MAIL_LIST = []
-MAIL_LIST.append(CAM_QAE_ADMIN, 'shhgu@marvell.com')
+MAIL_LIST.append(CAM_QAE_ADMIN)
+MAIL_LIST.append("shhgu@marvell.com")
 
 ''' Force Python's print function to output to the screen.
 '''
