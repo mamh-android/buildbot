@@ -113,6 +113,7 @@ Team of Cosmo''' % (build_link, image_path, change_log)
             infile = open(COSMO_CHANGELOG_BUILD, 'r')
             change_log = infile.read()
             infile.close()
+        image_path = publish_file(COSMO_OUT_DIR, IMAGE_SERVER)
         failure_log = ""
         infile = open(COSMO_BUILD_LOG, 'r')
         f = infile.readlines()
@@ -135,6 +136,9 @@ The error can be resulted from newly checked in codes.
 BuildBot Url:
 %s
 
+You can download the package at:
+%s
+
 The change since last build is listed below:
 %s
 
@@ -142,7 +146,7 @@ Last part of the build log is followed:
 %s
 
 Regards,
-Team of Cosmo''' % (build_link, change_log, failure_log)
+Team of Cosmo''' % (build_link, image_path, change_log, failure_log)
 
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(0)
