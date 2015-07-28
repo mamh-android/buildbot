@@ -26,6 +26,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+import pprint
 
 #Code remote server
 m_remote_server = "shgit.marvell.com"
@@ -183,7 +184,7 @@ def run(owner, branchregex):
             fc = ScanRev(Revision, Project, branch_l)
             Branch.append(f['branch'])
             Branch.extend(fc.scan_branch())
-            Subject = f['subject']
+            Subject = f['subject'].encode("utf-8")
             LastCreatedOn = strftime("%Y/%m/%d %H:%M:%S", time.localtime(f['createdOn']))
         p_count += 1
         print "=== %s/%s === Running ===" % (p_count, len(changeid_l))
