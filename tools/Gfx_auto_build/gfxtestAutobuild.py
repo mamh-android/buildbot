@@ -43,7 +43,7 @@ def sync_build_code(repo_url):
         subprocess.check_call('git checkout origin/master', shell=True, cwd=repo_folder)
     return "%s/%s" % (os.getcwd(), repo_folder)
 
-def run(branch):
+def run(branch, buildnum):
     # check if in branch list
     print "branch_list=%s" % BRANCH_LIST
     if not branch in BRANCH_LIST:
@@ -62,8 +62,8 @@ def run(branch):
     print "Start load core.sh"
     print "branch: %s" % branch
     print "TARGET_PRODUCT: %s" % product
-    cmd = "bash %s/core.sh %s %s %s" % (gfx_folder, "T", branch, product)
-    print cmd
+    cmd = "bash %s/core.sh %s %s %s %s" % (gfx_folder, "T", branch, product, buildnum)
+    print "cmd is: ",cmd
     os.system(cmd)
     exit(0)
 
@@ -89,14 +89,16 @@ def main(argv):
             sys.exit()
         elif opt in ("-b"):
             branch = arg
+        elif opt in ("-n"):
+            buildnum = arg
     if not branch:
         usage()
         sys.exit(2)
 
-    print "branch=%s" % branch
+    print "branch=%s" % branch, "buildnum=%s" % buildnum
     branch = branch.split("/")[0]
     print "after split(): branch=%s" % branch
-    run(branch)
+    run(branch, buildnum)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
