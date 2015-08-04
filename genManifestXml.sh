@@ -5,7 +5,9 @@
 
 export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-~/aabs/gen_manifest}
 export REFERENCE_URL=${REFERENCE_URL:-"--reference=/mnt/mirror/default"}
+
 export SRC_URL=${SRC_URL:-ssh://shgit.marvell.com/git/android/platform/manifest.git}
+
 export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"}
 export MANIFEST_URL=${MANIFEST_URL:-ssh://privgit.marvell.com:29418/buildbot/manifest_backup.git}
 export DEVICES_TAB=${DEVICES_TAB:-~/aabs/tools/branchDevicesList}
@@ -20,6 +22,11 @@ case "$1" in
           ;;
     *) echo "wrong parameter $1"; exit 1 ;;
 esac
+
+if [ "$MANIFEST_BRANCH" = "pxa1936-mpre" ];then
+export SRC_URL=ssh://shgit.marvell.com/git/lpre/platform/manifest.git
+echo "===$SRC_URL"
+fi
 
 # Clean the working directory
 rm -fr $SYNC_GIT_WORKING_DIR
