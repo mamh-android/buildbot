@@ -24,25 +24,36 @@ echo_out()
 }
 
 cd ~/buildbot_script
+echo "===rm -fr repo-diff-workdir===="
 rm -fr repo-diff-workdir
 mkdir repo-diff-workdir
 cd repo-diff-workdir
+
+echo "===cp ${sour} ./m1.xml==="
 cp ${sour} ./m1.xml
+
+echo "===cp ${dest} ./m2.xml==="
 cp ${dest} ./m2.xml
 
 
 #################### sync code and make tag ########################################
+echo "===repo init -u ${MANIFEST_GIT} --reference ${REPO_MIRROR} --repo-url ${REPO_GIT}==="
 repo init -u ${MANIFEST_GIT} --reference ${REPO_MIRROR} --repo-url ${REPO_GIT}
 
-cp ./m1.xml .repo/manifests && cp ./m2.xml .repo/manifests && \
-repo init -m m1.xml && \
-repo sync && \
-update_tag tag1 list1 && \
-repo init -m m2.xml && \
-repo sync && \
+cp ./m1.xml .repo/manifests && cp ./m2.xml .repo/manifests
+
+echo "===repo init -m m1.xml==="
+repo init -m m1.xml --reference ${REPO_MIRROR}
+repo sync -q -jobs 8
+update_tag tag1 list1
+
+echo "===repo init -m m2.xml==="
+repo init -m m2.xml
+repo sync -q -jobs 8 --reference ${REPO_MIRROR}
 update_tag tag2 list2
 
 ##################### do compare ##################################################
+echo "===do compare==="
 echo_out --- ${sour}
 echo_out +++ ${dest}
 echo_out
