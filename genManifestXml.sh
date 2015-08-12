@@ -25,7 +25,8 @@ esac
 
 if [ "$MANIFEST_BRANCH" = "pxa1936-mpre" ];then
 export SRC_URL=ssh://shgit.marvell.com/git/lpre/platform/manifest.git
-echo "===$SRC_URL"
+export REFERENCE_URL="--reference=/home/buildfarm/aabs/jenkins/mirror/mpre"
+echo "=mpre branch==$SRC_URL = $REFERENCE_URL"
 fi
 
 # Clean the working directory

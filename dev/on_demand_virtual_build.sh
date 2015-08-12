@@ -76,6 +76,13 @@ case "${11}" in
                 ;;
         *) echo "wrong parameter ${11}"; exit 1 ;;
 esac
+
+if [ "$MANIFEST_BRANCH" = "pxa1936-mpre" ];then
+export SRC_URL=ssh://shgit.marvell.com/git/lpre/platform/manifest.git
+export REFERENCE_URL="--reference=/home/buildfarm/aabs/jenkins/mirror/mpre"
+echo "=mpre branch==$SRC_URL = $REFERENCE_URL"
+fi
+
 # Clean the working directory
 printcolor "clean the working drectory: $SYNC_GIT_WORKING_DIR"
 rm -fr $SYNC_GIT_WORKING_DIR
