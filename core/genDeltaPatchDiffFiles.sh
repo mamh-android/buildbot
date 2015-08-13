@@ -44,12 +44,16 @@ cp ./m1.xml .repo/manifests && cp ./m2.xml .repo/manifests
 
 echo "===repo init -m m1.xml==="
 repo init -m m1.xml --reference ${REPO_MIRROR}
+echo "===repo sync -q --jobs 8==="
 repo sync -q --jobs 8
+
 update_tag tag1 list1
 
 echo "===repo init -m m2.xml==="
-repo init -m m2.xml
-repo sync -q --jobs 8 --reference ${REPO_MIRROR}
+repo init -m m2.xml --reference ${REPO_MIRROR}
+echo "===repo sync -q --jobs 8==="
+repo sync -q --jobs 8
+
 update_tag tag2 list2
 
 ##################### do compare ##################################################
