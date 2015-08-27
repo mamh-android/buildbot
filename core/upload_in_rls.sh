@@ -12,7 +12,7 @@
 # Command usage:
 #upload_in_rls.sh -t <tag name> -m <manifest xml> -b <manifest branch> --tagsrc
 
-export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-$(pwd)/in_work}
+export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-~/aabs/in_work}
 export REMOTE_SERVER=${REMOTE_SERVER:-github-i.marvell.com}
 export REMOTE_MNAME=${REMOTE_MNAME:-mars_in}
 export DEST_ROOT=${DEST_ROOT:-/mobile/android/default/}

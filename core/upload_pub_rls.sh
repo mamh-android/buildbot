@@ -12,7 +12,7 @@
 # Command usage:
 #upload_pub_rls.sh -t <tag name> -m <manifest xml> -b <manifest branch> --tagsrc
 
-export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-$(pwd)/pub_work}
+export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-~/aabs/pub_work}
 export REMOTE_SERVER=${REMOTE_SERVER:-github.marvell.com}
 export REMOTE_MNAME=${REMOTE_MNAME:-mars}
 
