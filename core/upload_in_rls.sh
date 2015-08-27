@@ -15,7 +15,7 @@
 export SYNC_GIT_WORKING_DIR=${SYNC_GIT_WORKING_DIR:-~/aabs/in_work}
 export REMOTE_SERVER=${REMOTE_SERVER:-github-i.marvell.com}
 export REMOTE_MNAME=${REMOTE_MNAME:-mars_in}
-export DEST_ROOT=${DEST_ROOT:-/mobile/android/default/}
+export DEST_ROOT=${DEST_ROOT:-/home/buildfarm/mobile/android/default/}
 export REFERENCE_URL=${REFERENCE_URL:-"--reference=/mnt/mirror/default"}
 export REPO_URL=${REPO_URL:-"--repo-url=ssh://shgit.marvell.com/git/android/tools/repo"}
 
@@ -84,8 +84,10 @@ echo $SCRIPT_PATH
 # Fetch code from Developer Server with mrvl-ics branch
 if [ -f $MANIFEST_DIR/manifest.commit ]; then
     MANIFEST_C=$(cat $MANIFEST_DIR/manifest.commit)
+    echo "=fetch code==$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_C $REFERENCE_URL $REPO_URL==="
     $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_C $REFERENCE_URL $REPO_URL
 else
+    echo "=fetch code==$SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL==="
     $SCRIPT_PATH/fetchcode.py -u $SRC_URL -b $MANIFEST_BRANCH $REFERENCE_URL $REPO_URL
 fi
 RET=$?
@@ -105,6 +107,7 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Fetch code from Developer Server with manifest xml
+echo "=fetch code from manifest.xml==$SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL========"
 $SCRIPT_PATH/fetchcode.py -u $SRC_URL -m $MANIFEST_XML $REFERENCE_URL $REPO_URL
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -114,6 +117,7 @@ if [ $RET -ne 0 ]; then
 fi
 
 # Output project name and revision number into .revision.pck
+echo "=output project name,revision==$SCRIPT_PATH/getname.py -o $REVISION_DICT==="
 $SCRIPT_PATH/getname.py -o $REVISION_DICT
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -125,6 +129,7 @@ fi
 # Compare whether different dictories are imported by manifest xml
 # $BRANCH_DICT is the parameter source
 # $REVISION_DICT is the parameter destination
+echo "=compare 1==$SCRIPT_PATH/comparedict.py -s $BRANCH_DICT -d $REVISION_DICT==="
 $SCRIPT_PATH/comparedict.py -s $BRANCH_DICT -d $REVISION_DICT
 RET=$?
 if [ $RET -lt 0 ]; then
@@ -138,6 +143,7 @@ elif [ $RET -eq 2 ]; then
 fi
 
 # Output project name and client path into .path.pck
+echo "=output project name,path==$SCRIPT_PATH/getname.py -o $REVISION_DICT==="
 $SCRIPT_PATH/getname.py -p -o $CPATH_DICT
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -149,6 +155,7 @@ fi
 # Compare whether different dictories are imported by manifest xml
 # $BRANCH_DICT is the parameter source
 # $CPATH_DICT is the parameter destination
+echo "=compare 2==$SCRIPT_PATH/comparedict.py -s $BRANCH_DICT -d $REVISION_DICT==="
 $SCRIPT_PATH/comparedict.py -s $BRANCH_DICT -d $CPATH_DICT
 RET=$?
 if [ $RET -lt 0 ]; then
@@ -162,6 +169,7 @@ elif [ $RET -eq 2 ]; then
 fi
 
 # Apply tag on working directory
+echo "=apply tag==$SCRIPT_PATH/tag.py -i $CPATH_DICT -r $REMOTE_MNAME -t $TAG_NAME==="
 $SCRIPT_PATH/tag.py -i $CPATH_DICT -r $REMOTE_MNAME -t $TAG_NAME
 RET=$?
 if [ $RET -ne 0 ]; then
@@ -171,39 +179,43 @@ if [ $RET -ne 0 ]; then
 fi
 
 #Clean the shallow
-echo "clean shallow of git tree"
+echo "=clean shallow of git tree====="
 FILES=$(find .repo/ -name "shallow")
 for i in $FILES;do
     rm $i
 done
 
 # Upload repository to dest server
+echo "=upload 1==$SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_SERVER -r $DEST_ROOT -b $MANIFEST_BRANCH==="
 $SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT -d $REMOTE_SERVER -r $DEST_ROOT -b $MANIFEST_BRANCH
 RET=$?
 if [ $RET -ne 0 ]; then
-	echo "Failed to upload repository to dest server"
-	echo "exit value:" $RET
-	exit 1
+    echo "Failed to upload 1 repository to dest server"
+    echo "exit value:" $RET
+    exit 1
 fi
 
+echo "==TAG_SRC=$TAG_SRC==="
 if [ ! -z $TAG_SRC ]; then
-	# Upload commits to source server
-	$SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT --tagsrc
-	RET=$?
-	if [ $RET -ne 0 ]; then
-		echo "Failed to upload repository to dest server"
-		echo "exit value:" $RET
-		exit 1
-	fi
+    # Upload commits to source server
+    echo "=upload 2==$SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT --tagsrc==="
+    $SCRIPT_PATH/push.py -t $TAG_NAME --dict-branch=$BRANCH_DICT --dict-path=$CPATH_DICT --tagsrc
+    RET=$?
+    if [ $RET -ne 0 ]; then
+        echo "Failed to upload 2 repository to dest server"
+        echo "exit value:" $RET
+        exit 1
+    fi
 fi
 
 # Verify revision number
+echo "=verify revision==$SCRIPT_PATH/verify.py --dict-revision=$REVISION_DICT --dict-path=$CPATH_DICT -t $TAG_NAME==="
 $SCRIPT_PATH/verify.py --dict-revision=$REVISION_DICT --dict-path=$CPATH_DICT -t $TAG_NAME
 RET=$?
 if [ $RET -ne 0 ]; then
-	echo "verification fail"
-	echo "exit value:" $RET
-	exit 1
+    echo "verification fail"
+    echo "exit value:" $RET
+    exit 1
 fi
 
 # Register Uploaded Projects by flushing the project_list cache
