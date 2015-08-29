@@ -210,12 +210,8 @@ def run(branch='master', build_nr=None):
     with open(publish_file, 'r') as file:
         for line in file:
             line = line.rstrip('\n' + '')
-            print "----------"
-            print line.split(':')[0].replace(' ', '')
-            print "----------"
             if os.path.isfile(line.split(':')[0].replace(' ', '')):
                 try:
-                    print "========="
                     copy_file(line.split(':')[0].replace(' ', ''), "out/%s/" % line.split(':')[1].replace(' ', ''))
                 except IOError:
                     print "[Ipp-build][%s] Failed Publising" % (str(datetime.datetime.now()))
