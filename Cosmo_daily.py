@@ -168,7 +168,7 @@ def run(build_nr=0, branch='master', rev='Release'):
         send_html_mail(subject,ADM_USER,BF_ADMIN,text)
         exit(1)
     print "[Cosmo-daily][%s] End git reset --hard" % (str(datetime.datetime.now()))
-    ret, imagedatabase_rev = sync_imagedatabase()
+    #ret, imagedatabase_rev = sync_imagedatabase()
     if not (ret==0):
         print "[Cosmo-daily][%s] Failed sync imagedatabase" % (str(datetime.datetime.now()))
         subject, text = return_mail_text('sync imagedatabase', branch, build_nr, 'failed', None, None, None)
@@ -197,11 +197,11 @@ def run(build_nr=0, branch='master', rev='Release'):
         subject, text = return_mail_text('[Generate-change-log]', branch, build_nr, 'failed', None, None, None)
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
-    if imagedatabase_rev:
-            f = open(IMAGEDATABASE_F, 'w')
-            f.write("ImageDataBase Rev: %s" % imagedatabase_rev)
-            f.close()
-    print "[Cosmo-daily][%s] End generate change log" % (str(datetime.datetime.now()))
+    #if imagedatabase_rev:
+    #        f = open(IMAGEDATABASE_F, 'w')
+    #        f.write("ImageDataBase Rev: %s" % imagedatabase_rev)
+    #        f.close()
+    # print "[Cosmo-daily][%s] End generate change log" % (str(datetime.datetime.now()))
     # MSbuild debug
     print "[Cosmo-daily][%s] Start MSBuild debug" % (str(datetime.datetime.now()))
     c_msbuild = ['MSBuild', 'Cosmo.sln', '/t:Rebuild', '/p:Configuration=Debug']
@@ -272,11 +272,11 @@ def run(build_nr=0, branch='master', rev='Release'):
         send_html_mail(subject,ADM_USER,MAIL_LIST,text)
         exit(1)
     # All Success
-    current_rev = os.popen("git log -1 --pretty=format:%H").read().split()
-    if current_rev:
-            f = open(last_build, 'w')
-            f.write("%s\nPackage: %s\nImageDataBase Rev: %s" % (current_rev[0], publish_folder, imagedatabase_rev))
-            f.close()
+    #current_rev = os.popen("git log -1 --pretty=format:%H").read().split()
+    #if current_rev:
+    #        f = open(last_build, 'w')
+    #        f.write("%s\nPackage: %s\nImageDataBase Rev: %s" % (current_rev[0], publish_folder, imagedatabase_rev))
+    #        f.close()
     print "[Cosmo-daily][%s] End Autotest" % (str(datetime.datetime.now()))
     print "[Cosmo-daily][%s] All success" % (str(datetime.datetime.now()))
     change_log = return_text(COSMO_CHANGELOG_BUILD)
