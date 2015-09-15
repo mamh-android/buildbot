@@ -14,7 +14,7 @@ import ConfigParser
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/image_auto_test/builds/"
+BUILDBOT_URL = "http://apse.marvell.com:8010/builders/image_auto_test/builds/"
 IMAUTO_LOG = ".imauto.build.log"
 TEST_CFG = "test.txt"
 BUILD_TYPE = "imauto"

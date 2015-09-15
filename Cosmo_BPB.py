@@ -11,7 +11,7 @@ import ConfigParser
 COSMO_OUT_DIR = "out\\"
 IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build_bpb\\"
 PROJECT = "cosmo"
-BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
+BUILDBOT_URL = "http://apse.marvell.com:8010/builders/cosmo_by_patch_build/builds/"
 IMAGEDATABASE = "W:"
 IMAGEDATABASE_L = "\\\\sh-srv06\\common\\"
 

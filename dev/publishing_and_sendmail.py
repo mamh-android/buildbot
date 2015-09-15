@@ -41,7 +41,7 @@ def get_ret():
     return buildresult
 
 def run(buildresult,build_nr):
-    build_link = "http://buildbot.marvell.com:8010/builders/cosmo_build/builds/" + build_nr
+    build_link = "http://apse.marvell.com:8010/builders/cosmo_build/builds/" + build_nr
     branch = os.popen("git branch").read().split()[1]
     last_build = IMAGE_SERVER + "LAST_BUILD."  + branch
     if os.path.isfile(last_build):

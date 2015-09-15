@@ -16,7 +16,7 @@ from hashlib import sha1
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_image_auto_test/builds/"
+BUILDBOT_URL = "http://apse.marvell.com:8010/builders/cosmo_image_auto_test/builds/"
 IMAUTO_LOG = ".imauto.build.log"
 TEST_CFG = "test.txt"
 IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build\\"

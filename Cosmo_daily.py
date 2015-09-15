@@ -14,7 +14,7 @@ from email.mime.text import MIMEText
 COSMO_OUT_DIR = "out\\"
 IMAGE_SERVER = "\\\\sh-srv06\\cosmo_build\\"
 PROJECT = "cosmo"
-BUILDBOT_URL = "http://buildbot.marvell.com:8010/builders/cosmo_build/builds/"
+BUILDBOT_URL = "http://apse.marvell.com:8010/builders/cosmo_build/builds/"
 COSMO_BUILD_LOG = ".cosmo.build.log"
 COSMO_CHANGELOG_BUILD = COSMO_OUT_DIR + "changelog.build"
 IMAGEDATABASE = "W:"
